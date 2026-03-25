@@ -388,6 +388,177 @@ You MUST respond in this EXACT JSON format (no markdown, no code blocks, just ra
   }
 };
 
+/**
+ * Generate career roles based on a domain
+ */
+const generateCareerRoles = async (domain) => {
+  const cacheKey = `roles:${domain}`;
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
+
+  const prompt = `You are a career advisor AI. Given the domain "${domain}", generate a list of 6-8 specific career roles a student can pursue.
+
+You MUST respond in this EXACT JSON format (no markdown, no code blocks, just raw JSON):
+{
+  "roles": [
+    { "title": "Role Title", "description": "One sentence description", "avgSalary": "$XX,XXX - $XXX,XXX", "demand": "High" }
+  ]
+}
+
+DOMAIN: ${domain}`;
+
+  try {
+    const text = await callAI(prompt);
+    const result = parseAIJSON(text, 'object');
+    cache.set(cacheKey, result);
+    return result;
+  } catch (err) {
+    console.error('Career Roles Error:', err.message);
+    throw err;
+  }
+};
+
+/**
+ * Generate a learning roadmap for a domain + role
+ */
+const generateRoadmap = async (domain, role) => {
+  const cacheKey = `roadmap:${domain}:${role}`;
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
+
+  const prompt = `You are an educational AI curriculum designer. Generate a detailed, structured learning roadmap for someone who wants to become a "${role}" in the "${domain}" domain.
+
+The roadmap should have 4-6 phases, each with specific skills, tools, and estimated timeframes.
+
+You MUST respond in this EXACT JSON format (no markdown, no code blocks, just raw JSON):
+{
+  "title": "Roadmap to become ${role}",
+  "estimatedDuration": "X months",
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Phase Title",
+      "duration": "X weeks",
+      "description": "Brief description",
+      "skills": ["Skill 1", "Skill 2"],
+      "tools": ["Tool 1", "Tool 2"],
+      "projects": ["Project idea 1"]
+    }
+  ],
+  "tips": ["Tip 1", "Tip 2", "Tip 3"]
+}`;
+
+  try {
+    const text = await callAI(prompt);
+    const result = parseAIJSON(text, 'object');
+    cache.set(cacheKey, result);
+    return result;
+  } catch (err) {
+    console.error('Roadmap Error:', err.message);
+    throw err;
+  }
+};
+
+/**
+ * Generate rich course info: "Why learn this" + "Achievable roles"
+ */
+const generateCourseInfo = async (courseTitle, courseDescription) => {
+  const cacheKey = `courseinfo:${courseTitle}`;
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
+
+  const prompt = `You are an educational AI advisor. For the following course, generate two sections:
+1. "Why should you learn this course?" — A compelling 2-3 sentence explanation
+2. "What roles can you achieve after completing this course?" — List of 3-5 specific job roles
+
+Course Title: ${courseTitle}
+Course Description: ${courseDescription || 'Not provided'}
+
+You MUST respond in this EXACT JSON format (no markdown, no code blocks, just raw JSON):
+{
+  "whyLearn": "Compelling reason to learn this course...",
+  "achievableRoles": ["Role 1", "Role 2", "Role 3"]
+}`;
+
+  try {
+    const text = await callAI(prompt);
+    const result = parseAIJSON(text, 'object');
+    cache.set(cacheKey, result);
+    return result;
+  } catch (err) {
+    console.error('Course Info Error:', err.message);
+    throw err;
+  }
+};
+
+/**
+ * Generate personalized learning insights from progress data
+ */
+const generateLearningInsights = async (progressData) => {
+  const prompt = `You are an AI learning analytics engine. Analyze the following student performance data and provide personalized insights and suggestions.
+
+Student Data:
+${JSON.stringify(progressData, null, 2)}
+
+Provide insights in these categories:
+1. Best study times (based on screen time patterns)
+2. Weak areas that need revision
+3. Next recommended course or topic
+4. General performance insights
+
+You MUST respond in this EXACT JSON format (no markdown, no code blocks, just raw JSON):
+{
+  "bestStudyTime": "You perform best during...",
+  "weakAreas": ["Area 1", "Area 2"],
+  "nextRecommendation": "Based on your progress, you should...",
+  "insights": [
+    "You perform better in the morning",
+    "Your quiz scores improve after short breaks"
+  ],
+  "revisionSuggestions": ["Topic 1", "Topic 2"],
+  "overallRating": 4
+}`;
+
+  try {
+    const text = await callAI(prompt);
+    return parseAIJSON(text, 'object');
+  } catch (err) {
+    console.error('Learning Insights Error:', err.message);
+    throw err;
+  }
+};
+
+/**
+ * Generate prerequisite test for course level entry
+ */
+const generateLevelTest = async (courseTitle, targetLevel) => {
+  const levelName = targetLevel === 'advanced' ? 'Advanced' : 'Medium';
+  const prompt = `Generate EXACTLY 10 multiple-choice questions to test if a student is ready for the ${levelName} level of the course: "${courseTitle}".
+
+${targetLevel === 'advanced' 
+  ? 'Questions should be challenging, testing deep understanding, edge cases, and advanced concepts.'
+  : 'Questions should test intermediate knowledge, application of concepts, and practical understanding.'}
+
+Rules:
+- Each question MUST have exactly 4 options: A, B, C, D
+- Provide the correct answer letter
+- Questions should properly assess readiness for the ${levelName} level
+
+You MUST respond in this EXACT JSON format (no markdown, no code blocks, just raw JSON):
+[
+  {
+    "question": "Question text?",
+    "options": { "A": "Option A", "B": "Option B", "C": "Option C", "D": "Option D" },
+    "answer": "A"
+  }
+]`;
+
+  try {
+    const text = await callAI(prompt);
+    return parseAIJSON(text, 'array');
+  } catch (err) {
+    console.error('Level Test Generation Error:', err.message);
+    throw err;
+  }
+};
+
 module.exports = {
   generateSummary,
   chatTutor,
@@ -397,5 +568,10 @@ module.exports = {
   generateAssessmentQuestions,
   analyzePersonalizedContent,
   generateCourseMetadata,
-  generateLaunchTest
+  generateLaunchTest,
+  generateCareerRoles,
+  generateRoadmap,
+  generateCourseInfo,
+  generateLearningInsights,
+  generateLevelTest
 };

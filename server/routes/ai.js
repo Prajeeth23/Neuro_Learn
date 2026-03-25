@@ -68,12 +68,94 @@ router.post('/assessment-questions', authMiddleware, async (req, res) => {
   }
 });
 
-// Generate Launch Test (5 questions) before enrolling
+// Generate Launch Test (10 questions) before enrolling
 router.post('/launch-test', authMiddleware, async (req, res) => {
   const { courseTitle, courseDescription } = req.body;
   try {
     if (!courseTitle) return res.status(400).json({ error: 'Course Title is required' });
     const test = await geminiService.generateLaunchTest(courseTitle, courseDescription || '');
+    res.json({ test });
+  } catch (err) {
+    console.error(`AI Route Error [${req.path}]:`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// =====================================================
+// NEW ENDPOINTS
+// =====================================================
+
+// Generate career roles for a domain
+router.post('/career-roles', authMiddleware, async (req, res) => {
+  const { domain } = req.body;
+  try {
+    if (!domain) return res.status(400).json({ error: 'Domain is required' });
+    const result = await geminiService.generateCareerRoles(domain);
+    res.json(result);
+  } catch (err) {
+    console.error(`AI Route Error [${req.path}]:`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Generate learning roadmap for domain + role
+router.post('/roadmap', authMiddleware, async (req, res) => {
+  const { domain, role } = req.body;
+  try {
+    if (!domain || !role) return res.status(400).json({ error: 'Domain and role are required' });
+    const roadmap = await geminiService.generateRoadmap(domain, role);
+    
+    // Save to DB
+    try {
+      await req.supabaseClient.from('roadmaps').insert({
+        user_id: req.user.id,
+        domain,
+        role,
+        roadmap_data: roadmap
+      });
+    } catch (dbErr) {
+      console.error('Failed to save roadmap to DB:', dbErr.message);
+    }
+
+    res.json(roadmap);
+  } catch (err) {
+    console.error(`AI Route Error [${req.path}]:`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Generate AI course info (why learn + achievable roles)
+router.post('/course-info', authMiddleware, async (req, res) => {
+  const { courseTitle, courseDescription } = req.body;
+  try {
+    if (!courseTitle) return res.status(400).json({ error: 'Course title is required' });
+    const info = await geminiService.generateCourseInfo(courseTitle, courseDescription);
+    res.json(info);
+  } catch (err) {
+    console.error(`AI Route Error [${req.path}]:`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Generate personalized learning insights
+router.post('/learning-insights', authMiddleware, async (req, res) => {
+  const { progressData } = req.body;
+  try {
+    if (!progressData) return res.status(400).json({ error: 'Progress data is required' });
+    const insights = await geminiService.generateLearningInsights(progressData);
+    res.json(insights);
+  } catch (err) {
+    console.error(`AI Route Error [${req.path}]:`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Generate prerequisite level test
+router.post('/level-test', authMiddleware, async (req, res) => {
+  const { courseTitle, targetLevel } = req.body;
+  try {
+    if (!courseTitle || !targetLevel) return res.status(400).json({ error: 'Course title and target level are required' });
+    const test = await geminiService.generateLevelTest(courseTitle, targetLevel);
     res.json({ test });
   } catch (err) {
     console.error(`AI Route Error [${req.path}]:`, err);

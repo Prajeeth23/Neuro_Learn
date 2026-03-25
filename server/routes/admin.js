@@ -29,7 +29,7 @@ router.get('/check', authMiddleware, adminMiddleware, (req, res) => {
 
 // Add a new course from playlist url
 router.post('/courses', authMiddleware, adminMiddleware, async (req, res) => {
-  const { title, playlist_url } = req.body;
+  const { title, playlist_url, domain } = req.body;
   if (!title || !playlist_url) {
     return res.status(400).json({ error: 'Title and Playlist URL required' });
   }
@@ -48,7 +48,7 @@ router.post('/courses', authMiddleware, adminMiddleware, async (req, res) => {
 
     const { data: course, error: courseError } = await supabase
       .from('courses')
-      .insert({ title, description, category })
+      .insert({ title, description, category, domain: domain || 'General' })
       .select()
       .single();
     
@@ -131,6 +131,79 @@ router.delete('/courses/:id', authMiddleware, adminMiddleware, async (req, res) 
   } catch (err) {
     console.error('Error deleting course:', err);
     res.status(500).json({ error: 'Failed to delete course' });
+  }
+});
+
+// =====================================================
+// USER MANAGEMENT
+// =====================================================
+
+// Get all users with basic stats
+router.get('/users', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { data: users, error } = await supabase
+      .from('users')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    // Fetch progress for each user 
+    const { data: allProgress } = await supabase
+      .from('user_progress')
+      .select('user_id, level, course_id');
+
+    const { data: allQuizResults } = await supabase
+      .from('quiz_results')
+      .select('user_id, score');
+
+    // Aggregate
+    const userStats = (users || []).map(u => {
+      const userProgress = (allProgress || []).filter(p => p.user_id === u.id);
+      const userQuizzes = (allQuizResults || []).filter(q => q.user_id === u.id);
+      const avgScore = userQuizzes.length > 0
+        ? Math.round(userQuizzes.reduce((s, q) => s + q.score, 0) / userQuizzes.length)
+        : 0;
+      const highestLevel = userProgress.length > 0
+        ? Math.max(...userProgress.map(p => p.level || 3))
+        : 3;
+
+      return {
+        ...u,
+        stats: {
+          coursesEnrolled: userProgress.length,
+          avgQuizScore: avgScore,
+          highestLevel,
+          totalQuizzes: userQuizzes.length
+        }
+      };
+    });
+
+    res.json(userStats);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+// Get detailed performance for a specific user
+router.get('/users/:userId/performance', authMiddleware, adminMiddleware, async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const [progressRes, quizRes, screenTimeRes] = await Promise.all([
+      supabase.from('user_progress').select('*, course:courses(title, category)').eq('user_id', userId),
+      supabase.from('quiz_results').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(20),
+      supabase.from('screen_time').select('*').eq('user_id', userId).order('session_date', { ascending: false }).limit(14)
+    ]);
+
+    res.json({
+      progress: progressRes.data || [],
+      quizResults: quizRes.data || [],
+      screenTime: screenTimeRes.data || []
+    });
+  } catch (err) {
+    console.error('Error fetching user performance:', err);
+    res.status(500).json({ error: 'Failed to fetch user performance' });
   }
 });
 

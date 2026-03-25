@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { BookOpen, Sparkles, User, LogOut, Shield } from 'lucide-react';
+import { BookOpen, Search, Activity, BarChart3, Sparkles, User, LogOut, Shield } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -13,7 +13,6 @@ export default function DashboardLayout() {
     const syncUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // Sync user to public.users table if not already synced
         await supabase
           .from('users')
           .upsert({ 
@@ -21,10 +20,6 @@ export default function DashboardLayout() {
             email: user.email, 
             name: user.user_metadata?.full_name || 'Neural Pioneer' 
           }, { onConflict: 'id' });
-      } else {
-        // Only redirect to login if we are actually trying to access a protected route
-        // and we are CERTAIN there is no user. 
-        // For now, we'll let the ProtectedRoute (if any) handle it or just stay on the page.
       }
     };
     syncUser();
@@ -36,9 +31,11 @@ export default function DashboardLayout() {
   };
 
   const navItems = [
-    { label: 'Overview', path: '/dashboard', icon: null },
     { label: 'My Courses', path: '/dashboard/courses', icon: <BookOpen size={16} /> },
-    { label: 'Personalized Tutor', path: '/dashboard/personalized', icon: <Sparkles size={16} /> },
+    { label: 'Course Search', path: '/dashboard/search', icon: <Search size={16} /> },
+    { label: 'Learning Tracker', path: '/dashboard/tracker', icon: <Activity size={16} /> },
+    { label: 'Analytics', path: '/dashboard/analytics', icon: <BarChart3 size={16} /> },
+    { label: 'AI Tutor', path: '/dashboard/personalized', icon: <Sparkles size={16} /> },
     { label: 'Profile', path: '/dashboard/profile', icon: <User size={16} /> }
   ];
 

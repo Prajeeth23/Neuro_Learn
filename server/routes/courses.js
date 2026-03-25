@@ -4,10 +4,40 @@ const supabase = require('../db/supabaseClient');
 const authMiddleware = require('../middleware/auth');
 const { getRecommendedModules } = require('../services/adaptiveEngine');
 
-// Get all courses
+// Get all courses — supports ?domain= and ?q= query params
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const { data, error } = await req.supabaseClient.from('courses').select('*');
+    const { domain, q } = req.query;
+    let query = req.supabaseClient.from('courses').select('*');
+
+    if (domain && domain !== 'All') {
+      query = query.eq('domain', domain);
+    }
+
+    if (q) {
+      query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%,category.ilike.%${q}%`);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Search courses (dedicated search endpoint)
+router.get('/search', authMiddleware, async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q || q.trim().length < 2) {
+      return res.json([]);
+    }
+    const { data, error } = await req.supabaseClient
+      .from('courses')
+      .select('*')
+      .or(`title.ilike.%${q}%,description.ilike.%${q}%,category.ilike.%${q}%`);
+
     if (error) throw error;
     res.json(data);
   } catch (err) {

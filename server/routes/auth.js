@@ -24,4 +24,47 @@ router.post('/sync-user', authMiddleware, async (req, res) => {
   }
 });
 
+// GET /api/auth/profile — Fetch user profile with all fields
+router.get('/profile', authMiddleware, async (req, res) => {
+  try {
+    const { data, error } = await req.supabaseClient
+      .from('users')
+      .select('*')
+      .eq('id', req.user.id)
+      .single();
+
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching profile:', err);
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+// PUT /api/auth/profile — Update profile fields
+router.put('/profile', authMiddleware, async (req, res) => {
+  const { name, department, year, domain_of_interest } = req.body;
+
+  try {
+    const updateFields = {};
+    if (name !== undefined) updateFields.name = name;
+    if (department !== undefined) updateFields.department = department;
+    if (year !== undefined) updateFields.year = year;
+    if (domain_of_interest !== undefined) updateFields.domain_of_interest = domain_of_interest;
+
+    const { data, error } = await req.supabaseClient
+      .from('users')
+      .update(updateFields)
+      .eq('id', req.user.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json({ message: 'Profile updated successfully', user: data });
+  } catch (err) {
+    console.error('Error updating profile:', err);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
 module.exports = router;
