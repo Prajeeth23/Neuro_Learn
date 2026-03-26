@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { supabase } from './supabase';
 
-let baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+let baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
 if (baseURL.endsWith('/')) baseURL = baseURL.slice(0, -1);
 if (!baseURL.endsWith('/api')) {
   baseURL = `${baseURL}/api`;
