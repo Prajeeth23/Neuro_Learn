@@ -30,11 +30,11 @@ app.use('/api/admin', require('./routes/admin'));
 
 // The "catchall" handler: for any request that doesn't 
 // match one above, send back React's index.html file.
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) {
-    return next();
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api')) {
+    return res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   }
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  next();
 });
 
 // 404 handler for API routes
