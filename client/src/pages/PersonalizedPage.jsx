@@ -406,7 +406,7 @@ export default function PersonalizedPage() {
               </div>
             </Card>
           ) : (
-            materials.map(plan => (
+            Array.isArray(materials) && materials.map(plan => (
               <Card key={plan.id} className="glass-card-premium neon-border-primary border-white/5 flex flex-col group h-full">
                 <CardHeader className="space-y-2">
                   <div className="flex justify-between items-center mb-2">

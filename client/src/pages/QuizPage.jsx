@@ -114,7 +114,7 @@ export default function QuizPage() {
 
           {/* Answer review */}
           <div className="space-y-4 text-left mb-8 max-h-96 overflow-y-auto custom-scrollbar">
-            {questions.map((q, idx) => {
+            {Array.isArray(questions) && questions.map((q, idx) => {
               const isCorrect = selectedAnswers[idx] === q.answer;
               return (
                 <div key={idx} className={`p-4 rounded-xl border text-sm ${isCorrect ? 'bg-green-500/5 border-green-500/20' : 'bg-red-500/5 border-red-500/20'}`}>
@@ -164,7 +164,7 @@ export default function QuizPage() {
         </CardHeader>
         
         <CardContent className="flex flex-col gap-3">
-          {Object.entries(q.options).map(([key, value]) => (
+          {q && q.options && Object.entries(q.options).map(([key, value]) => (
             <button
               key={key}
               onClick={() => handleSelect(key)}
