@@ -151,7 +151,7 @@ export default function CourseSearchPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {results.map(course => (
+        {Array.isArray(results) && results.map(course => (
           <Card key={course.id} className="glass-card-premium neon-border-primary border-white/5 flex flex-col group h-full">
             <CardHeader className="flex-1 space-y-4">
               <div className="flex justify-between items-start">
@@ -242,7 +242,7 @@ export default function CourseSearchPage() {
                     </div>
                   )}
                   <div className="space-y-6">
-                    {launchTestData.map((q, qIdx) => (
+                    {Array.isArray(launchTestData) && launchTestData.map((q, qIdx) => (
                       <div key={qIdx} className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-4">
                         <p className="font-bold text-white/90 text-sm"><span className="text-primary mr-2">Q{qIdx + 1}.</span>{q.question}</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

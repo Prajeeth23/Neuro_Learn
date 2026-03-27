@@ -199,7 +199,7 @@ export default function AdminPage() {
                 <div className="text-center py-8">
                   <Loader2 size={20} className="animate-spin mx-auto text-primary" />
                 </div>
-              ) : courses.length === 0 ? (
+              ) : !Array.isArray(courses) || courses.length === 0 ? (
                 <p className="text-white/30 text-center py-8">No courses yet. Create one above!</p>
               ) : (
                 courses.map(course => (
@@ -233,7 +233,7 @@ export default function AdminPage() {
               <Loader2 size={24} className="animate-spin mx-auto text-primary mb-3" />
               <p className="text-white/30 text-sm">Loading users...</p>
             </div>
-          ) : users.length === 0 ? (
+          ) : !Array.isArray(users) || users.length === 0 ? (
             <p className="text-white/30 text-center py-12">No users found.</p>
           ) : (
             users.map(u => (

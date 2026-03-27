@@ -138,7 +138,7 @@ export default function CoursesPage() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {courses.map(course => (
+        {Array.isArray(courses) && courses.map(course => (
           <Card key={course.id} className="glass-card-premium neon-border-primary border-white/5 flex flex-col group h-full">
             <CardHeader className="flex-1 space-y-4">
               <div className="flex justify-between items-start">
