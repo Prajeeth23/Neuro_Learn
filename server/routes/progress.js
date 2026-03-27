@@ -16,7 +16,7 @@ router.get('/', authMiddleware, async (req, res) => {
       .eq('user_id', userId);
 
     if (error) throw error;
-    res.json(progressData);
+    res.json(progressData || []);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -37,7 +37,7 @@ router.get('/activity', authMiddleware, async (req, res) => {
       .limit(10);
 
     if (error) throw error;
-    res.json(activityData);
+    res.json(activityData || []);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -107,7 +107,7 @@ router.get('/screen-time', authMiddleware, async (req, res) => {
       .limit(30);
 
     if (error) throw error;
-    res.json(data);
+    res.json(data || []);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

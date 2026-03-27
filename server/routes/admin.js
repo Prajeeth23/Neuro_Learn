@@ -179,7 +179,7 @@ router.get('/users', authMiddleware, adminMiddleware, async (req, res) => {
       };
     });
 
-    res.json(userStats);
+    res.json(userStats || []);
   } catch (err) {
     console.error('Error fetching users:', err);
     res.status(500).json({ error: 'Failed to fetch users' });

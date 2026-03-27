@@ -5,7 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const os = require('os');
 const authMiddleware = require('../middleware/auth');
-const geminiService = require('../services/geminiService');
+const aiService = require('../services/aiService');
 const fileService = require('../services/fileService');
 
 // Configure multer for file uploads (temp directory)
@@ -37,7 +37,7 @@ router.get('/', authMiddleware, async (req, res) => {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    res.json(data);
+    res.json(data || []);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -54,7 +54,7 @@ router.post('/generate', authMiddleware, async (req, res) => {
     }
 
     // Full AI analysis
-    const analysis = await geminiService.analyzePersonalizedContent(material_text, parseInt(deadline_days) || 7);
+    const analysis = await aiService.analyzePersonalizedContent(material_text, parseInt(deadline_days) || 7);
 
     // Save to DB
     const { data, error } = await req.supabaseClient
@@ -112,7 +112,7 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
     }
 
     // Full AI analysis
-    const analysis = await geminiService.analyzePersonalizedContent(extractedText, parseInt(deadline_days));
+    const analysis = await aiService.analyzePersonalizedContent(extractedText, parseInt(deadline_days));
 
     // Save to DB
     const { data, error } = await req.supabaseClient

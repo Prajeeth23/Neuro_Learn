@@ -20,7 +20,7 @@ router.get('/', authMiddleware, async (req, res) => {
 
     const { data, error } = await query;
     if (error) throw error;
-    res.json(data);
+    res.json(data || []);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -39,7 +39,7 @@ router.get('/search', authMiddleware, async (req, res) => {
       .or(`title.ilike.%${q}%,description.ilike.%${q}%,category.ilike.%${q}%`);
 
     if (error) throw error;
-    res.json(data);
+    res.json(data || []);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -84,7 +84,7 @@ router.get('/:courseId/modules', authMiddleware, async (req, res) => {
         console.error('Error fetching modules for admin:', mError.message);
         throw mError;
       }
-      return res.json(allModules);
+      return res.json(allModules || []);
     }
 
     // 2. Get user's current progress/level for this course
