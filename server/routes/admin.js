@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
 const supabase = require('../db/supabaseClient');
-const geminiService = require('../services/geminiService');
+const aiService = require('../services/aiService');
 
 // Middleware to check admin role
 const adminMiddleware = async (req, res, next) => {
@@ -39,7 +39,7 @@ router.post('/courses', authMiddleware, adminMiddleware, async (req, res) => {
     let description = 'A new course to enhance your skills.';
     let category = 'General';
     try {
-      const generated = await geminiService.generateCourseMetadata(title);
+      const generated = await aiService.generateCourseMetadata(title);
       description = generated.description || description;
       category = generated.category || category;
     } catch (aiErr) {

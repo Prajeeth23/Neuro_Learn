@@ -1,4 +1,4 @@
-const { generateLearningInsights } = require('./geminiService');
+const { generateLearningInsights } = require('./aiService');
 
 /**
  * AI Recommendation Engine
