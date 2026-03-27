@@ -234,7 +234,7 @@ export default function PersonalizedPage() {
                   {loading ? (
                     <div className="flex items-center justify-center gap-3">
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span className="font-black tracking-widest text-sm uppercase italic">Analyzing with Gemini AI...</span>
+                      <span className="font-black tracking-widest text-sm uppercase italic">Analyzing with Groq AI...</span>
                     </div>
                   ) : <span className="font-black tracking-widest text-sm uppercase">Generate Full AI Analysis</span>}
                 </button>

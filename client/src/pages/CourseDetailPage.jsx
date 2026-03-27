@@ -367,7 +367,7 @@ export default function CourseDetailPage() {
         <div className="sticky top-24">
           <div className="mb-4 flex items-center gap-2 px-1">
             <Sparkles size={16} className="text-accent" />
-            <span className="text-[10px] font-black tracking-[0.2em] text-white/40 uppercase">Gemini AI Assistant</span>
+            <span className="text-[10px] font-black tracking-[0.2em] text-white/40 uppercase">Groq AI Assistant</span>
           </div>
           <div className="glass-card-premium border-white/10 overflow-hidden shadow-2xl">
             <AiTutor 
