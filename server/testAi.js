@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '../.env' });
-const geminiService = require('./services/geminiService');
+const aiService = require('./services/aiService');
 
-async function testGemini() {
+async function testGroq() {
   try {
     process.on('unhandledRejection', (reason, promise) => {
       console.error('Unhandled Rejection at:', promise, 'reason:', reason);
@@ -10,9 +10,9 @@ async function testGemini() {
       console.error('Uncaught Exception:', err);
     });
 
-    console.log('Testing Study Plan generation...');
-    const result = await geminiService.generateStudyPlan('React Fundamentals', '2026-04-01');
-    console.log('Success! Result preview:', JSON.stringify(result).substring(0, 100));
+    console.log('Testing Course Metadata generation with Groq...');
+    const result = await aiService.generateCourseMetadata('Advanced React Patterns');
+    console.log('Success! Result preview:', JSON.stringify(result));
     process.exit(0);
   } catch(e) {
     console.error('AI Error caught in test script:', e);
@@ -20,4 +20,4 @@ async function testGemini() {
   }
 }
 
-testGemini();
+testGroq();

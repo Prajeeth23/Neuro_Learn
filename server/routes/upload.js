@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const authMiddleware = require('../middleware/auth');
-const geminiService = require('../services/geminiService');
+const aiService = require('../services/aiService');
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
@@ -27,7 +27,7 @@ router.post('/tutor', authMiddleware, upload.single('file'), async (req, res) =>
       console.error('History parse error', e); 
     }
 
-    const reply = await geminiService.chatTutorMultimodal(
+    const reply = await aiService.chatTutorMultimodal(
       parsedHistory, 
       message || 'Explain this document/image', 
       file, 
