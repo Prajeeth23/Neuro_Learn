@@ -93,7 +93,9 @@ export default function AdminPage() {
       setNewDomain('General');
       fetchCourses();
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create course');
+      console.error('Failed to create course:', err);
+      const errorMsg = err.response?.data?.error || err.message || 'Failed to create course';
+      setError(errorMsg);
     } finally {
       setCreating(false);
     }

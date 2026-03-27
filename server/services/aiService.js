@@ -3,13 +3,19 @@ const fs = require('fs');
 const path = require('path');
 const mammoth = require('mammoth');
 
-const apiKey = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
+// Lazy initialize Groq to prevent startup crashes if key is missing
+let _groq = null;
+const getGroq = () => {
+  if (!_groq) {
+    const apiKey = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
+    if (!apiKey) {
+      console.warn('WARNING: GROQ_API_KEY is missing from environment variables.');
+    }
+    _groq = new Groq({ apiKey: apiKey || 'MISSING_KEY' });
+  }
+  return _groq;
+};
 
-if (!apiKey) {
-  console.warn('GROQ_API_KEY or VITE_GROQ_API_KEY must be provided in environment variables.');
-}
-
-const groq = new Groq({ apiKey });
 const DEFAULT_MODEL = 'llama-3.3-70b-versatile';
 const VISION_MODEL = 'llama-3.2-11b-vision-preview';
 
@@ -19,9 +25,10 @@ const cache = new Map();
  * Helper: Send prompt to Groq and return text
  */
 const generateResponse = async (prompt, isVision = false) => {
-  if (!apiKey) {
-    throw new Error("Groq API key missing. Please provide GROQ_API_KEY in environment variables.");
-  }
+  // The API key check is now handled within getGroq, but we can keep a more direct error for immediate feedback
+  // if (!apiKey) { // This check is no longer valid here as apiKey is not in scope
+  //   throw new Error("Groq API key missing. Please provide GROQ_API_KEY in environment variables.");
+  // }
   try {
     const params = {
       messages: [
@@ -39,7 +46,7 @@ const generateResponse = async (prompt, isVision = false) => {
        params.response_format = { type: "json_object" };
     }
 
-    const chatCompletion = await groq.chat.completions.create(params);
+    const chatCompletion = await getGroq().chat.completions.create(params);
     return chatCompletion.choices[0]?.message?.content || "";
   } catch (error) {
     console.error('Groq API Error:', error);
@@ -404,7 +411,7 @@ const chatTutorMultimodal = async (history, message, file, level = 3, topic = ''
       } else if (['image/jpeg', 'image/png', 'image/webp'].includes(mimeType)) {
         // Groq Vision models support base64 images in messages
         const base64Image = file.buffer.toString('base64');
-        return await groq.chat.completions.create({
+        return await getGroq().chat.completions.create({
           messages: [
             {
               role: "user",
