@@ -7,6 +7,11 @@ if (!baseURL.endsWith('/api')) {
   baseURL = `${baseURL}/api`;
 }
 
+// Force Vercel Serverless Functions in production instead of old external Render APIs
+if (import.meta.env.PROD) {
+  baseURL = '/api';
+}
+
 const api = axios.create({
   baseURL,
 });
