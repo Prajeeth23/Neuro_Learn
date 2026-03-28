@@ -1,147 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import { Card } from '../components/ui/Card';
-import { Input } from '../components/ui/Input';
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { session } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (session) {
-      navigate('/dashboard');
-    }
-  }, [session, navigate]);
+  const [error, setError] = useState(null);
+  const [showPass, setShowPass] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError(null);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+      if (err) throw err;
       navigate('/dashboard');
     } catch (err) {
-      if (err.message.includes('Email not confirmed')) {
-        setError('Please verify your email address before signing in.');
-      } else if (err.status === 429) {
-        setError('Too many requests. Please try again later.');
-      } else {
-        setError(err.message || 'Invalid login credentials');
-      }
-    } finally {
-      setLoading(false);
+      setError(err.message || 'Sign in failed. Please try again.');
     }
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({ 
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin + '/dashboard'
-        }
-      });
-      if (error) throw error;
-      // OAuth redirects, no need to manually navigate
-    } catch (err) {
-      setError(err.message);
-    }
+    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-[#050510] text-white flex items-center justify-center relative overflow-hidden font-sans">
-      {/* Immersive Background Effects */}
-      <div className="fixed top-[-15%] left-[-10%] w-[600px] h-[600px] rounded-full bg-primary/20 blur-[120px] mix-blend-screen animate-pulse pointer-events-none z-0"></div>
-      <div className="fixed bottom-[-15%] right-[-10%] w-[700px] h-[700px] rounded-full bg-accent/15 blur-[140px] mix-blend-screen pointer-events-none z-0"></div>
-      <div className="fixed top-[30%] right-[10%] w-[400px] h-[400px] rounded-full bg-secondary/10 blur-[100px] mix-blend-screen pointer-events-none z-0"></div>
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden"
+      style={{ background: 'var(--cs-bg-deep)' }}>
+      {/* Orbs */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full opacity-25"
+          style={{ background: 'radial-gradient(ellipse, rgba(124,58,237,0.8) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+        <div className="absolute bottom-0 right-0 w-[300px] h-[300px] rounded-full opacity-15"
+          style={{ background: 'radial-gradient(ellipse, rgba(6,214,160,0.6) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+      </div>
 
-      <div className="w-full max-w-md px-6 relative z-10">
-        <div className="text-center mb-10 space-y-2">
-          <h1 className="text-4xl font-black tracking-tighter text-white">
-            NEURO<span className="text-accent">LEARN</span>
-          </h1>
-          <p className="text-white/40 text-sm font-medium tracking-wide">INNOVATE WITHOUT LIMITS</p>
+      <div className="relative z-10 w-full max-w-sm cs-animate-in">
+        {/* Brand */}
+        <div className="text-center mb-8">
+          <button onClick={() => navigate('/')} className="inline-flex items-center gap-2.5 mb-4">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, var(--cs-purple), var(--cs-teal))' }}>
+              <span className="material-symbols-outlined material-symbols-filled text-white" style={{ fontSize: '20px' }}>psychology_alt</span>
+            </div>
+            <span className="text-xl font-black text-[var(--cs-text-primary)]">Cognitive<span style={{ color: 'var(--cs-purple-light)' }}>Sanctuary</span></span>
+          </button>
+          <h1 className="text-2xl font-black text-[var(--cs-text-primary)]">Welcome back</h1>
+          <p className="text-sm text-[var(--cs-text-muted)] mt-1">Sign in to continue your learning journey</p>
         </div>
 
-        <div className="glass-card-premium p-10 relative neon-border-primary">
-          <h2 className="text-3xl font-bold text-center mb-8 text-gradient-primary">Welcome Back</h2>
-          
+        {/* Form Card */}
+        <div className="cs-card p-6">
           {error && (
-            <div className="p-4 mb-6 text-sm bg-red-500/10 border border-red-500/30 text-red-400 rounded-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2">
+            <div className="mb-4 flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium"
+              style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.3)', color: '#f43f5e' }}>
+              <span className="material-symbols-outlined text-base">error</span>
               {error}
             </div>
           )}
-
-          <button 
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 py-3.5 mb-8 bg-white/[0.05] border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 group shadow-lg"
-          >
-            <div className="bg-white p-1 rounded-full group-hover:scale-110 transition-transform">
-              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4"/>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-[var(--cs-text-muted)] mb-1.5">Email Address</label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[var(--cs-text-muted)]" style={{ fontSize: '18px' }}>mail</span>
+                <input type="email" className="cs-input pl-10" placeholder="you@example.com"
+                  value={email} onChange={e => setEmail(e.target.value)} required />
+              </div>
             </div>
-            <span className="text-sm font-semibold text-white/90">Sign in with Google</span>
-          </button>
-
-          <div className="relative flex items-center mb-8">
-            <div className="flex-1 border-t border-white/5"></div>
-            <span className="px-4 text-white/20 text-[10px] font-black tracking-widest uppercase">Or secure login</span>
-            <div className="flex-1 border-t border-white/5"></div>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-white/40 ml-1 uppercase tracking-wider">Email Address</label>
-              <Input 
-                type="email" 
-                placeholder="name@example.com" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                required 
-                className="bg-white/[0.03] border-white/10 h-14 rounded-2xl focus:ring-primary/50 focus:border-primary/50 text-base"
-              />
+            <div>
+              <label className="block text-xs font-semibold text-[var(--cs-text-muted)] mb-1.5">Password</label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[var(--cs-text-muted)]" style={{ fontSize: '18px' }}>lock</span>
+                <input type={showPass ? 'text' : 'password'} className="cs-input pl-10 pr-10"
+                  placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
+                <button type="button" onClick={() => setShowPass(p => !p)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--cs-text-muted)] hover:text-[var(--cs-text-primary)] transition-colors">
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{showPass ? 'visibility_off' : 'visibility'}</span>
+                </button>
+              </div>
             </div>
-            
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-white/40 ml-1 uppercase tracking-wider">Password</label>
-              <Input 
-                type="password" 
-                placeholder="••••••••" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-                className="bg-white/[0.03] border-white/10 h-14 rounded-2xl focus:ring-primary/50 focus:border-primary/50 text-base"
-              />
-            </div>
-
-            <button type="submit" disabled={loading} className="uiverse-btn w-full !py-4 mt-4 shadow-xl shadow-primary/20">
+            <button type="submit" disabled={loading} className="cs-btn-primary w-full justify-center mt-2">
               {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Authenticating...</span>
-                </div>
-              ) : 'Sign In to Dashboard'}
+                <><span className="material-symbols-outlined animate-spin text-base">hourglass_empty</span>Signing in...</>
+              ) : (
+                <><span className="material-symbols-outlined text-base">login</span>Sign In</>
+              )}
             </button>
           </form>
-          
-          <div className="text-center mt-10">
-            <p className="text-sm text-white/40">
-              New to the platform?{' '}
-              <button 
-                onClick={() => navigate('/signup')}
-                className="text-primary font-bold hover:text-accent transition-colors"
-              >
-                Create an account
-              </button>
-            </p>
-          </div>
         </div>
+
+        <p className="text-center text-sm text-[var(--cs-text-muted)] mt-5">
+          Don't have an account?{' '}
+          <Link to="/signup" className="font-bold hover:text-[var(--cs-teal)] transition-colors" style={{ color: 'var(--cs-purple-light)' }}>
+            Create one free
+          </Link>
+        </p>
       </div>
     </div>
   );

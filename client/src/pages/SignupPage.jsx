@@ -1,175 +1,133 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import { Card } from '../components/ui/Card';
-import { Input } from '../components/ui/Input';
-import api from '../lib/api';
+import axios from 'axios';
 
 export default function SignupPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
-  const { session } = useAuth();
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (session) {
-      navigate('/dashboard');
-    }
-  }, [session, navigate]);
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [showPass, setShowPass] = useState(false);
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-    setMessage('');
+    setError(null);
     try {
-      const { data, error: authError } = await supabase.auth.signUp({ 
-        email, 
-        password,
-        options: {
-          data: { full_name: name }
-        }
+      const { data, error: err } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: { data: { full_name: form.name } }
       });
-      if (authError) throw authError;
-
-      // Sync user profile to our backend public.users table
-      if (data.session) {
-        const { error: profileError } = await supabase
-          .from('users')
-          .upsert({ id: data.user.id, email, name });
-          
-        if (profileError) throw profileError;
-        navigate('/dashboard');
-      } else {
-        setMessage('Succes! Please check your email to verify your account.');
+      if (err) throw err;
+      // Sync user profile
+      const token = data.session?.access_token;
+      if (token) {
+        await axios.post('/api/auth/sync-user', { name: form.name }, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(() => {});
       }
+      navigate('/dashboard');
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setError(err.message || 'Sign up failed. Please try again.');
     }
+    setLoading(false);
   };
 
-  const handleGoogleLogin = async () => {
-    setError('');
-    setMessage('');
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-      if (error) throw error;
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+  const perks = [
+    'AI-powered adaptive learning paths',
+    'Personalized cognitive score tracking',
+    'Unlimited access to course library',
+    'AI Tutor available 24/7',
+  ];
 
   return (
-    <div className="min-h-screen bg-[#050510] text-white flex items-center justify-center relative overflow-hidden font-sans">
-      {/* Immersive Background Effects */}
-      <div className="fixed top-[-15%] right-[-10%] w-[600px] h-[600px] rounded-full bg-accent/20 blur-[120px] mix-blend-screen animate-pulse pointer-events-none z-0"></div>
-      <div className="fixed bottom-[-15%] left-[-10%] w-[700px] h-[700px] rounded-full bg-primary/15 blur-[140px] mix-blend-screen pointer-events-none z-0"></div>
-      <div className="fixed top-[30%] left-[10%] w-[400px] h-[400px] rounded-full bg-secondary/10 blur-[100px] mix-blend-screen pointer-events-none z-0"></div>
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden"
+      style={{ background: 'var(--cs-bg-deep)' }}>
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 right-1/4 w-[400px] h-[300px] rounded-full opacity-25"
+          style={{ background: 'radial-gradient(ellipse, rgba(124,58,237,0.8) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full opacity-15"
+          style={{ background: 'radial-gradient(ellipse, rgba(6,214,160,0.6) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+      </div>
 
-      <div className="w-full max-w-md px-6 relative z-10">
-        <div className="text-center mb-10 space-y-2">
-          <h1 className="text-4xl font-black tracking-tighter text-white">
-            NEURO<span className="text-accent">LEARN</span>
-          </h1>
-          <p className="text-white/40 text-sm font-medium tracking-wide">INNOVATE WITHOUT LIMITS</p>
+      <div className="relative z-10 w-full max-w-md cs-animate-in">
+        <div className="text-center mb-8">
+          <button onClick={() => navigate('/')} className="inline-flex items-center gap-2.5 mb-4">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, var(--cs-purple), var(--cs-teal))' }}>
+              <span className="material-symbols-outlined material-symbols-filled text-white" style={{ fontSize: '20px' }}>psychology_alt</span>
+            </div>
+            <span className="text-xl font-black text-[var(--cs-text-primary)]">Cognitive<span style={{ color: 'var(--cs-purple-light)' }}>Sanctuary</span></span>
+          </button>
+          <h1 className="text-2xl font-black text-[var(--cs-text-primary)]">Create your account</h1>
+          <p className="text-sm text-[var(--cs-text-muted)] mt-1">Join thousands of learners on the path to mastery</p>
         </div>
 
-        <div className="glass-card-premium p-10 relative neon-border-primary">
-          <h2 className="text-3xl font-bold text-center mb-8 text-gradient-primary">Create Account</h2>
-          
+        {/* Perks */}
+        <div className="mb-5 grid grid-cols-2 gap-2">
+          {perks.map(p => (
+            <div key={p} className="flex items-center gap-2 text-xs text-[var(--cs-text-secondary)]">
+              <span className="material-symbols-outlined material-symbols-filled flex-shrink-0" style={{ color: 'var(--cs-teal)', fontSize: '14px' }}>check_circle</span>
+              {p}
+            </div>
+          ))}
+        </div>
+
+        <div className="cs-card p-6">
           {error && (
-            <div className="p-4 mb-6 text-sm bg-red-500/10 border border-red-500/30 text-red-400 rounded-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2">
+            <div className="mb-4 flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium"
+              style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.3)', color: '#f43f5e' }}>
+              <span className="material-symbols-outlined text-base">error</span>
               {error}
             </div>
           )}
-
-          {message && (
-            <div className="p-4 mb-6 text-sm bg-primary/10 border border-primary/30 text-white rounded-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2">
-              {message}
-            </div>
-          )}
-
-          <button 
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 py-3.5 mb-8 bg-white/[0.05] border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 group shadow-lg"
-          >
-            <div className="bg-white p-1 rounded-full group-hover:scale-110 transition-transform">
-              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4"/>
-            </div>
-            <span className="text-sm font-semibold text-white/90">Sign up with Google</span>
-          </button>
-
-          <div className="relative flex items-center mb-8">
-            <div className="flex-1 border-t border-white/5"></div>
-            <span className="px-4 text-white/20 text-[10px] font-black tracking-widest uppercase">Or register here</span>
-            <div className="flex-1 border-t border-white/5"></div>
-          </div>
-
           <form onSubmit={handleSignup} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-white/40 ml-1 uppercase tracking-wider">Full Name</label>
-              <Input 
-                placeholder="John Doe" 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                required 
-                className="bg-white/[0.03] border-white/10 h-13 rounded-2xl focus:ring-primary/50 focus:border-primary/50 text-base"
-              />
+            <div>
+              <label className="block text-xs font-semibold text-[var(--cs-text-muted)] mb-1.5">Full Name</label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[var(--cs-text-muted)]" style={{ fontSize: '18px' }}>person</span>
+                <input type="text" className="cs-input pl-10" placeholder="Alex Chen"
+                  value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required />
+              </div>
             </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-white/40 ml-1 uppercase tracking-wider">Email Address</label>
-              <Input 
-                type="email" 
-                placeholder="name@example.com" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                required 
-                className="bg-white/[0.03] border-white/10 h-13 rounded-2xl focus:ring-primary/50 focus:border-primary/50 text-base"
-              />
+            <div>
+              <label className="block text-xs font-semibold text-[var(--cs-text-muted)] mb-1.5">Email Address</label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[var(--cs-text-muted)]" style={{ fontSize: '18px' }}>mail</span>
+                <input type="email" className="cs-input pl-10" placeholder="you@example.com"
+                  value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} required />
+              </div>
             </div>
-            
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-white/40 ml-1 uppercase tracking-wider">Password</label>
-              <Input 
-                type="password" 
-                placeholder="••••••••" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-                className="bg-white/[0.03] border-white/10 h-13 rounded-2xl focus:ring-primary/50 focus:border-primary/50 text-base"
-              />
+            <div>
+              <label className="block text-xs font-semibold text-[var(--cs-text-muted)] mb-1.5">Password</label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[var(--cs-text-muted)]" style={{ fontSize: '18px' }}>lock</span>
+                <input type={showPass ? 'text' : 'password'} className="cs-input pl-10 pr-10"
+                  placeholder="Min. 8 characters" value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))} required minLength={8} />
+                <button type="button" onClick={() => setShowPass(p => !p)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--cs-text-muted)] hover:text-[var(--cs-text-primary)] transition-colors">
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{showPass ? 'visibility_off' : 'visibility'}</span>
+                </button>
+              </div>
             </div>
-
-            <button type="submit" disabled={loading} className="uiverse-btn w-full !py-4 mt-6 shadow-xl shadow-primary/20">
+            <button type="submit" disabled={loading} className="cs-btn-teal w-full justify-center mt-2">
               {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Creating Account...</span>
-                </div>
-              ) : 'Get Started Now'}
+                <><span className="material-symbols-outlined animate-spin text-base">hourglass_empty</span>Creating account...</>
+              ) : (
+                <><span className="material-symbols-outlined text-base">rocket_launch</span>Begin Your Journey</>
+              )}
             </button>
           </form>
-          
-          <div className="text-center mt-10">
-            <p className="text-sm text-white/40">
-              Already have an account?{' '}
-              <button 
-                onClick={() => navigate('/login')}
-                className="text-accent font-bold hover:text-primary transition-colors"
-              >
-                Sign In instead
-              </button>
-            </p>
-          </div>
         </div>
+
+        <p className="text-center text-sm text-[var(--cs-text-muted)] mt-5">
+          Already have an account?{' '}
+          <Link to="/login" className="font-bold hover:text-[var(--cs-teal)] transition-colors" style={{ color: 'var(--cs-purple-light)' }}>
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -2,157 +2,443 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== COGNITIVE SANCTUARY DESIGN SYSTEM ===== */
+/* Extracted from Google Stitch project 7408640687204938476 */
+
+/* Material Symbols Icon Font */
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @layer base {
   :root {
-    --background: 240 10% 3.9%; /* Very dark deep blue/black */
-    --foreground: 0 0% 98%;
-    
-    --primary: 263.4 70% 50.4%; /* Vibrant Purple */
-    --secondary: 217.2 91.2% 59.8%; /* Vibrant Blue */
-    --accent: 270 91% 65%; /* Pink/Purple accent */
+    /* Core Palette - Cognitive Sanctuary */
+    --cs-bg-deep:       #0a0020;
+    --cs-bg-dark:       #0f0035;
+    --cs-bg-surface:    #160045;
+    --cs-bg-elevated:   #1e0060;
+    --cs-sidebar-bg:    #0d0030;
+    --cs-sidebar-width: 256px;
+
+    /* Accent Colors */
+    --cs-purple:        #7c3aed;
+    --cs-purple-light:  #a855f7;
+    --cs-purple-glow:   rgba(124, 58, 237, 0.4);
+    --cs-teal:          #06d6a0;
+    --cs-teal-light:    #34d399;
+    --cs-teal-glow:     rgba(6, 214, 160, 0.3);
+    --cs-cyan:          #22d3ee;
+    --cs-gold:          #fbbf24;
+    --cs-rose:          #f43f5e;
+
+    /* Text */
+    --cs-text-primary:  #f0e6ff;
+    --cs-text-secondary:#b8a8d8;
+    --cs-text-muted:    #7a6a9a;
+    --cs-text-dim:      #4a3a6a;
+
+    /* Borders */
+    --cs-border:        rgba(124, 58, 237, 0.2);
+    --cs-border-subtle: rgba(255, 255, 255, 0.06);
+    --cs-border-active: rgba(124, 58, 237, 0.6);
+
+    /* Card Backgrounds */
+    --cs-card-bg:       rgba(22, 0, 69, 0.6);
+    --cs-card-bg-hover: rgba(30, 0, 90, 0.7);
+
+    /* Tailwind token compat */
+    --background: 260 91% 8%;
+    --foreground: 270 100% 97%;
+    --primary: 263 70% 50%;
+    --secondary: 173 100% 43%;
+    --accent: 280 75% 60%;
   }
 }
 
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', 'Space Grotesk', sans-serif;
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-background text-foreground font-sans overflow-x-hidden min-h-screen;
-    background-image: radial-gradient(circle at 50% 0%, #170b3b 0%, #050510 50%, #000000 100%);
-    background-attachment: fixed;
+    @apply overflow-x-hidden min-h-screen;
+    background-color: var(--cs-bg-deep);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(124, 58, 237, 0.25) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(6, 214, 160, 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 100% 100% at 50% 50%, rgba(10, 0, 32, 0.9) 0%, #0a0020 100%);
+    color: var(--cs-text-primary);
+  }
+
+  /* Material Symbols */
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+
+  .material-symbols-filled {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 }
 
 @layer components {
-  /* Uiverse.io Inspired Neon Glowing Button */
-  .uiverse-btn {
-    @apply relative inline-flex items-center justify-center px-8 py-3 font-bold text-white transition-all duration-300 bg-transparent border-none rounded-full cursor-pointer;
-    background: linear-gradient(90deg, #7c3aed, #4f46e5);
-    background-size: 200% auto;
-    z-index: 1;
+  /* ===== SIDEBAR LAYOUT ===== */
+  .cs-layout {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .cs-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--cs-sidebar-width);
+    background: var(--cs-sidebar-bg);
+    border-right: 1px solid var(--cs-border-subtle);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
     overflow: hidden;
   }
 
-  .uiverse-btn::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: -1;
-    border-radius: 9999px;
-    background: linear-gradient(90deg, #7c3aed, #4f46e5, #c026d3, #7c3aed);
-    background-size: 300% auto;
-    animation: animateGradient 3s linear infinite;
-    filter: blur(10px);
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-  }
-
-  .uiverse-btn:hover {
-    background-position: right center;
-    transform: translateY(-2px);
-  }
-
-  .uiverse-btn:hover::before {
-    opacity: 1;
-  }
-
-  /* Uiverse.io Outline Button */
-  .uiverse-btn-outline {
-    @apply relative inline-flex items-center justify-center px-6 py-2 font-medium text-white transition-all duration-300 bg-transparent border border-white/20 rounded-full cursor-pointer overflow-hidden;
-  }
-  .uiverse-btn-outline:hover {
-    @apply bg-white/10 border-white/40;
-    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
-  }
-
-  /* Premium Glass Card */
-  .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] overflow-hidden transition-all duration-300;
-  }
-
-  .glass-card:hover {
-    @apply border-primary/50 bg-white/10;
-    box-shadow: 0 0 30px rgba(124, 58, 237, 0.2);
-    transform: translateY(-5px);
-  }
-
-  /* Abstract Glowing Light Orbs for Backgrounds */
-  .light-orb-1 {
-    @apply absolute rounded-full opacity-30 mix-blend-screen pointer-events-none;
-    background: radial-gradient(circle, rgba(124,58,237,0.8) 0%, rgba(124,58,237,0) 70%);
-    width: 600px; height: 600px;
-    top: -200px; left: -200px;
-    filter: blur(80px);
-  }
-
-  .light-orb-2 {
-    @apply absolute rounded-full opacity-20 mix-blend-screen pointer-events-none;
-    background: radial-gradient(circle, rgba(79,70,229,0.8) 0%, rgba(79,70,229,0) 70%);
-    width: 800px; height: 800px;
-    bottom: -300px; right: -200px;
-    filter: blur(100px);
-  }
-
-  /* Text Gradients */
-  .text-gradient-primary {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-white/70;
-  }
-  
-  .text-gradient-accent {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
-  }
-
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  ::-webkit-scrollbar-track {
+  .cs-main {
+    margin-left: var(--cs-sidebar-width);
+    flex: 1;
+    min-height: 100vh;
     background: transparent;
   }
-  ::-webkit-scrollbar-thumb {
-    background: rgba(124, 58, 237, 0.5);
+
+  /* ===== GLASSMORPHIC CARDS ===== */
+  .cs-card {
+    background: var(--cs-card-bg);
+    border: 1px solid var(--cs-border);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cs-card:hover {
+    background: var(--cs-card-bg-hover);
+    border-color: var(--cs-border-active);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 48px rgba(124, 58, 237, 0.2), 0 0 0 1px rgba(124, 58, 237, 0.1);
+  }
+
+  .cs-card-flat {
+    background: rgba(22, 0, 69, 0.4);
+    border: 1px solid var(--cs-border-subtle);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+  }
+
+  .cs-card-featured {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(6, 214, 160, 0.1) 100%);
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    border-radius: 20px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  /* ===== NAV ITEMS ===== */
+  .cs-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--cs-text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    text-decoration: none;
+    width: 100%;
+  }
+
+  .cs-nav-item:hover {
+    background: rgba(124, 58, 237, 0.1);
+    color: var(--cs-text-primary);
+    border-color: rgba(124, 58, 237, 0.15);
+  }
+
+  .cs-nav-item.active {
+    background: rgba(124, 58, 237, 0.2);
+    color: var(--cs-purple-light);
+    border-color: rgba(124, 58, 237, 0.35);
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.1);
+  }
+
+  .cs-nav-item.active .cs-nav-icon {
+    color: var(--cs-teal);
+  }
+
+  /* ===== BUTTONS ===== */
+  .cs-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--cs-purple) 0%, var(--cs-purple-light) 100%);
+    color: white;
+    border: none;
     border-radius: 10px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(124, 58, 237, 0.8);
-  }
-  /* Premium Glass Card - Enhanced */
-  .glass-card-premium {
-    @apply bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] transition-all duration-500;
-    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
   }
 
-  .glass-card-premium:hover {
-    @apply border-primary/40 bg-white/[0.07];
-    box-shadow: 0 0 40px rgba(124, 58, 237, 0.25), inset 0 0 20px rgba(255, 255, 255, 0.05);
-    transform: translateY(-8px) scale(1.01);
+  .cs-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.5);
+    filter: brightness(1.1);
   }
 
-  /* Neon Glowing Borders */
-  .neon-border-primary {
-    @apply relative overflow-hidden;
-  }
-  .neon-border-primary::after {
-    content: '';
-    @apply absolute inset-0 rounded-[inherit] border border-primary/30 pointer-events-none transition-opacity duration-300;
-    box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
-  }
-  .neon-border-primary:hover::after {
-    @apply border-primary/60;
-    box-shadow: 0 0 25px rgba(124, 58, 237, 0.5);
-  }
-
-  /* Pulsating Neon Glow */
-  .animate-glow-pulse {
-    animation: glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  .cs-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(124, 58, 237, 0.15);
+    color: var(--cs-purple-light);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
-  @keyframes glow-pulse {
-    0%, 100% { opacity: 0.5; filter: blur(10px); }
-    50% { opacity: 1; filter: blur(15px); }
+  .cs-btn-secondary:hover {
+    background: rgba(124, 58, 237, 0.25);
+    border-color: rgba(124, 58, 237, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .cs-btn-teal {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(6, 214, 160, 0.9) 0%, rgba(34, 211, 238, 0.9) 100%);
+    color: #0a0020;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(6, 214, 160, 0.35);
+  }
+
+  .cs-btn-teal:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(6, 214, 160, 0.5);
+  }
+
+  /* ===== BADGES & CHIPS ===== */
+  .cs-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .cs-badge-purple {
+    background: rgba(124, 58, 237, 0.2);
+    color: var(--cs-purple-light);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+  }
+
+  .cs-badge-teal {
+    background: rgba(6, 214, 160, 0.15);
+    color: var(--cs-teal);
+    border: 1px solid rgba(6, 214, 160, 0.25);
+  }
+
+  .cs-badge-gold {
+    background: rgba(251, 191, 36, 0.15);
+    color: var(--cs-gold);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+  }
+
+  /* ===== STATS CARDS ===== */
+  .cs-stat-card {
+    background: rgba(22, 0, 69, 0.5);
+    border: 1px solid var(--cs-border);
+    border-radius: 14px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    transition: all 0.25s ease;
+  }
+
+  .cs-stat-card:hover {
+    border-color: var(--cs-border-active);
+    background: rgba(30, 0, 90, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15);
+  }
+
+  /* ===== PROGRESS BARS ===== */
+  .cs-progress-bar {
+    height: 6px;
+    background: rgba(124, 58, 237, 0.15);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .cs-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cs-purple) 0%, var(--cs-teal) 100%);
+    border-radius: 999px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ===== SECTION HEADERS ===== */
+  .cs-section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--cs-text-primary);
+    margin-bottom: 0;
+  }
+
+  .cs-text-gradient {
+    background: linear-gradient(135deg, #f0e6ff 0%, var(--cs-purple-light) 50%, var(--cs-teal) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cs-text-gradient-gold {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ===== INPUTS ===== */
+  .cs-input {
+    width: 100%;
+    background: rgba(22, 0, 69, 0.5);
+    border: 1px solid var(--cs-border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    color: var(--cs-text-primary);
+    font-size: 0.875rem;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .cs-input:focus {
+    border-color: var(--cs-purple);
+    background: rgba(30, 0, 90, 0.5);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+  }
+
+  .cs-input::placeholder {
+    color: var(--cs-text-dim);
+  }
+
+  /* ===== DIVIDER ===== */
+  .cs-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cs-border), transparent);
+    margin: 20px 0;
+  }
+
+  /* ===== GLOW EFFECTS ===== */
+  .cs-glow-purple {
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+  }
+
+  .cs-glow-teal {
+    box-shadow: 0 0 30px rgba(6, 214, 160, 0.3);
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--cs-border); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--cs-purple); }
+
+  /* ===== AVATAR ===== */
+  .cs-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cs-purple) 0%, var(--cs-teal) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  /* Legacy Tailwind compat */
+  .glass-card {
+    @apply cs-card;
+  }
+  .glass-card:hover {
+    @apply cs-card;
   }
 }
 
-@keyframes animateGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* ===== RESPONSIVE: Collapse sidebar on mobile ===== */
+@media (max-width: 768px) {
+  .cs-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .cs-sidebar.open {
+    transform: translateX(0);
+  }
+  .cs-main {
+    margin-left: 0;
+  }
 }
+
+/* ===== ANIMATIONS ===== */
+@keyframes cs-fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cs-pulse-purple {
+  0%, 100% { box-shadow: 0 0 10px rgba(124, 58, 237, 0.4); }
+  50%       { box-shadow: 0 0 25px rgba(124, 58, 237, 0.7); }
+}
+
+@keyframes cs-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+.cs-animate-in { animation: cs-fade-in-up 0.4s ease both; }
+.cs-animate-float { animation: cs-float 3s ease-in-out infinite; }
+.cs-animate-glow { animation: cs-pulse-purple 2s ease-in-out infinite; }

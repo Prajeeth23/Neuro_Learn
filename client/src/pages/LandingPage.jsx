@@ -1,146 +1,128 @@
-import React, { useEffect } from 'react';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
-import { Play, Activity, Cpu, Code2 } from 'lucide-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const { session } = useAuth();
 
-  useEffect(() => {
-    if (session) {
-      navigate('/dashboard');
-    }
-  }, [session, navigate]);
+  const features = [
+    { icon: 'psychology',       title: 'Adaptive AI Engine',       desc: 'Personalized learning paths that evolve with your cognitive patterns.' },
+    { icon: 'quiz',             title: 'Smart Assessments',        desc: 'Dynamic quizzes that adjust difficulty based on your mastery level.' },
+    { icon: 'insights',         title: 'Cognitive Analytics',      desc: 'Deep insights into your learning velocity and skill mastery.' },
+    { icon: 'alt_route',        title: 'Learning Path',            desc: 'Visual roadmaps guiding you from fundamentals to mastery.' },
+    { icon: 'smart_toy',        title: 'AI Tutor',                 desc: 'An always-available mentor powered by advanced language models.' },
+    { icon: 'auto_stories',     title: 'Rich Course Library',      desc: 'Curated content across Data Science, ML, Programming and more.' },
+  ];
 
   return (
-    <div className="min-h-screen bg-background text-white font-sans relative overflow-hidden">
-      {/* Abstract Animated Glow Backgrounds */}
-      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-primary/20 blur-[120px] mix-blend-screen pointer-events-none animate-pulse"></div>
-      <div className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full bg-secondary/10 blur-[150px] mix-blend-screen pointer-events-none"></div>
+    <div className="min-h-screen" style={{ background: 'var(--cs-bg-deep)' }}>
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 h-16"
+        style={{ background: 'rgba(10,0,32,0.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--cs-border-subtle)' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, var(--cs-purple), var(--cs-teal))' }}>
+            <span className="material-symbols-outlined material-symbols-filled text-white" style={{ fontSize: '16px' }}>psychology_alt</span>
+          </div>
+          <span className="text-base font-black text-[var(--cs-text-primary)] tracking-tight">
+            Cognitive<span style={{ color: 'var(--cs-purple-light)' }}>Sanctuary</span>
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate('/login')} className="cs-btn-secondary text-sm px-4 py-2">Sign In</button>
+          <button onClick={() => navigate('/signup')} className="cs-btn-primary text-sm px-4 py-2">Get Started</button>
+        </div>
+      </header>
 
-      {/* Navbar equivalent */}
-      <nav className="relative z-10 flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
-        <div className="text-2xl font-bold tracking-widest text-white">
-          NEURO<span className="text-primary">LEARN</span>
+      {/* Hero */}
+      <section className="relative flex flex-col items-center justify-center min-h-screen px-6 text-center overflow-hidden pt-16">
+        {/* Ambient orbs */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-30"
+            style={{ background: 'radial-gradient(ellipse, rgba(124,58,237,0.6) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-20"
+            style={{ background: 'radial-gradient(ellipse, rgba(6,214,160,0.5) 0%, transparent 70%)', filter: 'blur(80px)' }} />
+          <div className="absolute top-1/3 right-0 w-[300px] h-[300px] rounded-full opacity-15"
+            style={{ background: 'radial-gradient(ellipse, rgba(34,211,238,0.5) 0%, transparent 70%)', filter: 'blur(60px)' }} />
         </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="text-sm text-white/70">EN ▾</div>
-          <button onClick={() => navigate('/login')} className="uiverse-btn-outline px-6 py-2 text-sm rounded-full">
-            Contact Us
-          </button>
-        </div>
-      </nav>
+        <div className="relative z-10 max-w-4xl mx-auto cs-animate-in">
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full"
+            style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.3)' }}>
+            <span className="material-symbols-outlined material-symbols-filled text-[var(--cs-teal)]" style={{ fontSize: '16px' }}>auto_awesome</span>
+            <span className="text-xs font-semibold text-[var(--cs-purple-light)]">AI-Powered Adaptive Learning</span>
+          </div>
 
-      {/* Main Hero Section */}
-      <main className="relative z-10 flex flex-col items-center justify-center text-center px-4 pt-20 pb-32 max-w-5xl mx-auto">
-        
+          <h1 className="text-5xl md:text-7xl font-black leading-[1.05] tracking-tight mb-6">
+            <span className="cs-text-gradient">Elevate Your</span>
+            <br />
+            <span className="text-[var(--cs-text-primary)]">Cognitive Potential</span>
+          </h1>
 
+          <p className="text-lg text-[var(--cs-text-secondary)] mb-10 max-w-2xl mx-auto leading-relaxed">
+            A sanctuary for deep learning. Our AI engine adapts to your mind, building personalized paths that turn knowledge into mastery.
+          </p>
 
-        {/* Hero Title */}
-        <h1 className="text-6xl md:text-[5.5rem] font-bold leading-[1.1] tracking-tight mb-12">
-          Innovate <br/> Without <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-white">Limits</span>
-        </h1>
-
-        {/* Action Buttons & Stats */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 w-full max-w-3xl">
-          
-          <div className="flex items-center gap-6">
-            <button onClick={() => navigate('/login')} className="uiverse-btn text-lg">
-              Get Started ✦
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button onClick={() => navigate('/signup')} className="cs-btn-primary px-8 py-3 text-base">
+              <span className="material-symbols-outlined text-base">rocket_launch</span>
+              Begin Your Journey
             </button>
-            <button className="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-md">
-              <Play fill="white" size={18} className="ml-1" />
-            </button>
-          </div>
-
-          <div className="h-12 w-[1px] bg-white/20 hidden md:block"></div>
-
-          <div className="flex gap-10 text-left">
-            <div>
-              <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">320M+</p>
-              <p className="text-xs text-white/50 uppercase tracking-wider mt-1">Course Views</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">NeuroLens</p>
-              <p className="text-xs text-white/50 uppercase tracking-wider mt-1">Active Learners</p>
-            </div>
-          </div>
-
-        </div>
-
-      </main>
-
-      {/* Bottom Cards Row */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* Card 1 */}
-        <div className="glass-card p-8 flex flex-col justify-between group h-64">
-          <div className="flex justify-between items-start">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary border border-primary/30 group-hover:bg-primary group-hover:text-white transition-colors">
-              <Code2 size={20} />
-            </div>
-            <div className="flex -space-x-2">
-              <div className="w-8 h-8 rounded-full border-2 border-background bg-blue-500"></div>
-              <div className="w-8 h-8 rounded-full border-2 border-background bg-purple-500"></div>
-            </div>
-          </div>
-          <div>
-            <h3 className="text-xl font-bold mb-2">Courses</h3>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-[10px] uppercase font-bold text-white/50 bg-white/10 px-2 py-1 rounded">Development</span>
-              <span className="text-[10px] uppercase font-bold text-white/50 bg-white/10 px-2 py-1 rounded">API Integration</span>
-            </div>
-            <button onClick={() => navigate('/dashboard/courses')} className="uiverse-btn-outline w-full py-1 text-sm flex justify-center items-center gap-2">
-              View Playlist <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <button onClick={() => navigate('/login')} className="cs-btn-secondary px-8 py-3 text-base">
+              <span className="material-symbols-outlined text-base">login</span>
+              Sign In
             </button>
           </div>
-        </div>
 
-        {/* Card 2 - Center piece with Robot/Abstract Graphic */}
-        <div className="glass-card flex flex-col justify-end p-8 relative overflow-hidden group h-64">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-primary/40 opacity-80 z-0"></div>
-          {/* Abstract Robot Head placeholder using CSS shapes/icons */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-30 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700 z-0">
-            <Cpu size={160} className="text-white" strokeWidth={1} />
-          </div>
-          <div className="relative z-10">
-            <h3 className="text-xl font-bold mb-1">Continuous AI <br/> Optimization</h3>
-            <p className="text-sm text-white/60">Adaptive engine adjusting in real-time.</p>
-          </div>
-        </div>
-
-        {/* Card 3 */}
-        <div className="glass-card p-8 flex flex-col justify-between h-64 group relative overflow-hidden">
-           <div className="absolute -right-10 -top-10 w-40 h-40 bg-accent/20 blur-3xl rounded-full"></div>
-           <div>
-              <p className="text-sm text-white/70 mb-1 flex justify-between">
-                <span>99.7%</span>
-                <span className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-[10px]">↘</span>
-              </p>
-              <p className="text-xs text-white/40">Knowledge Retention</p>
-           </div>
-           
-           {/* Abstract Chart */}
-           <div className="flex-1 w-full flex items-end justify-between py-4 gap-1 relative z-10">
-              <div className="w-1/6 bg-white/10 rounded-t-sm h-[30%] group-hover:h-[40%] transition-all"></div>
-              <div className="w-1/6 bg-white/20 rounded-t-sm h-[50%] group-hover:h-[60%] transition-all backdrop-blur-md border border-white/30"></div>
-              <div className="w-1/6 bg-primary rounded-t-sm h-[80%] shadow-[0_0_15px_rgba(124,58,237,0.8)] relative">
-                 <div className="absolute -top-3 -right-3 w-4 h-4 rounded-full bg-white shadow-[0_0_10px_white]"></div>
+          {/* Stats */}
+          <div className="flex items-center justify-center gap-8 mt-14 flex-wrap">
+            {[
+              { value: '10K+', label: 'Active Learners' },
+              { value: '94%',  label: 'Skill Improvement' },
+              { value: '50+',  label: 'Course Domains' },
+            ].map(s => (
+              <div key={s.label} className="text-center">
+                <div className="text-2xl font-black cs-text-gradient">{s.value}</div>
+                <div className="text-xs font-semibold text-[var(--cs-text-muted)] mt-1">{s.label}</div>
               </div>
-              <div className="w-1/6 bg-white/10 rounded-t-sm h-[40%] group-hover:h-[50%] transition-all"></div>
-           </div>
-
-           <div className="relative z-10 mt-auto">
-              <h3 className="text-xl font-bold">AI-Driven Skill <br/> Acceleration</h3>
-           </div>
+            ))}
+          </div>
         </div>
-
       </section>
 
+      {/* Features Grid */}
+      <section className="px-6 md:px-12 pb-24">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black text-[var(--cs-text-primary)] mb-3">Built for Deep Learning</h2>
+            <p className="text-[var(--cs-text-secondary)]">Every feature designed to optimize your cognitive growth</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {features.map((f, i) => (
+              <div key={f.title} className="cs-card p-6 cs-animate-in" style={{ animationDelay: `${i * 0.08}s` }}>
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                  style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.3) 0%, rgba(6,214,160,0.15) 100%)', border: '1px solid rgba(124,58,237,0.2)' }}>
+                  <span className="material-symbols-outlined material-symbols-filled text-[var(--cs-teal)]" style={{ fontSize: '24px' }}>{f.icon}</span>
+                </div>
+                <h3 className="text-base font-bold text-[var(--cs-text-primary)] mb-2">{f.title}</h3>
+                <p className="text-sm text-[var(--cs-text-muted)] leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="px-6 md:px-12 pb-24">
+        <div className="max-w-2xl mx-auto cs-card-featured p-10 text-center cs-animate-in">
+          <span className="material-symbols-outlined material-symbols-filled text-[var(--cs-teal)] mb-4 cs-animate-float" style={{ fontSize: '48px' }}>psychology_alt</span>
+          <h2 className="text-3xl font-black text-[var(--cs-text-primary)] mb-3">Your Mind Deserves More</h2>
+          <p className="text-[var(--cs-text-secondary)] mb-8">Join thousands of learners who've unlocked their full cognitive potential.</p>
+          <button onClick={() => navigate('/signup')} className="cs-btn-teal px-8 py-3 text-base mx-auto">
+            <span className="material-symbols-outlined text-base">auto_awesome</span>
+            Start for Free
+          </button>
+        </div>
+      </section>
     </div>
   );
 }
