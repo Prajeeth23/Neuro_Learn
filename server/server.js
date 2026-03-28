@@ -13,11 +13,6 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Basic health check route
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'NeuroLens API is running' });
-});
-
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
