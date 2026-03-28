@@ -21,18 +21,20 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // Diagnostic object to track loaded features
 const loadedFeatures = {};
 
-function safeLoad(routePath, file) {
+function safeLoad(routePath, relativeFile) {
   try {
-    app.use(routePath, require(file));
+    // Resolve the absolute path to ensure Vercel can find the module
+    const absolutePath = path.join(__dirname, relativeFile);
+    app.use(routePath, require(absolutePath));
     loadedFeatures[routePath] = '✅ Loaded';
-    console.log(`✅ Success: Loaded ${routePath}`);
+    console.log(`✅ Success: Loaded ${routePath} from ${absolutePath}`);
   } catch (err) {
     loadedFeatures[routePath] = `❌ FAILED: ${err.message}`;
-    console.error(`🔥 CRITICAL ERROR: Failed to load ${routePath} from ${file}!`, err.message);
+    console.error(`🔥 CRITICAL ERROR: Failed to load ${routePath} from ${relativeFile}!`, err.message);
   }
 }
 
-// Load individual routes with safety nets
+// Load individual routes with safety nets (paths relative to __dirname)
 safeLoad('/api/auth', './routes/auth');
 safeLoad('/api/courses', './routes/courses');
 safeLoad('/api/assessments', './routes/assessments');
