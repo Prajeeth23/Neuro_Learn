@@ -33,16 +33,16 @@ export default function DashboardLayout() {
   };
 
   const navItems = [
-    { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
-    { label: 'My Courses', path: '/dashboard/courses', icon: <BookOpen size={20} /> },
-    { label: 'AI Tutor', path: '/dashboard/personalized', icon: <Sparkles size={20} /> },
-    { label: 'Learning Tracker', path: '/dashboard/tracker', icon: <Activity size={20} /> },
-    { label: 'Analytics Dashboard', path: '/dashboard/analytics', icon: <BarChart3 size={20} /> },
-    { label: 'Profile', path: '/dashboard/profile', icon: <User size={20} /> },
+    { label: 'Dashboard',          path: '/dashboard',             icon: <LayoutDashboard size={16} /> },
+    { label: 'My Courses',         path: '/dashboard/courses',     icon: <BookOpen size={16} />        },
+    { label: 'AI Tutor',           path: '/dashboard/personalized',icon: <Sparkles size={16} />        },
+    { label: 'Learning Tracker',   path: '/dashboard/tracker',     icon: <Activity size={16} />        },
+    { label: 'Analytics',          path: '/dashboard/analytics',   icon: <BarChart3 size={16} />       },
+    { label: 'Profile',            path: '/dashboard/profile',     icon: <User size={16} />            },
   ];
 
   if (isAdmin) {
-    navItems.push({ label: 'Admin Panel', path: '/dashboard/admin', icon: <Shield size={20} /> });
+    navItems.push({ label: 'Admin Panel', path: '/dashboard/admin', icon: <Shield size={16} /> });
   }
 
   const handleNavClick = (path) => {
@@ -50,137 +50,175 @@ export default function DashboardLayout() {
     setIsDrawerOpen(false);
   };
 
-  return (
-    <div className="min-h-screen bg-white text-gray-900 relative flex flex-col overflow-hidden font-sans">
-      {/* Subtle sky-blue ambient orbs */}
-      <div className="fixed top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-sky-200/30 blur-[130px] pointer-events-none z-0" />
-      <div className="fixed bottom-[-10%] right-[-5%] w-[700px] h-[700px] rounded-full bg-sky-100/20 blur-[150px] pointer-events-none z-0" />
+  const userInitials = user?.user_metadata?.full_name
+    ?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    || user?.email?.substring(0, 2).toUpperCase()
+    || 'NL';
 
-      {/* Top Header */}
-      <header className="relative z-30 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsDrawerOpen(true)}
-              className="p-2 -ml-2 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-            >
-              <Menu size={26} />
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Neural Pioneer';
+
+  // Black sidebar nav content (shared between desktop + drawer)
+  const SidebarNav = ({ onClose }) => (
+    <div className="flex flex-col h-full" style={{ background: '#111111' }}>
+
+      {/* Brand */}
+      <div className="px-5 pt-6 pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="flex items-center justify-between">
+          <button onClick={() => { navigate('/'); onClose?.(); }}
+            className="text-white font-black text-base tracking-tight hover:opacity-70 transition-opacity">
+            NEURO<span style={{ color: '#aaaaaa' }}>LEARN</span>
+          </button>
+          {onClose && (
+            <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
+              <X size={18} />
             </button>
-            <h1
-              onClick={() => navigate('/')}
-              className="text-xl font-black tracking-tighter cursor-pointer hover:opacity-80 transition-all group hidden sm:block text-gray-900"
+          )}
+        </div>
+      </div>
+
+      {/* Nav Links */}
+      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.path
+            || (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
+
+          return (
+            <button
+              key={item.label}
+              onClick={() => handleNavClick(item.path)}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 text-left"
+              style={isActive ? {
+                background: 'rgba(255,255,255,0.12)',
+                color: '#ffffff',
+              } : {
+                color: 'rgba(255,255,255,0.45)',
+              }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+              onMouseLeave={e => { if (!isActive) { e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; e.currentTarget.style.background = 'transparent'; } }}
             >
-              NEURO<span className="text-sky-500 group-hover:text-sky-600 transition-colors">LEARN</span>
-            </h1>
+              <span style={{ opacity: isActive ? 1 : 0.6 }}>{item.icon}</span>
+              <span className="flex-1" style={{ letterSpacing: '-0.01em' }}>{item.label}</span>
+              {isActive && <div className="w-1 h-1 rounded-full" style={{ background: '#ffffff' }} />}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Bottom — user + logout */}
+      <div className="p-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        {/* User chip */}
+        <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg mb-1"
+          style={{ background: 'rgba(255,255,255,0.06)' }}>
+          <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0"
+            style={{ background: 'rgba(255,255,255,0.2)', color: '#ffffff' }}>
+            {userInitials}
           </div>
-
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-gray-50 rounded-2xl border border-gray-200">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-[10px] font-black text-white">
-                {user?.user_metadata?.full_name?.split(' ').map(n => n[0]).join('') || user?.email?.substring(0, 2).toUpperCase() || 'JD'}
-              </div>
-              <span className="text-xs font-semibold text-gray-600">
-                {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Neural Pioneer'}
-              </span>
-            </div>
-
-            <button
-              onClick={handleLogout}
-              className="group p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all duration-300"
-              title="Sign Out"
-            >
-              <LogOut size={17} className="text-gray-400 group-hover:text-red-500 transition-colors" />
-            </button>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-white truncate leading-tight" style={{ letterSpacing: '-0.01em' }}>{userName}</div>
+            <div className="text-[10px] truncate" style={{ color: 'rgba(255,255,255,0.35)' }}>{user?.email}</div>
           </div>
         </div>
-      </header>
+        {/* Sign Out */}
+        <button onClick={handleLogout}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left"
+          style={{ color: 'rgba(255,255,255,0.35)' }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#ff6b6b'; e.currentTarget.style.background = 'rgba(255,100,100,0.08)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; e.currentTarget.style.background = 'transparent'; }}>
+          <LogOut size={14} />
+          <span className="text-xs font-medium">Sign Out</span>
+        </button>
+      </div>
+    </div>
+  );
 
-      {/* Main Content */}
-      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-6 py-8 overflow-y-auto">
-        <Outlet />
-      </main>
+  return (
+    <div className="min-h-screen flex font-sans" style={{ background: '#f7f7f7' }}>
 
-      {/* Animated Hamburger Drawer */}
+      {/* ===== DESKTOP SIDEBAR — Fixed black sidebar ===== */}
+      <aside className="hidden md:flex flex-col fixed top-0 left-0 bottom-0 z-30"
+        style={{ width: '220px', background: '#111111' }}>
+        <SidebarNav />
+      </aside>
+
+      {/* ===== MOBILE DRAWER ===== */}
       <AnimatePresence>
         {isDrawerOpen && (
           <>
-            {/* Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsDrawerOpen(false)}
-              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+              className="fixed inset-0 z-40 md:hidden"
+              style={{ background: 'rgba(0,0,0,0.5)' }}
             />
-
-            {/* Sliding Drawer — white */}
-            <motion.div
+            <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 bottom-0 z-50 w-[70%] sm:w-[280px] bg-white border-r border-gray-100 shadow-xl flex flex-col"
+              transition={{ type: 'spring', damping: 28, stiffness: 240 }}
+              className="fixed top-0 left-0 bottom-0 z-50 w-60 md:hidden"
+              style={{ background: '#111111' }}
             >
-              {/* Drawer Header */}
-              <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-                <h2 className="text-lg font-black tracking-tighter text-gray-900">
-                  NEURO<span className="text-sky-500">LEARN</span>
-                </h2>
-                <button
-                  onClick={() => setIsDrawerOpen(false)}
-                  className="p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  <X size={22} />
-                </button>
-              </div>
-
-              {/* Nav Items */}
-              <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-                {navItems.map((item) => {
-                  const isActive = location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
-
-                  return (
-                    <button
-                      key={item.label}
-                      onClick={() => handleNavClick(item.path)}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                        isActive
-                          ? 'bg-sky-50 text-sky-600 border border-sky-200 shadow-sm'
-                          : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 border border-transparent'
-                      }`}
-                    >
-                      <span className={isActive ? 'text-sky-500' : 'text-gray-400'}>
-                        {item.icon}
-                      </span>
-                      {item.label}
-                      {isActive && (
-                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-sky-500" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Drawer Footer — user info */}
-              <div className="p-5 border-t border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-xs font-black text-white">
-                    {user?.user_metadata?.full_name?.split(' ').map(n => n[0]).join('') || user?.email?.substring(0, 2).toUpperCase() || 'JD'}
-                  </div>
-                  <div className="flex flex-col text-left min-w-0">
-                    <span className="text-sm font-bold text-gray-900 truncate max-w-[160px]">
-                      {user?.user_metadata?.full_name || 'Neural Pioneer'}
-                    </span>
-                    <span className="text-xs text-gray-400 truncate max-w-[160px]">
-                      {user?.email}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              <SidebarNav onClose={() => setIsDrawerOpen(false)} />
+            </motion.aside>
           </>
         )}
       </AnimatePresence>
+
+      {/* ===== MAIN CONTENT ===== */}
+      <div className="flex-1 flex flex-col min-h-screen" style={{ marginLeft: '0', paddingLeft: '0' }}
+        // Push content right of sidebar on desktop
+      >
+        <div className="md:ml-[220px] flex-1 flex flex-col">
+
+          {/* Mobile top bar */}
+          <header className="md:hidden sticky top-0 z-20 flex items-center justify-between px-5 h-14"
+            style={{ background: '#ffffff', borderBottom: '1px solid #e5e5e5' }}>
+            <button onClick={() => setIsDrawerOpen(true)}
+              className="p-2 -ml-2 rounded-lg hover:bg-gray-100 transition-colors">
+              <Menu size={20} style={{ color: '#111111' }} />
+            </button>
+            <span className="text-sm font-black tracking-tight" style={{ color: '#111111', letterSpacing: '-0.02em' }}>
+              NEURO<span style={{ color: '#888888' }}>LEARN</span>
+            </span>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black"
+              style={{ background: '#111111', color: '#ffffff' }}>
+              {userInitials}
+            </div>
+          </header>
+
+          {/* Desktop top bar */}
+          <header className="hidden md:flex sticky top-0 z-20 items-center justify-between px-8 h-14"
+            style={{ background: '#ffffff', borderBottom: '1px solid #e5e5e5' }}>
+            <div /> {/* spacer */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg" style={{ background: '#f7f7f7', border: '1px solid #e5e5e5' }}>
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black"
+                  style={{ background: '#111111', color: '#ffffff' }}>
+                  {userInitials}
+                </div>
+                <span className="text-xs font-semibold" style={{ color: '#444444', letterSpacing: '-0.01em' }}>
+                  {userName}
+                </span>
+              </div>
+              <button onClick={handleLogout}
+                className="p-2 rounded-lg transition-colors group"
+                style={{ border: '1px solid #e5e5e5', background: '#ffffff' }}
+                title="Sign out"
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffcccc'; e.currentTarget.style.background = '#fff5f5'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#e5e5e5'; e.currentTarget.style.background = '#ffffff'; }}>
+                <LogOut size={15} style={{ color: '#888888' }} />
+              </button>
+            </div>
+          </header>
+
+          {/* Page Content */}
+          <main className="flex-1 px-6 md:px-8 py-7">
+            <Outlet />
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
