@@ -6,19 +6,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "hsl(var(--background) / <alpha-value>)",
-        foreground: "hsl(var(--foreground) / <alpha-value>)",
-        primary: "hsl(var(--primary) / <alpha-value>)",
-        secondary: "hsl(var(--secondary) / <alpha-value>)",
-        accent: "hsl(var(--accent) / <alpha-value>)",
-        darkbg: "hsl(230, 20%, 10% / <alpha-value>)",
-        glass: "rgba(255,255,255,0.08)"
+        background: "#ffffff",
+        foreground: "#111827",
+        primary:   "#0ea5e9",   /* Sky blue */
+        secondary: "#38bdf8",   /* Light sky blue */
+        accent:    "#0284c7",   /* Deep sky blue */
+        darkbg:    "#f0f9ff",   /* Very light sky tint */
+        glass:     "rgba(14, 165, 233, 0.06)"
       },
       backdropBlur: {
         xs: "2px"
       },
       boxShadow: {
-        glow: "0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.3)"
+        glow: "0 0 10px rgba(14,165,233,0.4), 0 0 20px rgba(14,165,233,0.2)"
       }
     }
   },

@@ -51,51 +51,51 @@ export default function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050510] text-white relative flex flex-col overflow-hidden font-sans">
-      {/* Immersive Background Effects */}
-      <div className="fixed top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-primary/10 blur-[130px] mix-blend-screen pointer-events-none animate-pulse z-0"></div>
-      <div className="fixed bottom-[-10%] right-[-5%] w-[700px] h-[700px] rounded-full bg-accent/10 blur-[150px] mix-blend-screen pointer-events-none z-0"></div>
+    <div className="min-h-screen bg-white text-gray-900 relative flex flex-col overflow-hidden font-sans">
+      {/* Subtle sky-blue ambient orbs */}
+      <div className="fixed top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-sky-200/30 blur-[130px] pointer-events-none z-0" />
+      <div className="fixed bottom-[-10%] right-[-5%] w-[700px] h-[700px] rounded-full bg-sky-100/20 blur-[150px] pointer-events-none z-0" />
 
       {/* Top Header */}
-      <header className="relative z-30 w-full bg-black/40 backdrop-blur-2xl border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-6">
+      <header className="relative z-30 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => setIsDrawerOpen(true)}
-              className="p-2 -ml-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-2 -ml-2 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
             >
-              <Menu size={28} />
+              <Menu size={26} />
             </button>
-            <h1 
-              onClick={() => navigate('/')} 
-              className="text-2xl font-black tracking-tighter cursor-pointer hover:opacity-80 transition-all group hidden sm:block"
+            <h1
+              onClick={() => navigate('/')}
+              className="text-xl font-black tracking-tighter cursor-pointer hover:opacity-80 transition-all group hidden sm:block text-gray-900"
             >
-              NEURO<span className="text-accent group-hover:text-primary transition-colors">LEARN</span>
+              NEURO<span className="text-sky-500 group-hover:text-sky-600 transition-colors">LEARN</span>
             </h1>
           </div>
 
-          <div className="flex items-center gap-6">
-             <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-white/[0.03] rounded-2xl border border-white/5">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-[10px] font-black">
-                  {user?.user_metadata?.full_name?.split(' ').map(n => n[0]).join('') || user?.email?.substring(0, 2).toUpperCase() || 'JD'}
-                </div>
-                <span className="text-xs font-bold text-white/60">
-                  {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Neural Pioneer'}
-                </span>
-             </div>
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-gray-50 rounded-2xl border border-gray-200">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-[10px] font-black text-white">
+                {user?.user_metadata?.full_name?.split(' ').map(n => n[0]).join('') || user?.email?.substring(0, 2).toUpperCase() || 'JD'}
+              </div>
+              <span className="text-xs font-semibold text-gray-600">
+                {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Neural Pioneer'}
+              </span>
+            </div>
 
-             <button 
-               onClick={handleLogout} 
-               className="group p-2.5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-red-500/30 hover:bg-red-500/10 transition-all duration-300"
-               title="Sign Out"
-             >
-               <LogOut size={18} className="text-white/40 group-hover:text-red-400 transition-colors" />
-             </button>
+            <button
+              onClick={handleLogout}
+              className="group p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all duration-300"
+              title="Sign Out"
+            >
+              <LogOut size={17} className="text-gray-400 group-hover:text-red-500 transition-colors" />
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-6 py-8 overflow-y-auto">
         <Outlet />
       </main>
@@ -104,71 +104,74 @@ export default function DashboardLayout() {
       <AnimatePresence>
         {isDrawerOpen && (
           <>
-            {/* Blur Overlay */}
+            {/* Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsDrawerOpen(false)}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
             />
-            
-            {/* Sliding Drawer */}
+
+            {/* Sliding Drawer — white */}
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 bottom-0 z-50 w-[70%] sm:w-[300px] bg-[#0A0A15]/95 backdrop-blur-3xl border-r border-white/10 shadow-2xl flex flex-col"
+              className="fixed top-0 left-0 bottom-0 z-50 w-[70%] sm:w-[280px] bg-white border-r border-gray-100 shadow-xl flex flex-col"
             >
-              <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                <h2 className="text-xl font-black tracking-tighter">
-                  NEURO<span className="text-accent">LEARN</span>
+              {/* Drawer Header */}
+              <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+                <h2 className="text-lg font-black tracking-tighter text-gray-900">
+                  NEURO<span className="text-sky-500">LEARN</span>
                 </h2>
                 <button
                   onClick={() => setIsDrawerOpen(false)}
-                  className="p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                  className="p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                 >
-                  <X size={24} />
+                  <X size={22} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+              {/* Nav Items */}
+              <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
-                  
+
                   return (
                     <button
                       key={item.label}
                       onClick={() => handleNavClick(item.path)}
-                      className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold tracking-wide transition-all duration-300 group ${
-                        isActive 
-                        ? 'bg-primary/20 text-primary border border-primary/30 shadow-[0_0_20px_rgba(124,58,237,0.15)]' 
-                        : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                        isActive
+                          ? 'bg-sky-50 text-sky-600 border border-sky-200 shadow-sm'
+                          : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 border border-transparent'
                       }`}
                     >
-                      <span className={isActive ? 'text-primary' : 'text-white/40 group-hover:text-white/80 transition-colors'}>
+                      <span className={isActive ? 'text-sky-500' : 'text-gray-400'}>
                         {item.icon}
                       </span>
                       {item.label}
                       {isActive && (
-                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(124,58,237,0.8)]"></div>
+                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-sky-500" />
                       )}
                     </button>
                   );
                 })}
               </div>
 
-              <div className="p-6 border-t border-white/5 mt-auto">
+              {/* Drawer Footer — user info */}
+              <div className="p-5 border-t border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xs font-black">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-xs font-black text-white">
                     {user?.user_metadata?.full_name?.split(' ').map(n => n[0]).join('') || user?.email?.substring(0, 2).toUpperCase() || 'JD'}
                   </div>
-                  <div className="flex flex-col text-left">
-                    <span className="text-sm font-bold text-white truncate max-w-[150px]">
+                  <div className="flex flex-col text-left min-w-0">
+                    <span className="text-sm font-bold text-gray-900 truncate max-w-[160px]">
                       {user?.user_metadata?.full_name || 'Neural Pioneer'}
                     </span>
-                    <span className="text-xs font-medium text-white/40 truncate max-w-[150px]">
+                    <span className="text-xs text-gray-400 truncate max-w-[160px]">
                       {user?.email}
                     </span>
                   </div>

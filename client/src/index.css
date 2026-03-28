@@ -4,31 +4,32 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%; /* Very dark deep blue/black */
-    --foreground: 0 0% 98%;
-    
-    --primary: 263.4 70% 50.4%; /* Vibrant Purple */
-    --secondary: 217.2 91.2% 59.8%; /* Vibrant Blue */
-    --accent: 270 91% 65%; /* Pink/Purple accent */
+    --background: 0 0% 100%;           /* White background */
+    --foreground: 220 20% 10%;         /* Near-black text */
+
+    --primary: 199 89% 48%;            /* Sky blue #0ea5e9 */
+    --secondary: 210 100% 56%;         /* Bright blue #1d8feb */
+    --accent: 200 95% 35%;             /* Deep sky blue */
   }
 }
 
 @layer base {
   body {
-    @apply bg-background text-foreground font-sans overflow-x-hidden min-h-screen;
-    background-image: radial-gradient(circle at 50% 0%, #170b3b 0%, #050510 50%, #000000 100%);
-    background-attachment: fixed;
+    @apply bg-white text-gray-900 font-sans overflow-x-hidden min-h-screen;
+    background-color: #ffffff;
   }
 }
 
 @layer components {
-  /* Uiverse.io Inspired Neon Glowing Button */
+
+  /* ===== PRIMARY BUTTON — Sky blue fill ===== */
   .uiverse-btn {
-    @apply relative inline-flex items-center justify-center px-8 py-3 font-bold text-white transition-all duration-300 bg-transparent border-none rounded-full cursor-pointer;
-    background: linear-gradient(90deg, #7c3aed, #4f46e5);
+    @apply relative inline-flex items-center justify-center px-8 py-3 font-bold text-white transition-all duration-300 border-none rounded-full cursor-pointer;
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
     background-size: 200% auto;
     z-index: 1;
     overflow: hidden;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
   }
 
   .uiverse-btn::before {
@@ -37,7 +38,7 @@
     top: 0; left: 0; right: 0; bottom: 0;
     z-index: -1;
     border-radius: 9999px;
-    background: linear-gradient(90deg, #7c3aed, #4f46e5, #c026d3, #7c3aed);
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8, #7dd3fc, #0ea5e9);
     background-size: 300% auto;
     animation: animateGradient 3s linear infinite;
     filter: blur(10px);
@@ -48,111 +49,121 @@
   .uiverse-btn:hover {
     background-position: right center;
     transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.45);
   }
 
   .uiverse-btn:hover::before {
-    opacity: 1;
+    opacity: 0.7;
   }
 
-  /* Uiverse.io Outline Button */
+  /* ===== OUTLINE BUTTON — Black border, sky blue hover ===== */
   .uiverse-btn-outline {
-    @apply relative inline-flex items-center justify-center px-6 py-2 font-medium text-white transition-all duration-300 bg-transparent border border-white/20 rounded-full cursor-pointer overflow-hidden;
+    @apply relative inline-flex items-center justify-center px-6 py-2 font-medium transition-all duration-300 bg-transparent border rounded-full cursor-pointer overflow-hidden;
+    color: #111827;
+    border-color: #d1d5db;
   }
   .uiverse-btn-outline:hover {
-    @apply bg-white/10 border-white/40;
-    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+    background: #f0f9ff;
+    border-color: #0ea5e9;
+    color: #0ea5e9;
+    box-shadow: 0 0 18px rgba(14, 165, 233, 0.2);
   }
 
-  /* Premium Glass Card */
+  /* ===== CARD — White with light border and shadow ===== */
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] overflow-hidden transition-all duration-300;
+    @apply bg-white border border-gray-100 rounded-3xl shadow-[0_4px_24px_0_rgba(0,0,0,0.07)] overflow-hidden transition-all duration-300;
   }
 
   .glass-card:hover {
-    @apply border-primary/50 bg-white/10;
-    box-shadow: 0 0 30px rgba(124, 58, 237, 0.2);
-    transform: translateY(-5px);
+    border-color: #bae6fd;
+    box-shadow: 0 8px_32px_rgba(14,165,233,0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(14, 165, 233, 0.12);
   }
 
-  /* Abstract Glowing Light Orbs for Backgrounds */
+  /* ===== LIGHT ORBS — subtle sky blue tints ===== */
   .light-orb-1 {
-    @apply absolute rounded-full opacity-30 mix-blend-screen pointer-events-none;
-    background: radial-gradient(circle, rgba(124,58,237,0.8) 0%, rgba(124,58,237,0) 70%);
+    @apply absolute rounded-full opacity-20 pointer-events-none;
+    background: radial-gradient(circle, rgba(14,165,233,0.5) 0%, rgba(14,165,233,0) 70%);
     width: 600px; height: 600px;
     top: -200px; left: -200px;
     filter: blur(80px);
   }
 
   .light-orb-2 {
-    @apply absolute rounded-full opacity-20 mix-blend-screen pointer-events-none;
-    background: radial-gradient(circle, rgba(79,70,229,0.8) 0%, rgba(79,70,229,0) 70%);
+    @apply absolute rounded-full opacity-15 pointer-events-none;
+    background: radial-gradient(circle, rgba(56,189,248,0.5) 0%, rgba(56,189,248,0) 70%);
     width: 800px; height: 800px;
     bottom: -300px; right: -200px;
     filter: blur(100px);
   }
 
-  /* Text Gradients */
+  /* ===== TEXT GRADIENTS ===== */
   .text-gradient-primary {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-white/70;
-  }
-  
-  .text-gradient-accent {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(90deg, #111827, #0ea5e9, #111827);
   }
 
-  /* Custom Scrollbar */
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  }
+
+  /* ===== SCROLLBAR — sky blue ===== */
   ::-webkit-scrollbar {
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #f1f5f9;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(124, 58, 237, 0.5);
+    background: #7dd3fc;
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(124, 58, 237, 0.8);
+    background: #0ea5e9;
   }
-  /* Premium Glass Card - Enhanced */
+
+  /* ===== PREMIUM CARD — white elevated ===== */
   .glass-card-premium {
-    @apply bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] transition-all duration-500;
-    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+    @apply bg-white border border-gray-100 rounded-3xl transition-all duration-500;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   }
 
   .glass-card-premium:hover {
-    @apply border-primary/40 bg-white/[0.07];
-    box-shadow: 0 0 40px rgba(124, 58, 237, 0.25), inset 0 0 20px rgba(255, 255, 255, 0.05);
-    transform: translateY(-8px) scale(1.01);
+    border-color: #bae6fd;
+    box-shadow: 0 12px 40px rgba(14, 165, 233, 0.15);
+    transform: translateY(-6px) scale(1.01);
   }
 
-  /* Neon Glowing Borders */
+  /* ===== NEON BORDER — sky blue instead of purple ===== */
   .neon-border-primary {
     @apply relative overflow-hidden;
   }
   .neon-border-primary::after {
     content: '';
-    @apply absolute inset-0 rounded-[inherit] border border-primary/30 pointer-events-none transition-opacity duration-300;
-    box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+    @apply absolute inset-0 rounded-[inherit] border pointer-events-none transition-opacity duration-300;
+    border-color: rgba(14, 165, 233, 0.3);
+    box-shadow: 0 0 12px rgba(14, 165, 233, 0.2);
   }
   .neon-border-primary:hover::after {
-    @apply border-primary/60;
-    box-shadow: 0 0 25px rgba(124, 58, 237, 0.5);
+    border-color: rgba(14, 165, 233, 0.6);
+    box-shadow: 0 0 22px rgba(14, 165, 233, 0.4);
   }
 
-  /* Pulsating Neon Glow */
+  /* ===== GLOW PULSE — sky blue ===== */
   .animate-glow-pulse {
     animation: glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   @keyframes glow-pulse {
-    0%, 100% { opacity: 0.5; filter: blur(10px); }
-    50% { opacity: 1; filter: blur(15px); }
+    0%, 100% { opacity: 0.5; filter: blur(8px); }
+    50%       { opacity: 1;   filter: blur(14px); }
   }
 }
 
 @keyframes animateGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
