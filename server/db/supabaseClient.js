@@ -3,30 +3,36 @@ const { createClient } = require('@supabase/supabase-js');
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Supabase configuration missing (URL or Key)');
-  // Don't throw in production to prevent crashes, but log clearly
-  if (process.env.NODE_ENV === 'development') {
-    throw new Error('Supabase URL and Key must be provided in environment variables');
+let supabase;
+
+try {
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('⚠️ Supabase credentials missing during startup!');
   }
+  supabase = createClient(supabaseUrl, supabaseKey);
+  console.log('✅ Supabase Client initialized');
+} catch (err) {
+  console.error('🔥 Supabase Client Crash on Startup:', err.message);
+  // Create a dummy client that throws on query but doesn't crash the server
+  supabase = {
+    from: () => ({ select: () => ({ limit: () => Promise.resolve({ error: { message: 'Supabase not initialized: ' + err.message } }) }) })
+  };
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Diagnostic Check (Non-blocking)
+// Diagnostic: non-blocking check
 if (supabaseUrl && supabaseKey) {
-  supabase.from('courses').select('id', { count: 'exact', head: true })
-    .then(({ error }) => {
-      if (error) {
-        console.error('Supabase DB Diagnostic Error:', error.message);
-        if (error.message.includes('relation "courses" does not exist')) {
-          console.error('CRITICAL: The "courses" table is missing. Please run database migrations.');
-        }
-      } else {
-        console.log('Supabase DB connection successful.');
+  supabase.from('courses').select('id').limit(1).then(({ error }) => {
+    if (error) {
+      console.error('❌ Supabase DB Diagnostic Error:', error.message);
+      if (error.message.includes('relation "courses" does not exist')) {
+        console.error('CRITICAL: The "courses" table is missing. Please run database migrations.');
       }
-    })
-    .catch(err => console.error('Supabase DB connection failed:', err.message));
+    } else {
+      console.log('✅ Supabase DB Diagnostic: Connection Successful');
+    }
+  }).catch(err => {
+    console.error('❌ Supabase DB Diagnostic Crash:', err.message);
+  });
 }
 
 module.exports = supabase;
