@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
+const supabase = require('./db/supabaseClient');
+const authMiddleware = require('./middleware/auth');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
@@ -56,12 +58,9 @@ app.get('/api/debug-me', authMiddleware, async (req, res) => {
   }
 });
 
-// Import and use routes in a safe manner to prevent startup crashes
+// Import and use routes in a safe manner
 try {
   app.use('/api/auth', require('./routes/auth'));
-  console.log('✅ Auth route loaded');
-  
-  /* Temporarily commenting out to isolate Vercel crash
   app.use('/api/courses', require('./routes/courses'));
   app.use('/api/assessments', require('./routes/assessments'));
   app.use('/api/progress', require('./routes/progress'));
@@ -69,9 +68,8 @@ try {
   app.use('/api/ai', require('./routes/ai'));
   app.use('/api/admin', require('./routes/admin'));
   app.use('/api/upload', require('./routes/upload'));
-  */
   
-  console.log('✅ Base routes loaded successfully');
+  console.log('✅ All routes loaded successfully');
 } catch (err) {
   console.error('🔥 CRITICAL ERROR: Failed to load routes on startup!', err.message);
 }

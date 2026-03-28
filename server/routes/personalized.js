@@ -139,7 +139,7 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
     }
     res.json({ message: 'File analyzed successfully', plan: data, analysis });
   } catch (err) {
-    require('fs').appendFileSync('upload_error.log', `[${new Date().toISOString()}] ${err.stack}\n\n`);
+    console.error(`[AI Error Logging] ${err.stack}`);
     console.error('File Upload Analysis Error:', err.stack);
     res.status(500).json({ error: err.message });
   }
