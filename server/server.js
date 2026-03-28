@@ -21,28 +21,70 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // Diagnostic object to track loaded features
 const loadedFeatures = {};
 
-function safeLoad(routePath, relativeFile) {
-  try {
-    // Resolve the absolute path to ensure Vercel can find the module
-    const absolutePath = path.join(__dirname, relativeFile);
-    app.use(routePath, require(absolutePath));
-    loadedFeatures[routePath] = '✅ Loaded';
-    console.log(`✅ Success: Loaded ${routePath} from ${absolutePath}`);
-  } catch (err) {
-    loadedFeatures[routePath] = `❌ FAILED: ${err.message}`;
-    console.error(`🔥 CRITICAL ERROR: Failed to load ${routePath} from ${relativeFile}!`, err.message);
-  }
+// Load individual routes with explicit literal requires so Vercel's bundler can "see" them
+try {
+  app.use('/api/auth', require('./routes/auth'));
+  loadedFeatures['/api/auth'] = '✅ Loaded';
+} catch (err) {
+  loadedFeatures['/api/auth'] = `❌ FAILED: ${err.message}`;
+  console.error('🔥 FAILED to load /api/auth:', err.message);
 }
 
-// Load individual routes with safety nets (paths relative to __dirname)
-safeLoad('/api/auth', './routes/auth');
-safeLoad('/api/courses', './routes/courses');
-safeLoad('/api/assessments', './routes/assessments');
-safeLoad('/api/progress', './routes/progress');
-safeLoad('/api/personalized', './routes/personalized');
-safeLoad('/api/ai', './routes/ai');
-safeLoad('/api/admin', './routes/admin');
-safeLoad('/api/upload', './routes/upload');
+try {
+  app.use('/api/courses', require('./routes/courses'));
+  loadedFeatures['/api/courses'] = '✅ Loaded';
+} catch (err) {
+  loadedFeatures['/api/courses'] = `❌ FAILED: ${err.message}`;
+  console.error('🔥 FAILED to load /api/courses:', err.message);
+}
+
+try {
+  app.use('/api/assessments', require('./routes/assessments'));
+  loadedFeatures['/api/assessments'] = '✅ Loaded';
+} catch (err) {
+  loadedFeatures['/api/assessments'] = `❌ FAILED: ${err.message}`;
+  console.error('🔥 FAILED to load /api/assessments:', err.message);
+}
+
+try {
+  app.use('/api/progress', require('./routes/progress'));
+  loadedFeatures['/api/progress'] = '✅ Loaded';
+} catch (err) {
+  loadedFeatures['/api/progress'] = `❌ FAILED: ${err.message}`;
+  console.error('🔥 FAILED to load /api/progress:', err.message);
+}
+
+try {
+  app.use('/api/personalized', require('./routes/personalized'));
+  loadedFeatures['/api/personalized'] = '✅ Loaded';
+} catch (err) {
+  loadedFeatures['/api/personalized'] = `❌ FAILED: ${err.message}`;
+  console.error('🔥 FAILED to load /api/personalized:', err.message);
+}
+
+try {
+  app.use('/api/ai', require('./routes/ai'));
+  loadedFeatures['/api/ai'] = '✅ Loaded';
+} catch (err) {
+  loadedFeatures['/api/ai'] = `❌ FAILED: ${err.message}`;
+  console.error('🔥 FAILED to load /api/ai:', err.message);
+}
+
+try {
+  app.use('/api/admin', require('./routes/admin'));
+  loadedFeatures['/api/admin'] = '✅ Loaded';
+} catch (err) {
+  loadedFeatures['/api/admin'] = `❌ FAILED: ${err.message}`;
+  console.error('🔥 FAILED to load /api/admin:', err.message);
+}
+
+try {
+  app.use('/api/upload', require('./routes/upload'));
+  loadedFeatures['/api/upload'] = '✅ Loaded';
+} catch (err) {
+  loadedFeatures['/api/upload'] = `❌ FAILED: ${err.message}`;
+  console.error('🔥 FAILED to load /api/upload:', err.message);
+}
 
 // Update health check to include loaded features
 app.get('/api/health', async (req, res) => {
