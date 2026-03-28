@@ -42,6 +42,7 @@ export default function AdminPage() {
       setCourses(data || []);
     } catch (err) {
       console.error('Error loading courses', err);
+      setError(err.response?.data?.error || err.message || 'Failed to load courses');
     } finally {
       setLoading(false);
     }
@@ -49,11 +50,13 @@ export default function AdminPage() {
 
   const fetchUsers = async () => {
     setUsersLoading(true);
+    setError('');
     try {
       const { data } = await api.get('/admin/users');
       setUsers(data || []);
     } catch (err) {
       console.error('Error loading users', err);
+      setError(err.response?.data?.error || err.message || 'Failed to load users');
     } finally {
       setUsersLoading(false);
     }

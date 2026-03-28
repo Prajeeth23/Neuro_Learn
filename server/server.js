@@ -20,6 +20,42 @@ app.get('/api/health', (req, res) => {
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // Import and use routes
+// Diagnostic routes (No auth for health, basic auth for profile)
+app.get('/api/health', async (req, res) => {
+  const status = {
+    env: {
+      supabaseUrl: !!process.env.SUPABASE_URL,
+      supabaseKey: !!process.env.SUPABASE_KEY,
+      groqKey: !!process.env.GROQ_API_KEY
+    },
+    db: 'unknown'
+  };
+  try {
+    const { data, error } = await supabase.from('courses').select('id').limit(1);
+    if (error) {
+      status.db = `error: ${error.message}`;
+    } else {
+      status.db = 'connected';
+    }
+  } catch (err) {
+    status.db = `crash: ${err.message}`;
+  }
+  res.json(status);
+});
+
+app.get('/api/debug-me', authMiddleware, async (req, res) => {
+  try {
+    const { data: profile } = await req.supabaseClient.from('users').select('*').eq('id', req.user.id).single();
+    res.json({
+      auth_user_id: req.user.id,
+      auth_user_email: req.user.email,
+      db_profile: profile || 'NOT FOUND in users table'
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/courses', require('./routes/courses'));
 app.use('/api/assessments', require('./routes/assessments'));

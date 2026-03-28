@@ -1,26 +1,16 @@
 require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
+const { Client } = require('pg');
 
-const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const dbUrl = process.env.SUPABASE_DB_URL;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Error: Supabase credentials missing in .env');
+if (!dbUrl) {
+  console.error('❌ Error: SUPABASE_DB_URL missing in .env');
   process.exit(1);
 }
 
-// Note: This script uses the anon key. 
-// For this to work, you must have an RLS policy that allows inserting into 'public.users'.
-// OR you can use the SERVICE_ROLE_KEY if you have it in your .env.
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 async function seedAdmin() {
-  console.log('🚀 Starting Admin Seeding...');
+  console.log('🚀 Starting Admin Seeding via Direct DB Connection...');
 
-  // 1. Get the most recent user from Supabase Auth (if possible via service role)
-  // Since we only have the anon key, we'll ask the user to provide their ID 
-  // OR we can try to guess it if we find it in any other table.
-  
   const userId = process.argv[2];
 
   if (!userId) {
@@ -31,26 +21,32 @@ async function seedAdmin() {
 
   console.log(`👤 Targeting User ID: ${userId}`);
 
-  const { data, error } = await supabase
-    .from('users')
-    .upsert({ 
-      id: userId, 
-      role: 'admin',
-      name: 'Admin User',
-      email: 'admin@neurolearn.com' // You can change this
-    })
-    .select()
-    .single();
+  const client = new Client({
+    connectionString: dbUrl,
+    ssl: { rejectUnauthorized: false }
+  });
 
-  if (error) {
-    console.error('❌ Error seeding admin:', error.message);
-    if (error.message.includes('new row violates row-level security policy')) {
-      console.log('\n💡 TIP: You might need to temporarily disable RLS on the "users" table in Supabase Dashboard or use your SERVICE_ROLE_KEY.');
-    }
-  } else {
+  try {
+    await client.connect();
+    
+    const query = `
+      INSERT INTO public.users (id, email, role, name)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (id) DO UPDATE SET role = 'admin';
+    `;
+    
+    const values = [userId, 'admin@neurolearn.com', 'admin', 'Admin User'];
+    
+    await client.query(query, values);
+    
     console.log('✅ Success! User is now an admin.');
-    console.log(data);
+  } catch (err) {
+    console.error('❌ Error seeding admin:', err.message);
+  } finally {
+    await client.end();
   }
 }
+
+seedAdmin();
 
 seedAdmin();
