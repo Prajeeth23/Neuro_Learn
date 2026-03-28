@@ -59,17 +59,22 @@ app.get('/api/debug-me', authMiddleware, async (req, res) => {
 // Import and use routes in a safe manner to prevent startup crashes
 try {
   app.use('/api/auth', require('./routes/auth'));
+  console.log('✅ Auth route loaded');
+  
+  /* Temporarily commenting out to isolate Vercel crash
   app.use('/api/courses', require('./routes/courses'));
   app.use('/api/assessments', require('./routes/assessments'));
   app.use('/api/progress', require('./routes/progress'));
   app.use('/api/personalized', require('./routes/personalized'));
   app.use('/api/ai', require('./routes/ai'));
   app.use('/api/admin', require('./routes/admin'));
-  console.log('✅ All routes loaded successfully');
+  app.use('/api/upload', require('./routes/upload'));
+  */
+  
+  console.log('✅ Base routes loaded successfully');
 } catch (err) {
   console.error('🔥 CRITICAL ERROR: Failed to load routes on startup!', err.message);
 }
-app.use('/api/upload', require('./routes/upload'));
 
 // The "catchall" handler: for any request that doesn't 
 // match one above, send back React's index.html file.

@@ -155,7 +155,11 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl p-4 mb-6 text-sm font-bold">{error}</div>}
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-xl text-sm font-bold mb-6">
+          {typeof error === 'object' ? (error.message || JSON.stringify(error)) : error}
+        </div>
+      )}
       {success && <div className="bg-green-500/10 border border-green-500/30 text-green-400 rounded-xl p-4 mb-6 text-sm font-bold">{success}</div>}
 
       {/* COURSES TAB */}
