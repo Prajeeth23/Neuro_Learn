@@ -82,9 +82,13 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error('Server Error:', err.stack);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error'
+  console.error('Unhandled Server Error:', err);
+  const errorMessage = err.message || (typeof err === 'string' ? err : JSON.stringify(err));
+  res.status(500).json({ 
+    error: 'Internal Server Error',
+    message: errorMessage,
+    path: req.path,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
   });
 });
 
