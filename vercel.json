@@ -1,14 +1,16 @@
 {
   "version": 2,
-  "framework": "vite",
-  "name": "neurolearn",
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api/index.js"
     },
     {
-      "source": "/((?!api/|assets/|static/|favicon.ico).*)",
+      "source": "/assets/(.*)",
+      "destination": "/client/dist/assets/$1"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "/client/dist/index.html"
     }
   ]
