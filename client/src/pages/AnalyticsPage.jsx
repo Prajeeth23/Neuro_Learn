@@ -36,6 +36,7 @@ export default function AnalyticsPage() {
   const [analytics, setAnalytics] = useState(null);
   const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
 
   useScreenTime();
@@ -44,10 +45,13 @@ export default function AnalyticsPage() {
 
   const fetchData = async () => {
     try {
+      setError(null);
       const { data } = await api.get('/progress/analytics');
       setAnalytics(data);
     } catch (err) {
       console.error('Failed to load analytics:', err);
+      const errorData = err.response?.data?.error || err.message || 'Failed to load analytics';
+      setError(typeof errorData === 'object' ? (errorData.message || JSON.stringify(errorData)) : errorData);
     } finally {
       setLoading(false);
     }
@@ -105,6 +109,14 @@ export default function AnalyticsPage() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 w-full mb-20">
+      
+      {error && (
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm font-medium flex items-center justify-between">
+          <span>{error}</span>
+          <button onClick={fetchData} className="text-[10px] font-black tracking-widest uppercase px-3 py-1 bg-red-500/20 rounded-lg hover:bg-red-500/30 transition-colors">Retry</button>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
         <div className="space-y-1">
           <h1 className="text-5xl font-black tracking-tighter text-white">

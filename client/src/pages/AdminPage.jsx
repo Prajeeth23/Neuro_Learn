@@ -94,7 +94,10 @@ export default function AdminPage() {
       fetchCourses();
     } catch (err) {
       console.error('Failed to create course:', err);
-      const errorMsg = err.response?.data?.error || err.message || 'Failed to create course';
+      const errorData = err.response?.data?.error || err.message || 'Failed to create course';
+      const errorMsg = typeof errorData === 'object' 
+        ? (errorData.message || JSON.stringify(errorData)) 
+        : errorData;
       setError(errorMsg);
     } finally {
       setCreating(false);

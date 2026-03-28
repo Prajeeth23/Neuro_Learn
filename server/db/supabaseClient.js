@@ -13,4 +13,20 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Diagnostic Check (Non-blocking)
+if (supabaseUrl && supabaseKey) {
+  supabase.from('courses').select('id', { count: 'exact', head: true })
+    .then(({ error }) => {
+      if (error) {
+        console.error('Supabase DB Diagnostic Error:', error.message);
+        if (error.message.includes('relation "courses" does not exist')) {
+          console.error('CRITICAL: The "courses" table is missing. Please run database migrations.');
+        }
+      } else {
+        console.log('Supabase DB connection successful.');
+      }
+    })
+    .catch(err => console.error('Supabase DB connection failed:', err.message));
+}
+
 module.exports = supabase;
