@@ -58,21 +58,49 @@ app.get('/api/debug-me', authMiddleware, async (req, res) => {
   }
 });
 
-// Import and use routes in a safe manner
-try {
-  app.use('/api/auth', require('./routes/auth'));
-  app.use('/api/courses', require('./routes/courses'));
-  app.use('/api/assessments', require('./routes/assessments'));
-  app.use('/api/progress', require('./routes/progress'));
-  app.use('/api/personalized', require('./routes/personalized'));
-  app.use('/api/ai', require('./routes/ai'));
-  app.use('/api/admin', require('./routes/admin'));
-  app.use('/api/upload', require('./routes/upload'));
-  
-  console.log('✅ All routes loaded successfully');
-} catch (err) {
-  console.error('🔥 CRITICAL ERROR: Failed to load routes on startup!', err.message);
+// Diagnostic object to track loaded features
+const loadedFeatures = {};
+
+function safeLoad(routePath, file) {
+  try {
+    app.use(routePath, require(file));
+    loadedFeatures[routePath] = '✅ Loaded';
+    console.log(`✅ Success: Loaded ${routePath}`);
+  } catch (err) {
+    loadedFeatures[routePath] = `❌ FAILED: ${err.message}`;
+    console.error(`🔥 CRITICAL ERROR: Failed to load ${routePath} from ${file}!`, err.message);
+  }
 }
+
+// Load individual routes with safety nets
+safeLoad('/api/auth', './routes/auth');
+safeLoad('/api/courses', './routes/courses');
+safeLoad('/api/assessments', './routes/assessments');
+safeLoad('/api/progress', './routes/progress');
+safeLoad('/api/personalized', './routes/personalized');
+safeLoad('/api/ai', './routes/ai');
+safeLoad('/api/admin', './routes/admin');
+safeLoad('/api/upload', './routes/upload');
+
+// Update health check to include loaded features
+app.get('/api/health', async (req, res) => {
+  const status = {
+    env: {
+      supabaseUrl: !!process.env.SUPABASE_URL,
+      supabaseKey: !!process.env.SUPABASE_KEY,
+      groqKey: !!process.env.GROQ_API_KEY
+    },
+    features: loadedFeatures,
+    db: 'unknown'
+  };
+  try {
+    const { error } = await supabase.from('courses').select('id').limit(1);
+    status.db = error ? `error: ${error.message}` : 'connected';
+  } catch (err) {
+    status.db = `crash: ${err.message}`;
+  }
+  res.json(status);
+});
 
 // The "catchall" handler: for any request that doesn't 
 // match one above, send back React's index.html file.
