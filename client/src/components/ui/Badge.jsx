@@ -1,25 +1,23 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
 
-export const Badge = React.forwardRef(({ className, variant = 'default', ...props }, ref) => {
+export function Badge({ children, className, variant = 'default', ...props }) {
+  const baseStyles = "inline-flex items-center rounded-lg px-2.5 py-1 text-[9px] font-black uppercase tracking-widest transition-colors border";
+  
   const variants = {
-    default: "bg-primary/20 text-primary border-primary/50",
-    secondary: "bg-secondary/20 text-secondary border-secondary/50",
-    accent: "bg-accent/20 text-accent border-accent/50",
-    outline: "border-white/20 text-white"
+    default: "bg-black text-white border-black",
+    secondary: "bg-gray-100 text-black border-gray-200",
+    outline: "bg-white text-black border-gray-100 hover:border-black",
+    destructive: "bg-white text-black border-black/10",
+    glass: "bg-black/5 text-black border-black/5 backdrop-blur-sm"
   };
 
   return (
     <div
-      ref={ref}
-      className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-        variants[variant],
-        className
-      )}
+      className={cn(baseStyles, variants[variant], className)}
       {...props}
-    />
+    >
+      {children}
+    </div>
   );
-});
-
-Badge.displayName = "Badge";
+}

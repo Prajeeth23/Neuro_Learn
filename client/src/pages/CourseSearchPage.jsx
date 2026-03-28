@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, BookOpen, Sparkles, Loader2, BrainCircuit, CheckCircle, XCircle } from 'lucide-react';
+import { Search, BookOpen, Sparkles, Loader2, BrainCircuit, CheckCircle, XCircle, ArrowRight, Filter } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import api from '../lib/api';
@@ -11,11 +11,9 @@ export default function CourseSearchPage() {
   const [searched, setSearched] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState({});
   
-  // Course info states
   const [courseInfoCache, setCourseInfoCache] = useState({});
   const [loadingInfo, setLoadingInfo] = useState({});
 
-  // Launch test states
   const [showLaunchTest, setShowLaunchTest] = useState(false);
   const [activeCourse, setActiveCourse] = useState(null);
   const [launchTestData, setLaunchTestData] = useState(null);
@@ -25,7 +23,6 @@ export default function CourseSearchPage() {
   const [quizScore, setQuizScore] = useState(0);
 
   useEffect(() => {
-    // Fetch enrolled courses on mount
     api.get('/progress').then(res => {
       const map = {};
       (res.data || []).forEach(p => { map[p.course_id] = true; });
@@ -33,7 +30,6 @@ export default function CourseSearchPage() {
     }).catch(() => {});
   }, []);
 
-  // Debounced search
   useEffect(() => {
     if (!query.trim() || query.trim().length < 2) {
       if (!query.trim()) { setResults([]); setSearched(false); }
@@ -99,169 +95,170 @@ export default function CourseSearchPage() {
   const submitLaunchTest = async () => {
     if (!launchTestData) return;
     let correct = 0;
-    launchTestData.forEach((q, idx) => {
-      if (answers[idx] === q.answer) correct++;
-    });
+    launchTestData.forEach((q, idx) => { if (answers[idx] === q.answer) correct++; });
     const score = Math.round((correct / launchTestData.length) * 100);
     setQuizScore(score);
     setQuizSubmitted(true);
     try {
       await api.post(`/assessments/initial/${activeCourse.id}/submit`, { score });
       setEnrolledCourses(prev => ({ ...prev, [activeCourse.id]: true }));
-    } catch (err) {
-      console.error('Failed to save assessment:', err);
-    }
+    } catch (err) { console.error('Failed to save assessment:', err); }
   };
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 w-full mb-20">
-      <div className="mb-10 space-y-2">
-        <h1 className="text-5xl font-black tracking-tighter text-white">
-          Course <span className="text-accent underline decoration-primary/30 underline-offset-8">Search</span>
+    <div className="animate-fade-in-up w-full mb-20 space-y-12">
+      <div className="space-y-4">
+        <h1 className="text-5xl font-black tracking-tighter text-black uppercase italic leading-none">
+          Course <span className="text-gray-300">Vault</span>
         </h1>
-        <p className="text-white/40 font-medium tracking-widest uppercase text-xs">Explore any course freely</p>
+        <p className="text-gray-400 text-[9px] font-black tracking-[0.4em] uppercase ml-1">Universal Search Interface / Adaptive Learning Nodes</p>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative mb-10">
-        <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-          <Search size={20} className="text-white/30" />
+      {/* Modern High-Contrast Search Bar */}
+      <div className="relative group">
+        <div className="absolute inset-y-0 left-0 pl-7 flex items-center pointer-events-none">
+          <Search size={22} className="text-gray-200 group-focus-within:text-black transition-colors" />
         </div>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search for any course... (e.g. Machine Learning, Web Development, Python)"
-          className="w-full pl-14 pr-6 py-5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all text-lg font-medium"
+          placeholder="ENTER DOMAIN VECTOR... (E.G. QUANTUM COMPUTING, NEURAL LINKS)"
+          className="w-full pl-16 pr-8 py-7 bg-white border border-gray-100 rounded-[2.5rem] text-sm font-black tracking-widest text-black placeholder:text-gray-200 focus:outline-none focus:border-black focus:ring-4 focus:ring-black/5 transition-all shadow-card-lg uppercase"
         />
         {loading && (
-          <div className="absolute inset-y-0 right-0 pr-5 flex items-center">
-            <Loader2 size={20} className="text-primary animate-spin" />
+          <div className="absolute inset-y-0 right-0 pr-8 flex items-center">
+            <Loader2 size={22} className="text-black animate-spin" />
           </div>
         )}
       </div>
 
-      {/* Results */}
+      {/* Results Matrix */}
       {searched && !loading && results.length === 0 && (
-        <div className="text-center py-20 space-y-4">
-          <Search size={48} className="mx-auto text-white/10" />
-          <p className="text-white/40 font-bold">No courses found for "{query}"</p>
-          <p className="text-white/20 text-sm">Try a different search term</p>
+        <div className="py-32 border border-dashed border-gray-100 rounded-[3rem] text-center space-y-6">
+          <div className="w-16 h-16 bg-gray-50 rounded-full mx-auto flex items-center justify-center text-gray-200">
+             <Search size={32} />
+          </div>
+          <div className="space-y-2">
+            <p className="text-lg font-black uppercase italic tracking-tighter">Null Result Architecture</p>
+            <p className="text-gray-300 text-[10px] font-black tracking-widest uppercase">No indexing for "{query}" detected.</p>
+          </div>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {Array.isArray(results) && results.map(course => (
-          <Card key={course.id} className="glass-card-premium neon-border-primary border-white/5 flex flex-col group h-full">
-            <CardHeader className="flex-1 space-y-4">
+          <Card key={course.id} className="bg-white border border-gray-100 rounded-[2.5rem] flex flex-col group h-full shadow-sm hover:shadow-card-lg transition-all duration-500 overflow-hidden">
+            <CardHeader className="p-8 pb-4 flex-1 space-y-6">
               <div className="flex justify-between items-start">
-                <Badge variant="accent" className="bg-primary/20 text-primary border-primary/30 px-3 py-1 text-[10px] font-black tracking-widest uppercase rounded-lg">
+                <Badge className="bg-gray-50 text-gray-400 border border-gray-100 px-3 py-1.5 text-[9px] font-black tracking-widest uppercase rounded-lg group-hover:bg-black group-hover:text-white group-hover:border-black transition-colors">
                   {course.category}
                 </Badge>
                 {course.domain && course.domain !== 'General' && (
-                  <span className="text-[10px] font-black tracking-widest uppercase px-2 py-1 rounded bg-accent/10 border border-accent/20 text-accent">
-                    {course.domain}
+                  <span className="text-[9px] font-black tracking-widest uppercase text-gray-200">
+                    // {course.domain}
                   </span>
                 )}
               </div>
-              <CardTitle className="text-2xl font-bold leading-tight group-hover:text-primary transition-colors">{course.title}</CardTitle>
-              <CardDescription className="line-clamp-2 text-white/50 text-sm leading-relaxed font-medium">
+              <CardTitle className="text-2xl font-black italic tracking-tighter text-black uppercase leading-none group-hover:opacity-60 transition-opacity italic">{course.title}</CardTitle>
+              <CardDescription className="line-clamp-3 text-gray-400 text-xs font-medium leading-relaxed">
                 {course.description}
               </CardDescription>
 
-              {/* AI Course Info */}
-              {courseInfoCache[course.id] ? (
-                <div className="space-y-3 bg-white/[0.02] rounded-xl p-4 border border-white/5">
-                  <div>
-                    <p className="text-[10px] font-black tracking-widest uppercase text-accent/60 mb-1 flex items-center gap-1">
-                      <Sparkles size={10} /> Why Learn This
-                    </p>
-                    <p className="text-xs text-white/50 leading-relaxed">{courseInfoCache[course.id].whyLearn}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black tracking-widest uppercase text-primary/60 mb-1">Achievable Roles</p>
-                    <div className="flex flex-wrap gap-1">
-                      {(courseInfoCache[course.id].achievableRoles || []).map((r, i) => (
-                        <span key={i} className="text-[10px] px-2 py-0.5 rounded bg-primary/10 border border-primary/20 text-primary font-bold">{r}</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => fetchCourseInfo(course)}
-                  disabled={loadingInfo[course.id]}
-                  className="text-[10px] font-black tracking-widest uppercase text-accent/50 hover:text-accent transition-colors flex items-center gap-1"
-                >
-                  {loadingInfo[course.id] ? <Loader2 size={10} className="animate-spin" /> : <Sparkles size={10} />}
-                  {loadingInfo[course.id] ? 'Generating...' : 'AI Course Info'}
-                </button>
-              )}
+              {/* AI Diagnostic Layer */}
+              <div className="mt-auto pt-6 border-t border-gray-50 space-y-4">
+                 {courseInfoCache[course.id] ? (
+                   <div className="space-y-4 animate-in fade-in duration-500">
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-black mb-2 flex items-center gap-2">
+                          <Sparkles size={10} /> Rationale
+                        </p>
+                        <p className="text-[11px] text-gray-400 font-bold leading-relaxed">{courseInfoCache[course.id].whyLearn}</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {(courseInfoCache[course.id].achievableRoles || []).map((r, i) => (
+                          <span key={i} className="text-[8px] px-2 py-1 bg-gray-50 border border-gray-100 rounded-md text-gray-400 font-black tracking-widest uppercase">{r}</span>
+                        ))}
+                      </div>
+                   </div>
+                 ) : (
+                   <button
+                     onClick={() => fetchCourseInfo(course)}
+                     disabled={loadingInfo[course.id]}
+                     className="w-full py-4 rounded-xl border border-gray-50 bg-gray-50/50 text-[9px] font-black tracking-widest uppercase text-gray-300 hover:text-black hover:border-black transition-all flex items-center justify-center gap-3"
+                   >
+                     {loadingInfo[course.id] ? <Loader2 size={12} className="animate-spin text-black" /> : <BrainCircuit size={12} />}
+                     {loadingInfo[course.id] ? 'ANALYZING...' : 'INITIALIZE AI INSIGHT'}
+                   </button>
+                 )}
+              </div>
             </CardHeader>
-            <CardFooter className="pt-0 pb-6 px-6">
+            <CardFooter className="p-8 pt-0">
               <button
                 onClick={() => handleLaunchCourse(course)}
-                className="uiverse-btn w-full !py-3.5 !text-xs tracking-widest uppercase shadow-lg shadow-primary/10"
+                className={`w-full py-4 rounded-2xl text-[10px] font-black tracking-[0.2em] uppercase transition-all shadow-lg active:scale-95 ${
+                  enrolledCourses[course.id] 
+                    ? 'bg-white text-black border border-gray-100 hover:bg-black hover:text-white' 
+                    : 'bg-black text-white hover:bg-gray-900 shadow-black/5'
+                }`}
               >
-                {enrolledCourses[course.id] ? 'Resume Course' : 'Launch Course'}
+                {enrolledCourses[course.id] ? 'RE-SYNC PROTOCOL' : 'INITIALIZE MODULE'}
               </button>
             </CardFooter>
           </Card>
         ))}
       </div>
 
-      {/* Launch Test Modal */}
+      {/* Global High-Contrast Modal */}
       {showLaunchTest && activeCourse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-black/90 border border-white/10 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-8 border-b border-white/5 sticky top-0 bg-black/90 backdrop-blur-md z-10 flex justify-between items-center">
-              <div>
-                <h3 className="text-xl font-black text-white flex items-center gap-2">
-                  <BrainCircuit className="text-primary" />
-                  Launch Test: {activeCourse.title}
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-white/90 backdrop-blur-xl animate-in fade-in duration-500">
+          <div className="bg-white border border-gray-100 rounded-[3rem] max-w-2xl w-full max-h-[85vh] overflow-hidden shadow-2xl flex flex-col">
+            <div className="p-10 border-b border-gray-50 flex justify-between items-center bg-white">
+              <div className="space-y-1">
+                <h3 className="text-xl font-black text-black uppercase italic tracking-tighter">
+                  Launch Phase: <span className="text-gray-300">{activeCourse.title}</span>
                 </h3>
-                <p className="text-white/40 text-xs mt-1 uppercase tracking-widest">Complete this to begin</p>
+                <p className="text-gray-400 text-[9px] font-black uppercase tracking-widest">Initial Calibration Assessment</p>
               </div>
-              <button onClick={() => setShowLaunchTest(false)} className="p-2 text-white/40 hover:text-white rounded-full bg-white/5">
+              <button onClick={() => setShowLaunchTest(false)} className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 hover:text-black hover:bg-gray-100 transition-all">
                 <XCircle size={20} />
               </button>
             </div>
-            <div className="p-8">
+            
+            <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
               {launchTestLoading ? (
-                <div className="text-center py-20 space-y-4">
-                  <div className="w-10 h-10 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto"></div>
-                  <p className="text-white/50 animate-pulse text-sm">Generating AI Launch Assessment...</p>
+                <div className="py-24 flex flex-col items-center gap-6 opacity-40">
+                  <div className="w-12 h-12 border-2 border-black/10 border-t-black rounded-full animate-spin"></div>
+                  <p className="text-[10px] uppercase font-black tracking-[0.3em]">Synthesizing diagnostic probes...</p>
                 </div>
               ) : launchTestData ? (
-                <div className="space-y-8">
+                <div className="space-y-12">
                   {quizSubmitted && (
-                    <div className={`text-center p-6 rounded-2xl border ${quizScore >= 60 ? 'bg-green-500/10 border-green-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
-                      <p className="text-3xl font-black mb-1">{quizScore}%</p>
-                      <p className="text-sm text-white/50">{quizScore >= 60 ? 'Passed!' : "Let's get started to improve!"}</p>
-                      <button onClick={() => window.location.href = `/dashboard/courses/${activeCourse.id}`} className="uiverse-btn mt-4 px-8">Enter Course</button>
+                    <div className="p-10 rounded-[2rem] bg-black text-white text-center space-y-6 shadow-xl shadow-black/10 animate-in zoom-in duration-500">
+                      <div className="text-5xl font-black italic">{quizScore}%</div>
+                      <p className="text-[10px] font-black tracking-widest uppercase opacity-40">CALIBRATION ACCURACY ACHIEVED</p>
+                      <button onClick={() => window.location.href = `/dashboard/courses/${activeCourse.id}`} className="uiverse-btn !rounded-xl !px-12 !py-4 w-full">PROCEED TO MODULE</button>
                     </div>
                   )}
-                  <div className="space-y-6">
-                    {Array.isArray(launchTestData) && launchTestData.map((q, qIdx) => (
-                      <div key={qIdx} className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-4">
-                        <p className="font-bold text-white/90 text-sm"><span className="text-primary mr-2">Q{qIdx + 1}.</span>{q.question}</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-10">
+                    {launchTestData.map((q, qIdx) => (
+                      <div key={qIdx} className="space-y-6">
+                        <p className="text-sm font-black text-black uppercase italic leading-tight"><span className="text-gray-200 mr-4 italic not-uppercase text-xs font-medium">#{qIdx + 1}</span>{q.question}</p>
+                        <div className="grid grid-cols-1 gap-3 ml-6">
                           {Object.entries(q.options).map(([key, value]) => {
                             const isSelected = answers[qIdx] === key;
                             const isCorrect = quizSubmitted && key === q.answer;
                             const isWrong = quizSubmitted && isSelected && key !== q.answer;
                             return (
                               <button key={key} onClick={() => !quizSubmitted && setAnswers(p => ({ ...p, [qIdx]: key }))} disabled={quizSubmitted}
-                                className={`text-left p-3 rounded-xl border text-sm transition-all flex items-center gap-3 ${
-                                  isCorrect ? 'bg-green-500/20 border-green-500/50 text-green-300' :
-                                  isWrong ? 'bg-red-500/20 border-red-500/50 text-red-300' :
-                                  isSelected ? 'bg-primary/20 border-primary/50 text-white' :
-                                  'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] text-white/70'
+                                className={`text-left p-4 rounded-xl border text-[11px] font-black uppercase tracking-tight transition-all flex items-center justify-between ${
+                                  isCorrect ? 'bg-black text-white border-black' :
+                                  isWrong ? 'bg-gray-100 border-gray-200 text-gray-400' :
+                                  isSelected ? 'bg-black text-white border-black' :
+                                  'bg-gray-50 border-gray-100 hover:border-gray-300 text-gray-500'
                                 }`}>
-                                <span className="font-black text-xs shrink-0 w-6 h-6 flex items-center justify-center rounded-lg bg-white/5 border border-white/10">{key}</span>
-                                <span className="flex-1">{value}</span>
-                                {isCorrect && <CheckCircle size={16} className="text-green-400 shrink-0" />}
-                                {isWrong && <XCircle size={16} className="text-red-400 shrink-0" />}
+                                <span><span className="opacity-30 mr-4">{key}</span> {value}</span>
+                                {(isCorrect || isWrong) && (isCorrect ? <CheckCircle size={14} /> : <XCircle size={14} />)}
                               </button>
                             );
                           })}
@@ -269,17 +266,20 @@ export default function CourseSearchPage() {
                       </div>
                     ))}
                   </div>
-                  {!quizSubmitted && (
-                    <button onClick={submitLaunchTest} disabled={Object.keys(answers).length < launchTestData.length}
-                      className="uiverse-btn w-full !py-4 shadow-xl shadow-primary/20 disabled:opacity-40">
-                      Submit Test ({Object.keys(answers).length}/{launchTestData.length})
-                    </button>
-                  )}
                 </div>
               ) : (
-                <div className="text-center text-red-400 p-8">Failed to generate test.</div>
+                <div className="text-center py-20 bg-gray-50 rounded-2xl border border-gray-100"><p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Protocol Generation Failed.</p></div>
               )}
             </div>
+
+            {!quizSubmitted && launchTestData && !launchTestLoading && (
+               <div className="p-10 border-t border-gray-50 bg-white">
+                  <button onClick={submitLaunchTest} disabled={Object.keys(answers).length < launchTestData.length}
+                    className="uiverse-btn w-full !py-5 !rounded-2xl shadow-xl shadow-black/5 active:scale-95 disabled:opacity-20 uppercase font-black tracking-widest text-[11px]">
+                    VERIFY CALIBRATION ({Object.keys(answers).length}/{launchTestData.length})
+                  </button>
+               </div>
+            )}
           </div>
         </div>
       )}

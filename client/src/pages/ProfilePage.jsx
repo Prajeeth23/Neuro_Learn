@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
-import { User, Mail, Shield, BookOpen, Star, Map, Loader2, Sparkles, ChevronRight } from 'lucide-react';
+import { User, Mail, Shield, BookOpen, Star, Map, Loader2, Sparkles, ChevronRight, UserCircle, Settings, Award, Layers } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { Button } from '../components/ui/Button';
 import api from '../lib/api';
 
 const DOMAINS = ['AI & Machine Learning', 'Web Development', 'Data Science', 'Cybersecurity', 'Cloud Computing', 'Mobile Development', 'Game Development', 'DevOps'];
@@ -16,11 +17,9 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
 
-  // Career roles
   const [careerRoles, setCareerRoles] = useState(null);
   const [rolesLoading, setRolesLoading] = useState(false);
 
-  // Roadmap
   const [roadmap, setRoadmap] = useState(null);
   const [roadmapLoading, setRoadmapLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
@@ -40,14 +39,7 @@ export default function ProfilePage() {
   const fetchProfile = async () => {
     try {
       const { data } = await api.get('/auth/profile');
-      if (data) {
-        setProfile({
-          name: data.name || '',
-          department: data.department || '',
-          year: data.year || '',
-          domain_of_interest: data.domain_of_interest || ''
-        });
-      }
+      if (data) setProfile({ name: data.name || '', department: data.department || '', year: data.year || '', domain_of_interest: data.domain_of_interest || '' });
     } catch (err) { console.error('Failed to load profile:', err); }
   };
 
@@ -67,292 +59,265 @@ export default function ProfilePage() {
     setSaveMsg('');
     try {
       await api.put('/auth/profile', profile);
-      setSaveMsg('Profile updated!');
+      setSaveMsg('SYNC COMPLETE');
       setTimeout(() => setSaveMsg(''), 3000);
-    } catch (err) {
-      setSaveMsg('Failed to save');
-    } finally {
-      setSaving(false);
-    }
+    } catch (err) { setSaveMsg('SYNC FAILED'); } finally { setSaving(false); }
   };
 
   const fetchCareerRoles = async () => {
     if (!profile.domain_of_interest) return;
-    setRolesLoading(true);
-    setRoadmap(null);
-    setSelectedRole(null);
+    setRolesLoading(true); setRoadmap(null); setSelectedRole(null);
     try {
       const { data } = await api.post('/ai/career-roles', { domain: profile.domain_of_interest });
       setCareerRoles(data.roles || []);
-    } catch (err) {
-      console.error('Failed to fetch roles:', err);
-    } finally {
-      setRolesLoading(false);
-    }
+    } catch (err) { console.error('Failed to fetch roles:', err); } finally { setRolesLoading(false); }
   };
 
   const fetchRoadmap = async (role) => {
-    setSelectedRole(role);
-    setRoadmapLoading(true);
+    setSelectedRole(role); setRoadmapLoading(true);
     try {
       const { data } = await api.post('/ai/roadmap', { domain: profile.domain_of_interest, role: role.title });
       setRoadmap(data);
-    } catch (err) {
-      console.error('Failed to generate roadmap:', err);
-    } finally {
-      setRoadmapLoading(false);
-    }
+    } catch (err) { console.error('Failed to generate roadmap:', err); } finally { setRoadmapLoading(false); }
   };
 
-  // Auto-fetch roles when domain changes
-  useEffect(() => {
-    if (profile.domain_of_interest) {
-      setCareerRoles(null);
-      setRoadmap(null);
-    }
-  }, [profile.domain_of_interest]);
-
-  const levelNames = { 3: 'Beginner', 4: 'Intermediate', 5: 'Advanced' };
-  const levelColors = { 3: 'text-green-400', 4: 'text-yellow-400', 5: 'text-purple-400' };
+  useEffect(() => { if (profile.domain_of_interest) { setCareerRoles(null); setRoadmap(null); } }, [profile.domain_of_interest]);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
-      {/* Profile Header */}
-      <div className="flex flex-col md:flex-row items-center gap-8 mb-10">
-        <div className="relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-50 group-hover:opacity-100 transition duration-1000"></div>
-          <div className="relative w-32 h-32 rounded-full bg-black flex items-center justify-center text-4xl font-black border-2 border-white/10 ring-4 ring-black">
+    <div className="max-w-6xl mx-auto space-y-12 animate-fade-in-up pb-32">
+      
+      {/* Dossier Header */}
+      <div className="bg-white border border-gray-100 rounded-[3rem] p-10 shadow-card-lg flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none grayscale"><UserCircle size={200} /></div>
+        <div className="relative shrink-0">
+          <div className="w-32 h-32 rounded-[2.5rem] bg-black flex items-center justify-center text-4xl font-black text-white shadow-xl shadow-black/10">
             {initials}
           </div>
+          <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-black">
+             <Award size={20} />
+          </div>
         </div>
-        <div className="text-center md:text-left">
-          <h1 className="text-4xl font-bold text-gradient-primary mb-2">{fullName}</h1>
-          <p className="text-white/40 font-medium tracking-widest uppercase text-xs">
-            {isAdmin ? 'Administrator' : 'Learner'} • {provider === 'google' ? 'Google Auth' : 'Email Auth'}
-            {userLevel && (
-              <span className={`ml-3 ${levelColors[userLevel] || 'text-white/60'}`}>
-                {userLevel}★ {levelNames[userLevel] || ''}
-              </span>
-            )}
-          </p>
-          {profile.department && <p className="text-white/30 text-sm mt-1">{profile.department} • {profile.year}</p>}
-          {profile.domain_of_interest && (
-            <span className="inline-block mt-2 text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-lg bg-accent/10 border border-accent/20 text-accent">
-              {profile.domain_of_interest}
-            </span>
-          )}
+        <div className="text-center md:text-left space-y-4">
+          <div className="space-y-1">
+             <h1 className="text-4xl font-black italic tracking-tighter text-black uppercase leading-none">{fullName}</h1>
+             <p className="text-[10px] font-black tracking-[0.3em] text-gray-400 uppercase">IDENTIFIER: {email.toUpperCase()}</p>
+          </div>
+          <div className="flex flex-wrap justify-center md:justify-start gap-3">
+             <span className="px-3 py-1.5 bg-black text-white text-[9px] font-black rounded-lg uppercase tracking-widest leading-none">
+                {isAdmin ? 'ADMINISTRATOR' : 'PIONEER LEARNER'}
+             </span>
+             {userLevel && (
+               <span className="px-3 py-1.5 bg-gray-50 border border-gray-100 text-black text-[9px] font-black rounded-lg uppercase tracking-widest leading-none">
+                  RANK: {userLevel}★ {userLevel === 5 ? 'ELITE' : userLevel === 4 ? 'STRUCTURALIST' : 'INITIATE'}
+               </span>
+             )}
+             <span className="px-3 py-1.5 bg-gray-50 border border-gray-100 text-gray-400 text-[9px] font-black rounded-lg uppercase tracking-widest leading-none">
+                AUTH: {provider.toUpperCase()}
+             </span>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Editable Profile Info */}
-        <Card className="glass-card-premium p-6 neon-border-primary">
-          <CardHeader className="flex flex-row items-center gap-4 pb-2">
-            <div className="p-3 bg-primary/10 rounded-2xl text-primary"><User size={20} /></div>
-            <CardTitle className="text-xl">Student Profile</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 pt-4">
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Full Name</label>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Profile Synthesis */}
+        <Card className="lg:col-span-2 bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-sm">
+          <div className="flex items-center gap-4 mb-10 pb-6 border-b border-gray-50">
+             <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-black"><Settings size={20} /></div>
+             <h3 className="text-sm font-black text-black uppercase tracking-widest">Configuration Sync</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">Universal Name</label>
               <input value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 focus:outline-none transition-all" />
+                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-black focus:border-black focus:outline-none transition-all uppercase" />
             </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Department</label>
+            <div className="space-y-2">
+              <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">Institutional Domain</label>
               <select value={profile.department} onChange={e => setProfile(p => ({ ...p, department: e.target.value }))}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 focus:outline-none transition-all">
-                <option value="" className="bg-black">Select Department</option>
-                {DEPARTMENTS.map(d => <option key={d} value={d} className="bg-black">{d}</option>)}
+                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-black focus:border-black focus:outline-none transition-all uppercase">
+                <option value="">SELECT DOMAIN</option>
+                {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Year</label>
+            <div className="space-y-2">
+              <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">Temporal Phase</label>
               <select value={profile.year} onChange={e => setProfile(p => ({ ...p, year: e.target.value }))}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 focus:outline-none transition-all">
-                <option value="" className="bg-black">Select Year</option>
-                {YEARS.map(y => <option key={y} value={y} className="bg-black">{y}</option>)}
+                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-black focus:border-black focus:outline-none transition-all uppercase">
+                <option value="">SELECT PHASE</option>
+                {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Domain of Interest</label>
+            <div className="space-y-2">
+              <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">Core Vector</label>
               <select value={profile.domain_of_interest} onChange={e => setProfile(p => ({ ...p, domain_of_interest: e.target.value }))}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 focus:outline-none transition-all">
-                <option value="" className="bg-black">Select Domain</option>
-                {DOMAINS.map(d => <option key={d} value={d} className="bg-black">{d}</option>)}
+                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-black focus:border-black focus:outline-none transition-all uppercase">
+                <option value="">SELECT VECTOR</option>
+                {DOMAINS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
-            <div className="flex items-center gap-3">
-              <button onClick={handleSave} disabled={saving} className="uiverse-btn !py-2.5 !px-6 !text-xs flex-1">
-                {saving ? 'Saving...' : 'Save Profile'}
-              </button>
-              {saveMsg && <span className="text-xs text-green-400 font-bold">{saveMsg}</span>}
-            </div>
-          </CardContent>
+          </div>
+          <div className="mt-12 flex items-center justify-between gap-6 pt-10 border-t border-gray-50">
+             <p className="text-[9px] font-black text-gray-200 uppercase tracking-widest italic">{saveMsg || 'STANDBY FOR SYNCHRONIZATION'}</p>
+             <Button variant="black" onClick={handleSave} disabled={saving} className="!rounded-xl !px-12 !py-4 shadow-xl shadow-black/5">
+                {saving ? 'SYNCING...' : 'SAVE CONFIGURATION'}
+             </Button>
+          </div>
         </Card>
 
-        {/* Security Info */}
-        <Card className="glass-card-premium p-6 neon-border-primary">
-          <CardHeader className="flex flex-row items-center gap-4 pb-2">
-            <div className="p-3 bg-accent/10 rounded-2xl text-accent"><Shield size={20} /></div>
-            <CardTitle className="text-xl">Security</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 pt-4">
-            <div className="flex justify-between items-center border-b border-white/5 pb-3">
-              <span className="text-white/40 text-sm">Email</span>
-              <span className="text-white/90 font-medium text-sm truncate max-w-[200px]">{email}</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-white/5 pb-3">
-              <span className="text-white/40 text-sm">Auth Provider</span>
-              <span className="text-white/90 font-medium capitalize">{provider}</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-white/5 pb-3">
-              <span className="text-white/40 text-sm">Joined</span>
-              <span className="text-white/90 font-medium">{joinedDate}</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-white/5 pb-3">
-              <span className="text-white/40 text-sm">Role</span>
-              <span className={`font-bold text-xs uppercase tracking-widest px-2 py-1 rounded ${isAdmin ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
-                {isAdmin ? 'Admin' : 'Student'}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-white/40 text-sm">Session</span>
-              <span className="text-green-400 font-bold text-xs uppercase tracking-widest bg-green-400/10 px-2 py-1 rounded">Active</span>
-            </div>
-          </CardContent>
+        {/* System Ledger */}
+        <Card className="bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-sm flex flex-col">
+          <div className="flex items-center gap-4 mb-10 pb-6 border-b border-gray-50">
+             <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-white font-black italic">!</div>
+             <h3 className="text-sm font-black text-black uppercase tracking-widest">System Ledger</h3>
+          </div>
+          <div className="space-y-6 flex-1">
+             {[
+               { icon: <Mail size={14} />, label: 'GATEWAY', val: email.toUpperCase() },
+               { icon: <Shield size={14} />, label: 'ACCESS', val: provider.toUpperCase() },
+               { icon: <Star size={14} />, label: 'ORIGIN', val: joinedDate.toUpperCase() },
+               { icon: <Award size={14} />, label: 'PRIORITY', val: isAdmin ? 'LEVEL 10' : 'LEVEL 01' },
+             ].map((item, i) => (
+               <div key={i} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
+                  <div className="flex items-center gap-3 text-gray-200">
+                     {item.icon}
+                     <span className="text-[8px] font-black uppercase tracking-[0.2em]">{item.label}</span>
+                  </div>
+                  <span className="text-[10px] font-black text-black tracking-tight">{item.val}</span>
+               </div>
+             ))}
+          </div>
+          <div className="mt-10 p-5 bg-gray-50 rounded-2xl border border-gray-100">
+             <p className="text-[8px] font-black text-gray-300 uppercase tracking-widest mb-1 text-center">SESSION PULSE</p>
+             <div className="flex items-center justify-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></div>
+                <span className="text-[10px] font-black text-black uppercase">LIVE ENCRYPTED</span>
+             </div>
+          </div>
         </Card>
       </div>
 
-      {/* Career Roles Section */}
+      {/* Discovery Layer */}
       {profile.domain_of_interest && (
-        <Card className="glass-card-premium p-6 neon-border-primary">
-          <CardHeader className="p-0 mb-4 flex flex-row items-center justify-between">
-            <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
-              <Map size={20} className="text-accent" /> Career Roles for {profile.domain_of_interest}
-            </CardTitle>
-            <button onClick={fetchCareerRoles} disabled={rolesLoading}
-              className="uiverse-btn-outline !px-4 !py-2 !text-[10px] font-black tracking-widest uppercase flex items-center gap-2">
-              {rolesLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-              {rolesLoading ? 'Generating...' : careerRoles ? 'Refresh Roles' : 'Discover Roles'}
-            </button>
-          </CardHeader>
-          {careerRoles && (
-            <CardContent className="p-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-8">
+           <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                 <h2 className="text-3xl font-black italic tracking-tighter text-black uppercase">Career Vectors</h2>
+                 <p className="text-[9px] font-black tracking-[0.3em] text-gray-400 uppercase">PREDICTIVE NODES FOR {profile.domain_of_interest}</p>
+              </div>
+              <button onClick={fetchCareerRoles} disabled={rolesLoading}
+                className="bg-black text-white px-8 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-gray-800 transition-all flex items-center gap-3 shadow-xl shadow-black/5 leading-none">
+                {rolesLoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                {rolesLoading ? 'ANALYZING...' : 'MAP NEW VECTORS'}
+              </button>
+           </div>
+
+           {careerRoles && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in duration-700">
                 {careerRoles.map((role, i) => (
-                  <div key={i} className={`p-5 rounded-2xl border transition-all cursor-pointer group ${
-                    selectedRole?.title === role.title 
-                      ? 'bg-primary/10 border-primary/30 shadow-lg shadow-primary/10' 
-                      : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10'
-                  }`} onClick={() => fetchRoadmap(role)}>
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-bold text-white/80 text-sm">{role.title}</h4>
-                      <ChevronRight size={16} className="text-white/20 group-hover:text-primary transition-colors shrink-0 mt-0.5" />
+                  <button key={i} onClick={() => fetchRoadmap(role)} 
+                    className={`text-left p-8 rounded-[2rem] border transition-all relative overflow-hidden group ${
+                      selectedRole?.title === role.title ? 'bg-black text-white border-black shadow-card-lg shadow-black/20' : 'bg-white border-gray-100 hover:border-black'
+                    }`}>
+                    <div className="relative z-10 space-y-4">
+                       <h4 className="text-sm font-black uppercase italic tracking-tight leading-none">{role.title}</h4>
+                       <p className={`text-[10px] font-medium leading-relaxed line-clamp-2 ${selectedRole?.title === role.title ? 'text-gray-400' : 'text-gray-300'}`}>{role.description}</p>
+                       <div className="flex gap-2">
+                          <span className={`text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border ${selectedRole?.title === role.title ? 'bg-white/10 border-white/10 text-white' : 'bg-gray-50 border-gray-100 text-gray-400'}`}>{role.avgSalary}</span>
+                       </div>
                     </div>
-                    <p className="text-xs text-white/40 mb-3">{role.description}</p>
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-green-500/10 border border-green-500/20 text-green-400 font-bold">{role.avgSalary}</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-bold">{role.demand} Demand</span>
-                    </div>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); fetchRoadmap(role); }}
-                      className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                        selectedRole?.title === role.title
-                          ? 'bg-primary text-white border-primary shadow-[0_0_15px_rgba(0,180,255,0.4)]'
-                          : 'bg-white/5 border-white/10 hover:bg-primary/20 hover:border-primary/50 hover:text-white text-white/70'
-                      }`}
-                    >
-                      {selectedRole?.title === role.title && roadmapLoading ? 'Generating Roadmap...' : 'Generate Roadmap'}
-                    </button>
-                  </div>
+                    <div className={`absolute -bottom-2 -right-2 opacity-5 scale-150 grayscale transition-opacity ${selectedRole?.title === role.title ? 'opacity-20' : 'group-hover:opacity-10'}`}><Layers size={60} /></div>
+                  </button>
                 ))}
               </div>
-            </CardContent>
-          )}
+           )}
+        </div>
+      )}
+
+      {/* Roadmap Visualization */}
+      {roadmapLoading && (
+        <div className="py-24 flex flex-col items-center gap-6 opacity-40 grayscale">
+          <Loader2 size={40} className="animate-spin text-black" />
+          <p className="text-[10px] font-black tracking-[0.4em] uppercase">Synthesizing personalized growth vector...</p>
+        </div>
+      )}
+      
+      {roadmap && !roadmapLoading && (
+        <Card className="bg-white border border-gray-200 rounded-[3rem] p-12 shadow-card-lg animate-in fade-in slide-in-from-bottom-8 duration-700 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-12 opacity-5 grayscale pointer-events-none"><Map size={240} /></div>
+          <div className="relative z-10 space-y-12">
+             <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                   <div className="w-1.5 h-10 bg-black" />
+                   <h3 className="text-4xl font-black italic tracking-tighter text-black uppercase leading-none">{roadmap.title}</h3>
+                </div>
+                <p className="text-[10px] font-black tracking-[0.3em] text-gray-300 uppercase ml-5">PROJECTION DURATION: {roadmap.estimatedDuration.toUpperCase()}</p>
+             </div>
+
+             <div className="space-y-6">
+                {(roadmap.phases || []).map((phase, i) => (
+                  <div key={i} className="group relative pl-12 border-l border-gray-100 pb-12 last:pb-0">
+                     <div className="absolute top-0 left-[-8px] w-4 h-4 rounded-full bg-white border-2 border-black z-10" />
+                     <div className="bg-gray-50 border border-gray-100 rounded-[2rem] p-8 space-y-4 hover:border-black transition-all">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                           <div className="space-y-1">
+                              <h4 className="text-lg font-black uppercase italic text-black">{phase.title}</h4>
+                              <p className="text-[9px] font-black uppercase text-gray-300 tracking-widest">PHASE {phase.phase} | {phase.duration.toUpperCase()}</p>
+                           </div>
+                           <div className="flex flex-wrap gap-2">
+                              {(phase.skills || []).map((s, j) => (
+                                <span key={j} className="text-[9px] px-3 py-1 bg-black text-white rounded-lg font-black uppercase tracking-widest leading-none">{s}</span>
+                              ))}
+                           </div>
+                        </div>
+                        <p className="text-xs text-gray-400 font-bold leading-relaxed max-w-2xl">{phase.description}</p>
+                        <div className="flex flex-wrap gap-2 pt-2">
+                           {(phase.tools || []).map((t, j) => (
+                             <span key={j} className="text-[8px] px-2 py-1 bg-white border border-gray-100 rounded-md text-gray-300 font-black uppercase tracking-widest">{t}</span>
+                           ))}
+                        </div>
+                     </div>
+                  </div>
+                ))}
+             </div>
+
+             {roadmap.tips?.length > 0 && (
+               <div className="pt-10 border-t border-gray-100">
+                  <h4 className="text-[9px] font-black tracking-[0.3em] text-gray-300 uppercase mb-6 text-center">PRACTICAL GUIDELINES</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {roadmap.tips.map((tip, i) => (
+                      <div key={i} className="p-6 bg-gray-50 border border-gray-100 rounded-2xl flex gap-4">
+                         <Star size={14} className="text-black shrink-0 mt-0.5" />
+                         <p className="text-[11px] text-gray-400 font-bold leading-relaxed">{tip}</p>
+                      </div>
+                    ))}
+                  </div>
+               </div>
+             )}
+          </div>
         </Card>
       )}
 
-      {/* Roadmap Section */}
-      {roadmapLoading && (
-        <div className="text-center py-12">
-          <div className="w-10 h-10 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white/40 text-sm">Generating your personalized roadmap...</p>
-        </div>
-      )}
-      {roadmap && !roadmapLoading && (
-        <Card className="glass-card-premium p-8 neon-border-primary animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <CardHeader className="p-0 mb-6">
-            <CardTitle className="text-2xl font-black tracking-tight text-gradient-primary">{roadmap.title}</CardTitle>
-            <p className="text-white/40 text-xs mt-1">Estimated Duration: {roadmap.estimatedDuration}</p>
-          </CardHeader>
-          <CardContent className="p-0 space-y-6">
-            {/* Phases */}
-            <div className="space-y-4">
-              {(roadmap.phases || []).map((phase, i) => (
-                <div key={i} className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center text-sm font-black">
-                      P{phase.phase}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white/80">{phase.title}</h4>
-                      <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">{phase.duration}</p>
-                    </div>
+      {/* Course Sync History */}
+      {enrolledCourses.length > 0 && (
+        <div className="space-y-8">
+           <div className="space-y-1">
+              <h2 className="text-3xl font-black italic tracking-tighter text-black uppercase">Active Nodes</h2>
+              <p className="text-[9px] font-black tracking-[0.3em] text-gray-400 uppercase">DOMAIN ENROLLMENT LOG</p>
+           </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {enrolledCourses.map((progress, i) => (
+                <div key={i} className="p-8 bg-white border border-gray-100 rounded-[2rem] shadow-sm hover:border-black transition-all flex justify-between items-center group">
+                  <div className="space-y-1">
+                    <p className="font-black text-black uppercase italic tracking-tight text-sm leading-none">{progress.course?.title || 'NODE'}</p>
+                    <p className="text-[9px] font-black tracking-widest uppercase text-gray-300 italic">{progress.course?.category?.toUpperCase() || ''}</p>
                   </div>
-                  <p className="text-sm text-white/50">{phase.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {(phase.skills || []).map((s, j) => (
-                      <span key={j} className="text-[10px] px-2 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary font-bold">{s}</span>
-                    ))}
-                    {(phase.tools || []).map((t, j) => (
-                      <span key={j} className="text-[10px] px-2 py-1 rounded-lg bg-accent/10 border border-accent/20 text-accent font-bold">{t}</span>
-                    ))}
+                  <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex flex-col items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
+                    <span className="text-xs font-black">{progress.level}★</span>
                   </div>
                 </div>
               ))}
-            </div>
-            {/* Tips */}
-            {roadmap.tips?.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-xs font-black tracking-widest uppercase text-white/30">Pro Tips</h4>
-                {roadmap.tips.map((tip, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm text-white/50 bg-white/[0.02] p-3 rounded-xl border border-white/5">
-                    <Star size={14} className="text-yellow-400 shrink-0" />
-                    {tip}
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Enrolled Courses */}
-      {enrolledCourses.length > 0 && (
-        <Card className="glass-card-premium p-6 neon-border-primary">
-          <CardHeader className="flex flex-row items-center gap-4 pb-2">
-            <div className="p-3 bg-secondary/10 rounded-2xl text-secondary"><BookOpen size={20} /></div>
-            <CardTitle className="text-xl">Enrolled Courses</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-3">
-            {enrolledCourses.map((progress, i) => (
-              <div key={i} className="flex items-center justify-between p-4 bg-white/[0.02] rounded-xl border border-white/5">
-                <div>
-                  <p className="font-bold text-white/80">{progress.course?.title || 'Course'}</p>
-                  <p className="text-xs text-white/30">{progress.course?.category || ''}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-sm font-black ${levelColors[progress.level] || 'text-white/40'}`}>
-                    {progress.level}★
-                  </span>
-                  <span className="text-[10px] font-black tracking-widest uppercase text-white/30">
-                    {levelNames[progress.level] || 'Level ' + progress.level}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+           </div>
+        </div>
       )}
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { CheckCircle, XCircle, BrainCircuit } from 'lucide-react';
+import { CheckCircle, XCircle, BrainCircuit, Sparkles, Loader2, ArrowRight, ShieldCheck, Target } from 'lucide-react';
 import api from '../lib/api';
 
 export default function AssessmentPage() {
@@ -19,7 +19,6 @@ export default function AssessmentPage() {
   const [courseName, setCourseName] = useState('');
   const [courseContext, setCourseContext] = useState('');
 
-  // Fetch course name for context
   useEffect(() => {
     async function fetchCourse() {
       try {
@@ -59,26 +58,14 @@ export default function AssessmentPage() {
     setSelectedAnswers(prev => ({ ...prev, [currentQIndex]: key }));
   };
 
-  const handleNext = () => {
-    if (currentQIndex < questions.length - 1) {
-      setCurrentQIndex(currentQIndex + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentQIndex > 0) {
-      setCurrentQIndex(currentQIndex - 1);
-    }
-  };
+  const handleNext = () => { if (currentQIndex < questions.length - 1) setCurrentQIndex(currentQIndex + 1); };
+  const handlePrev = () => { if (currentQIndex > 0) setCurrentQIndex(currentQIndex - 1); };
 
   const handleSubmit = async () => {
     let correct = 0;
-    questions.forEach((q, idx) => {
-      if (selectedAnswers[idx] === q.answer) correct++;
-    });
+    questions.forEach((q, idx) => { if (selectedAnswers[idx] === q.answer) correct++; });
     const score = Math.round((correct / questions.length) * 100);
     setSubmitted(true);
-
     try {
       const { data } = await api.post(`/assessments/initial/${courseId}/submit`, { score });
       setResult({
@@ -95,163 +82,135 @@ export default function AssessmentPage() {
     }
   };
 
-  // Start splash
   if (!started) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 animate-in fade-in duration-500">
-        <Card className="max-w-md text-center p-8 glass-card-premium neon-border-primary">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 flex items-center justify-center">
-            <BrainCircuit size={36} className="text-primary" />
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 animate-fade-in-up">
+        <Card className="max-w-xl bg-white border border-gray-100 rounded-[3rem] p-10 shadow-card-lg text-center">
+          <div className="w-20 h-20 mx-auto mb-10 rounded-[1.5rem] bg-black flex items-center justify-center text-white shadow-xl shadow-black/10">
+            <ShieldCheck size={40} />
           </div>
-          <h1 className="text-3xl font-black mb-3 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-            Diagnostic Assessment
+          <h1 className="text-3xl font-black mb-4 tracking-tighter text-black uppercase italic">
+            Diagnostic <span className="text-gray-300">Phase</span>
           </h1>
-          <p className="text-white/70 mb-3 text-sm">{courseName}</p>
-          <p className="text-white/40 mb-8 text-sm">
-            This quick 10-question assessment will calibrate NeuroLearn's adaptive engine to match your skill level.
-            No pressure — it just ensures you get the right content!
+          <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400 mb-8">{courseName}</p>
+          <p className="text-gray-500 mb-12 text-sm font-medium px-4 leading-relaxed">
+            Initialize the calibration protocol. This 10-node assessment synchronizes the Adaptive engine with your current skill vector.
           </p>
-          <div className="space-y-3 text-left mb-8 text-xs text-white/40">
-            <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-xl border border-white/5">
-              <span className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 font-black">3★</span>
-              <span>Score &lt; 50% → <strong className="text-white/60">Beginner</strong> — Simple explanations</span>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-xl border border-white/5">
-              <span className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-400 font-black">4★</span>
-              <span>Score 50-79% → <strong className="text-white/60">Intermediate</strong> — Moderate depth</span>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-xl border border-white/5">
-              <span className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 font-black">5★</span>
-              <span>Score ≥ 80% → <strong className="text-white/60">Advanced</strong> — In-depth content</span>
-            </div>
+
+          <div className="grid grid-cols-1 gap-3 text-left mb-12">
+            {[
+              { level: '3', label: 'BEGINNER', range: '< 50%', desc: 'Linear explanations + Visual anchors' },
+              { level: '4', label: 'INTERMEDIATE', range: '50-79%', desc: 'Modular depth + Structural logic' },
+              { level: '5', label: 'ADVANCED', range: '≥ 80%', desc: 'Complex derivations + High-density maps' }
+            ].map((node, i) => (
+              <div key={i} className="flex items-center gap-5 p-4 bg-gray-50 border border-gray-100 rounded-2xl">
+                <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-[10px] font-black shadow-sm">{node.level}★</div>
+                <div>
+                   <p className="text-[9px] font-black uppercase tracking-widest text-black mb-1">{node.label} <span className="text-gray-300 ml-2">{node.range}</span></p>
+                   <p className="text-[11px] text-gray-400 font-bold">{node.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
-          <Button className="w-full uiverse-btn !py-5 shadow-xl shadow-primary/20" onClick={handleStart}>
-            Start Assessment
+          
+          <Button variant="black" className="w-full !py-6 !rounded-2xl shadow-xl shadow-black/5 active:scale-[0.98]" onClick={handleStart}>
+            INITIALIZE CALIBRATION
           </Button>
         </Card>
       </div>
     );
   }
 
-  // Loading
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-center space-y-6">
-          <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto"></div>
-          <div className="space-y-2">
-            <p className="text-xl font-bold text-white/70">Generating Assessment</p>
-            <p className="text-sm text-white/30">AI is creating 10 diagnostic questions on {courseName}...</p>
-          </div>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-8 grayscale opacity-40">
+        <Loader2 className="animate-spin text-black" size={48} />
+        <div className="text-center space-y-3">
+          <p className="text-2xl font-black tracking-tighter text-black uppercase italic">Generating Node Map</p>
+          <p className="text-[10px] font-black tracking-[0.3em] text-gray-300 uppercase">Indexing 10 high-fidelity diagnostic probes for {courseName}</p>
         </div>
       </div>
     );
   }
 
-  // Results
   if (submitted && result) {
-    const starColors = { 3: 'text-green-400', 4: 'text-yellow-400', 5: 'text-purple-400' };
-    const starBgs = { 3: 'bg-green-500/10 border-green-500/30', 4: 'bg-yellow-500/10 border-yellow-500/30', 5: 'bg-purple-500/10 border-purple-500/30' };
-    const levelNames = { 3: 'Beginner', 4: 'Intermediate', 5: 'Advanced' };
-
     return (
-      <div className="min-h-[60vh] flex items-center justify-center p-6 animate-in fade-in duration-500">
-        <Card className="w-full max-w-lg text-center p-8 glass-card-premium neon-border-primary">
-          <div className={`w-24 h-24 mx-auto mb-6 rounded-full border-2 flex items-center justify-center ${starBgs[result.level]}`}>
-            <span className={`text-4xl font-black ${starColors[result.level]}`}>{result.level}★</span>
+      <div className="min-h-[60vh] flex items-center justify-center p-6 animate-fade-in-up">
+        <Card className="w-full max-w-xl bg-white border border-gray-100 rounded-[3rem] p-12 shadow-card-lg text-center">
+          <div className="w-24 h-24 mx-auto mb-10 rounded-[2rem] bg-black flex items-center justify-center text-white border-4 border-gray-50 shadow-xl shadow-black/10">
+            <span className="text-4xl font-black italic">{result.level}★</span>
           </div>
-          <CardTitle className="text-3xl mb-2 font-black">Assessment Complete!</CardTitle>
-          <p className="text-xl text-white/70 mb-2">{result.score}% — {result.correct}/{result.total} correct</p>
-          <p className={`text-lg font-bold mb-6 ${starColors[result.level]}`}>
-            Level: {levelNames[result.level]}
-          </p>
-          <p className="text-sm text-white/40 mb-8">
-            {result.level === 5 ? 'You\'ll get detailed, in-depth content explanations.' :
-             result.level === 4 ? 'You\'ll get clear, moderately detailed content.' :
-             'You\'ll get simple, easy-to-understand explanations with examples.'}
-          </p>
-          <Button 
-            onClick={() => navigate(`/dashboard/courses/${courseId}`)} 
-            variant="primary" 
-            className="w-full uiverse-btn !py-4"
-          >
-            Begin Learning →
+          <h2 className="text-3xl font-black mb-2 tracking-tighter uppercase italic text-black">Sync Complete</h2>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 mb-8">{result.score}% ACCURACY — {result.correct}/{result.total} NODES VERIFIED</p>
+          
+          <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-10 text-left">
+             <div className="flex items-center gap-3 mb-3">
+                <Target size={16} className="text-black" />
+                <p className="text-[10px] font-black uppercase tracking-widest">Protocol Assignment: {result.level === 5 ? 'Advanced' : result.level === 4 ? 'Intermediate' : 'Beginner'}</p>
+             </div>
+             <p className="text-xs text-gray-400 font-bold leading-relaxed">
+               {result.level === 5 ? 'Engaging high-density vectors. System will deliver complex derivation maps and specialized insights.' :
+                result.level === 4 ? 'Engaging structural depth. System will provide modular explanations with moderate complexity.' :
+                'Engaging basic anchors. System will deliver linear explanations with emphasis on foundational synchronization.'}
+             </p>
+          </div>
+
+          <Button onClick={() => navigate(`/dashboard/courses/${courseId}`)} variant="black" className="w-full !rounded-2xl !py-5 shadow-lg active:scale-95 group">
+             BEGIN LEARNING PROTOCOL <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" size={18} />
           </Button>
         </Card>
       </div>
     );
   }
 
-  // Quiz view
   if (!questions.length) return null;
   const q = questions[currentQIndex];
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center p-6 animate-in fade-in duration-500">
-      <Card className="w-full max-w-2xl glass-card-premium neon-border-primary">
-        <CardHeader className="border-b border-white/10 pb-4 mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] text-white/40 font-black tracking-widest uppercase">Question {currentQIndex + 1} of {questions.length}</span>
-            {q.difficulty && (
-              <span className={`text-[10px] font-black tracking-widest uppercase px-2 py-0.5 rounded border ${
-                q.difficulty === 'easy' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
-                q.difficulty === 'medium' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
-                'bg-red-500/10 border-red-500/20 text-red-400'
-              }`}>{q.difficulty}</span>
-            )}
+    <div className="min-h-[60vh] flex items-center justify-center p-6 animate-fade-in-up">
+      <Card className="w-full max-w-2xl bg-white border border-gray-100 rounded-[3rem] p-10 shadow-card-lg">
+        <CardHeader className="p-0 border-b border-gray-50 pb-10 mb-10">
+          <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center gap-3">
+               <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white"><BrainCircuit size={16} /></div>
+               <div className="text-[10px] text-gray-300 font-black tracking-[0.2em] uppercase tracking-[0.3em]">PROBE NODES</div>
+            </div>
+            <span className="text-[10px] font-black tracking-widest uppercase px-3 py-1.5 rounded-lg bg-black text-white">{q.difficulty || 'CALIBRATING'}</span>
           </div>
-          {/* Progress bar */}
-          <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500" 
-              style={{ width: `${((currentQIndex + 1) / questions.length) * 100}%` }}
-            ></div>
+          <div className="w-full h-1 bg-gray-50 rounded-full overflow-hidden mb-8">
+            <div className="h-full bg-black transition-all duration-700 ease-in-out" style={{ width: `${((currentQIndex + 1) / questions.length) * 100}%` }}></div>
           </div>
-          <CardTitle className="text-xl leading-relaxed mt-4">{q.question}</CardTitle>
+          <div className="flex justify-between items-end gap-10">
+             <div className="text-[10px] font-black text-gray-200 uppercase tracking-[0.3em] mb-4">P-{(currentQIndex + 1).toString().padStart(2, '0')}</div>
+             <CardTitle className="text-xl md:text-2xl font-black text-black leading-tight tracking-tight uppercase italic">{q.question}</CardTitle>
+          </div>
         </CardHeader>
         
-        <CardContent className="flex flex-col gap-3">
+        <CardContent className="p-0 flex flex-col gap-4">
           {Object.entries(q.options).map(([key, value]) => (
-            <button
-              key={key}
-              onClick={() => handleSelect(key)}
-              className={`w-full text-left p-4 rounded-xl border transition-all flex items-center gap-4 ${
+            <button key={key} onClick={() => handleSelect(key)}
+              className={`w-full text-left p-5 rounded-2xl border transition-all flex items-center gap-6 group ${
                 selectedAnswers[currentQIndex] === key 
-                  ? 'bg-primary/20 border-primary text-white shadow-[0_0_15px_rgba(100,50,255,0.3)]' 
-                  : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/80'
-              }`}
-            >
-              <span className="font-black text-xs w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 shrink-0">{key}</span>
-              <span>{value}</span>
+                  ? 'bg-black text-white border-black shadow-lg shadow-black/10' 
+                  : 'bg-white border-gray-100 hover:border-black text-gray-500'
+              }`}>
+              <span className={`font-black text-[10px] w-9 h-9 flex items-center justify-center rounded-xl border transition-colors ${selectedAnswers[currentQIndex] === key ? 'bg-white/10 border-white/20 text-white' : 'bg-gray-50 border-gray-100 text-gray-300 group-hover:text-black group-hover:border-black'}`}>{key}</span>
+              <span className={`text-[13px] font-bold ${selectedAnswers[currentQIndex] === key ? 'text-white' : 'group-hover:text-black'}`}>{value}</span>
             </button>
           ))}
         </CardContent>
 
-        <CardFooter className="pt-6 flex gap-3">
-          <Button 
-            className="flex-1"
-            onClick={handlePrev}
-            disabled={currentQIndex === 0}
-          >
-            Previous
+        <CardFooter className="p-0 pt-10 mt-10 border-t border-gray-50 flex gap-4">
+          <Button variant="outline" className="!flex-1 !rounded-xl !border-gray-100 !text-gray-300" onClick={handlePrev} disabled={currentQIndex === 0}>
+             PREVIOUS
           </Button>
           {currentQIndex === questions.length - 1 ? (
-            <Button 
-              className="flex-1" 
-              variant="primary" 
-              onClick={handleSubmit}
-              disabled={Object.keys(selectedAnswers).length < questions.length}
-            >
-              Submit ({Object.keys(selectedAnswers).length}/{questions.length})
+            <Button variant="black" className="!flex-[2] !rounded-xl !py-4" onClick={handleSubmit} disabled={Object.keys(selectedAnswers).length < questions.length}>
+               SUBMIT FOR SYNC ({Object.keys(selectedAnswers).length}/{questions.length})
             </Button>
           ) : (
-            <Button 
-              className="flex-1" 
-              variant="primary" 
-              onClick={handleNext}
-              disabled={selectedAnswers[currentQIndex] === undefined}
-            >
-              Next Question
+            <Button variant="black" className="!flex-[2] !rounded-xl !py-4" onClick={handleNext} disabled={selectedAnswers[currentQIndex] === undefined}>
+               NEXT PROBE <ArrowRight size={14} className="ml-2" />
             </Button>
           )}
         </CardFooter>
