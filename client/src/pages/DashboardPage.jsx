@@ -21,37 +21,33 @@ export default function DashboardPage() {
   const [welcomeMessage, setWelcomeMessage] = useState('');
   const [subtitle, setSubtitle] = useState('');
 
-  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Pioneer';
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Learner';
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-
-        // Check if first login (if true or undefined)
         const isFirst = user?.user_metadata?.isFirstLogin !== false;
         setIsFirstLogin(isFirst);
         
-        // Randomize messages for returning users
         if (!isFirst) {
           const messages = [
-            `Welcome Back, ${firstName} — Your learning evolution continues`,
-            `Good to see you, ${firstName} — Systems synced and ready`,
-            `Hey ${firstName}, Your adaptive engine is recalibrated`,
-            `Welcome back, ${firstName} — Progress awaits`,
+            `Welcome back, ${firstName} — Your evolution continue`,
+            `Systems synced, ${firstName}`,
+            `Hey ${firstName}, Adaptive engine ready`,
+            `Progress awaits, ${firstName}`,
             `Neural sync complete, ${firstName}`
           ];
           const subtitles = [
-            "Cognitive Synchronization Active",
-            "Adaptive Learning Mode Engaged",
-            "Skill Matrix Updating",
-            "Neural Pathways Optimized"
+            "Cognitive Link Active",
+            "Adaptive Sync Engaged",
+            "Skill Matrix Ready",
+            "Neural Paths Optimized"
           ];
           setWelcomeMessage(messages[Math.floor(Math.random() * messages.length)]);
           setSubtitle(subtitles[Math.floor(Math.random() * subtitles.length)]);
         }
 
-        // Fetch Analytics and Study Plans
         const [analyticsRes, personalizedRes] = await Promise.all([
           api.get('/progress/analytics').catch(() => null),
           api.get('/personalized').catch(() => null)
@@ -65,7 +61,7 @@ export default function DashboardPage() {
            setStats({
              adaptiveLevel: analyticsData.summary.avgLevel || 4.2,
              activeCourses: analyticsData.summary.coursesEnrolled || 0,
-             studyPlans: personalizedData.length > 0 ? personalizedData.length : 1, // At least 1 template
+             studyPlans: personalizedData.length > 0 ? personalizedData.length : 1,
              skillPoints: calculatedSkillPoints || 1200
            });
         }
@@ -76,23 +72,16 @@ export default function DashboardPage() {
       }
     };
 
-    if (user) {
-      fetchDashboardData();
-    }
+    if (user) fetchDashboardData();
   }, [user]);
 
   const handleStartSetup = async () => {
     try {
-      // Update user metadata in Supabase
-      await supabase.auth.updateUser({
-        data: { isFirstLogin: false }
-      });
+      await supabase.auth.updateUser({ data: { isFirstLogin: false } });
       setIsFirstLogin(false);
-      
-      // Navigate to onboarding / personalized page
       navigate('/dashboard/personalized'); 
     } catch (error) {
-       console.error("Failed to update user status", error);
+       console.error("Setup failed", error);
     }
   };
 
@@ -101,117 +90,132 @@ export default function DashboardPage() {
     return points;
   };
 
-  const getAdaptiveDecimal = (val) => {
-    return (val % 1).toFixed(1).split('.')[1];
-  };
-
   if (loading) {
     return (
       <div className="w-full h-full flex items-center justify-center min-h-[50vh]">
-        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(124,58,237,0.5)]"></div>
+        <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="animate-in fade-in duration-700 w-full h-full flex flex-col gap-8">
+    <div className="animate-fade-in-up w-full flex flex-col gap-10">
       
-      {/* Dynamic Hero Section */}
-      <section className="glass-card-premium neon-border-primary p-12 relative overflow-hidden group">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] group-hover:bg-primary/20 transition-all duration-700"></div>
-        <div className="relative z-10 w-full lg:w-2/3 space-y-6">
+      {/* ===== HERO SECTION — Clean B&W ===== */}
+      <section className="bg-white border border-gray-200 rounded-3xl p-10 md:p-14 relative overflow-hidden shadow-sm">
+        <div className="relative z-10 max-w-2xl space-y-6">
           
           {isFirstLogin ? (
-            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter capitalize">
-                 Welcome, <span className="text-secondary underline decoration-primary/30 underline-offset-8">{firstName}</span>
+            <div className="space-y-5">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black">
+                 Welcome, <span className="underline decoration-gray-200 underline-offset-8">{firstName}</span>
               </h1>
-              <h2 className="text-xl md:text-2xl text-white/80 font-bold tracking-wide">
-                 Let's build your personalized learning path
+              <h2 className="text-xl md:text-2xl text-gray-500 font-semibold leading-tight">
+                 Let's build your personalized learning journey from scratch.
               </h2>
-              <p className="text-lg text-white/50 leading-relaxed max-w-lg mt-2 font-medium">
-                 Select your domain of interest and preferred role to generate your adaptive roadmap.
+              <p className="text-gray-400 text-sm font-medium">
+                 Generate your adaptive roadmap by selecting your preferred domains and goals.
               </p>
               <button 
                 onClick={handleStartSetup} 
-                className="uiverse-btn !px-8 !py-4 shadow-lg shadow-primary/20 mt-6 flex items-center gap-3 active:scale-95 transition-transform"
+                className="uiverse-btn !rounded-xl flex items-center gap-2"
               >
-                 START SETUP <ArrowRight size={18} />
+                 START CONFIGURATION <ArrowRight size={16} />
               </button>
             </div>
           ) : (
-            <div className="space-y-6 animate-in fade-in duration-1000">
-              <div className="space-y-2 flex flex-col items-start pr-4">
-                <h1 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight italic uppercase">
-                  <span className="text-white">
-                    {welcomeMessage.split('—')[0]}
-                  </span>
-                  <span className="block text-xl md:text-2xl text-primary/80 mt-2 lowercase tracking-wider pl-1">
-                    — {welcomeMessage.split('—')[1]}
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h1 className="text-3xl md:text-5xl font-black tracking-tighter uppercase leading-none text-black">
+                  {welcomeMessage.split('—')[0]}
+                  <span className="block text-xl md:text-2xl text-gray-400 font-bold mt-2 lowercase tracking-normal">
+                    {welcomeMessage.split('—')[1]}
                   </span>
                 </h1>
-                <p className="text-white/40 font-medium tracking-[0.3em] uppercase text-[10px] ml-1 mt-4">{subtitle}</p>
+                <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-300 ml-1 mt-6">{subtitle}</p>
               </div>
               
-              <p className="text-lg text-white/50 leading-relaxed font-medium">
+              <p className="text-gray-500 font-medium">
                 {stats.activeCourses > 0 
-                  ? "Your personalized learning node is active. Continue your journey." 
-                  : "Your learning system is ready. Explore new courses to begin."}
+                  ? "Your learning engine is synchronized. Continue where you left off." 
+                  : "All systems ready. Start your first course to begin adaptive tracking."}
               </p>
               
               <button 
                 onClick={() => navigate('/dashboard/courses')} 
-                className="uiverse-btn !px-10 !py-4 shadow-2xl shadow-primary/20 mt-2 active:scale-95 transition-transform"
+                className="uiverse-btn !rounded-xl"
               >
-                 {stats.activeCourses > 0 ? "RESUME LEARNING ✦" : "EXPLORE COURSES ✦"}
+                 {stats.activeCourses > 0 ? "RESUME LEARNING" : "EXPLORE DOMAINS"}
               </button>
             </div>
           )}
 
         </div>
+        {/* Subtle abstract background element */}
+        <div className="absolute right-0 bottom-0 opacity-[0.03] pointer-events-none select-none">
+           <BrainCircuit size={400} />
+        </div>
       </section>
 
-      {/* Dynamic Stats Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10">
+      {/* ===== STATS GRID — B&W style ===== */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
-        <div className="glass-card-premium neon-border-primary border-white/5 p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Adaptive Level</h3>
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform"><Activity size={20} /></div>
+        <div className="stat-card-bw flex flex-col gap-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Adaptive Level</h3>
+            <div className="text-gray-300"><Activity size={18} /></div>
           </div>
-          <p className="text-6xl font-black tracking-tighter italic relative z-10">
-            {Math.floor(stats.adaptiveLevel)}<span className="text-2xl text-primary/40 ml-1">.{getAdaptiveDecimal(stats.adaptiveLevel)}</span>
-          </p>
+          <div className="flex items-baseline gap-1">
+            <span className="text-5xl font-black tracking-tighter text-black">{Math.floor(stats.adaptiveLevel)}</span>
+            <span className="text-xl font-bold text-gray-300">.{(stats.adaptiveLevel % 1).toFixed(1).split('.')[1]}</span>
+          </div>
         </div>
 
-        <div className="glass-card-premium neon-border-primary border-white/5 p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-2xl group-hover:bg-accent/10 transition-colors"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Active Courses</h3>
-            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent group-hover:scale-110 transition-transform"><BookOpen size={20} /></div>
+        <div className="stat-card-bw flex flex-col gap-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Active Nodes</h3>
+            <div className="text-gray-300"><BookOpen size={18} /></div>
           </div>
-          <p className="text-6xl font-black tracking-tighter italic relative z-10">{stats.activeCourses.toString().padStart(2, '0')}</p>
+          <p className="text-5xl font-black tracking-tighter text-black">{stats.activeCourses.toString().padStart(2, '0')}</p>
         </div>
 
-        <div className="glass-card-premium neon-border-primary border-white/5 p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-2xl group-hover:bg-secondary/10 transition-colors"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Study Plans</h3>
-            <div className="w-10 h-10 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform"><BrainCircuit size={20} /></div>
+        <div className="stat-card-bw flex flex-col gap-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Study Vectors</h3>
+            <div className="text-gray-300"><BrainCircuit size={18} /></div>
           </div>
-          <p className="text-6xl font-black tracking-tighter italic relative z-10">{stats.studyPlans.toString().padStart(2, '0')}</p>
+          <p className="text-5xl font-black tracking-tighter text-black">{stats.studyPlans.toString().padStart(2, '0')}</p>
         </div>
 
-        <div className="glass-card-premium neon-border-primary border-white/5 p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-colors"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Skill Points</h3>
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform"><Star size={20} /></div>
+        <div className="stat-card-bw flex flex-col gap-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Skill Points</h3>
+            <div className="text-gray-300"><Star size={18} /></div>
           </div>
-          <p className="text-6xl font-black tracking-tighter italic text-gradient-primary relative z-10">{formatPoints(stats.skillPoints)}</p>
+          <p className="text-5xl font-black tracking-tighter text-black">{formatPoints(stats.skillPoints)}</p>
         </div>
 
+      </section>
+
+      {/* ===== RECENT ACTIVITY (Placeholder to fill space) ===== */}
+      <section className="glass-card p-8">
+        <h3 className="text-sm font-black uppercase tracking-widest text-black mb-6">Recent Cognitive Activity</h3>
+        <div className="space-y-4">
+           {[...Array(3)].map((_, i) => (
+             <div key={i} className="flex items-center justify-between pb-4 border-b border-gray-100 last:border-0">
+               <div className="flex items-center gap-4">
+                 <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400">
+                    <Activity size={16} />
+                 </div>
+                 <div>
+                    <h4 className="text-sm font-bold text-black">Neural Pathway Sync</h4>
+                    <p className="text-xs text-gray-400">Checkpoint reached in Data Structures</p>
+                 </div>
+               </div>
+               <span className="text-[10px] font-black text-gray-300 uppercase">2h ago</span>
+             </div>
+           ))}
+        </div>
       </section>
 
     </div>

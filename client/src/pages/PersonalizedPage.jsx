@@ -2,14 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import api from '../lib/api';
-import { Sparkles, Calendar, FileText, Upload, BookOpen, Target, ListChecks, Brain, CheckCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Sparkles, Calendar, FileText, Upload, BookOpen, Target, ListChecks, Brain, CheckCircle, XCircle, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 
 export default function PersonalizedPage() {
   const [materials, setMaterials] = useState([]);
   const [showGenerate, setShowGenerate] = useState(false);
   const [activeTab, setActiveTab] = useState('text'); // 'text' | 'upload'
   
-  // Form state
   const [title, setTitle] = useState('');
   const [materialText, setMaterialText] = useState('');
   const [deadlineDays, setDeadlineDays] = useState('7');
@@ -18,17 +17,14 @@ export default function PersonalizedPage() {
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Expanded plan view
   const [expandedPlan, setExpandedPlan] = useState(null);
-  const [viewSection, setViewSection] = useState('summary'); // 'summary' | 'topics' | 'points' | 'plan' | 'quiz'
-  
-  // Quiz state for expanded view
+  const [viewSection, setViewSection] = useState('summary'); 
   const [quizAnswers, setQuizAnswers] = useState({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
 
   useEffect(() => {
     loadMaterials();
-  }, [showGenerate]);
+  }, []);
 
   const loadMaterials = async () => {
     try {
@@ -37,8 +33,11 @@ export default function PersonalizedPage() {
       setMaterials(data || []);
     } catch (err) {
       console.error('Failed to load personalized materials', err);
-      const errorData = err.response?.data?.error || err.message || 'Failed to load materials';
-      setError(typeof errorData === 'object' ? (errorData.message || JSON.stringify(errorData)) : errorData);
+      // If 404, it might mean the route registration failed on backend
+      const errorMsg = err.response?.status === 404 
+        ? "AI Module Initialization Error. Please contact admin." 
+        : (err.response?.data?.error || err.message || 'Failed to connect to AI engine');
+      setError(errorMsg);
     }
   };
 
@@ -66,7 +65,7 @@ export default function PersonalizedPage() {
       setTitle(''); setMaterialText(''); setDeadlineDays('7'); setFile(null);
       await loadMaterials();
     } catch (err) {
-      console.error('Failed generation', err);
+      setError(err.response?.data?.error || "Generation failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -74,17 +73,7 @@ export default function PersonalizedPage() {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-    }
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile) {
-      setFile(droppedFile);
-    }
+    if (selectedFile) setFile(selectedFile);
   };
 
   const openPlanView = (plan) => {
@@ -96,160 +85,105 @@ export default function PersonalizedPage() {
 
   const getNotes = (plan) => {
     if (!plan.notes) return {};
-    if (typeof plan.notes === 'string') {
-      try { return JSON.parse(plan.notes); } catch { return {}; }
-    }
-    return plan.notes;
+    return typeof plan.notes === 'string' ? JSON.parse(plan.notes) : plan.notes;
   };
 
   const getStudyPlan = (plan) => {
     if (!plan.study_plan) return [];
-    if (typeof plan.study_plan === 'string') {
-      try { return JSON.parse(plan.study_plan); } catch { return []; }
-    }
-    return plan.study_plan;
+    return typeof plan.study_plan === 'string' ? JSON.parse(plan.study_plan) : plan.study_plan;
   };
 
   const tabs = [
     { key: 'summary', label: 'Summary', icon: BookOpen },
-    { key: 'topics', label: 'Key Topics', icon: Target },
-    { key: 'points', label: 'Important Points', icon: ListChecks },
-    { key: 'plan', label: 'Study Plan', icon: Calendar },
-    { key: 'quiz', label: 'Quiz', icon: Brain },
+    { key: 'topics', label: 'Topics', icon: Target },
+    { key: 'points', label: 'Nodes', icon: ListChecks },
+    { key: 'plan', label: 'Timeline', icon: Calendar },
+    { key: 'quiz', label: 'Recall', icon: Brain },
   ];
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 w-full mb-20">
+    <div className="animate-fade-in-up w-full">
       
+      {/* Error Alert — Clean B&W */}
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm font-medium flex items-center justify-between">
-          <span>{error}</span>
-          <button onClick={() => setError(null)} className="text-[10px] font-black tracking-widest uppercase px-3 py-1 bg-red-500/20 rounded-lg hover:bg-red-500/30 transition-colors">Dismiss</button>
+        <div className="mb-8 p-4 bg-white border border-black/10 rounded-xl flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-3">
+             <div className="text-black"><XCircle size={18} /></div>
+             <span className="text-xs font-bold text-black/70 tracking-tight">{error}</span>
+          </div>
+          <button onClick={() => setError(null)} className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-black text-white rounded-lg hover:opacity-80 transition-opacity">Dismiss</button>
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
-        <div className="space-y-1">
-          <h1 className="text-5xl font-black tracking-tighter text-white">
-            Study <span className="text-secondary underline decoration-accent/30 underline-offset-8">Planner</span>
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black uppercase leading-none italic">
+            AI <span className="text-gray-300">Tutor</span>
           </h1>
-          <p className="text-white/40 font-medium tracking-widest uppercase text-[10px]">AI-Generated Personalized Materials</p>
+          <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400 mt-4 ml-1">Personalized Study Node</p>
         </div>
         <button 
           onClick={() => { setShowGenerate(!showGenerate); setExpandedPlan(null); }} 
-          className="uiverse-btn !text-xs !px-6 !py-3 font-black tracking-widest flex items-center gap-3 shadow-xl shadow-primary/20 transition-all active:scale-95"
+          className="uiverse-btn !rounded-xl flex items-center gap-2.5 active:scale-95 transition-transform"
         >
-          <Sparkles size={16} className="text-accent animate-pulse" />
-          {showGenerate ? 'CLOSE GENERATOR' : 'NEW AI STUDY PLAN'}
+          {showGenerate ? <div className="flex items-center gap-2"><XCircle size={15}/> <span>CLOSE PANEL</span></div> : <div className="flex items-center gap-2"><Sparkles size={15}/> <span>INITIALIZE PLAN</span></div>}
         </button>
       </div>
 
-      {/* Generator Form */}
+      {/* Generator Form — B&W Style */}
       {showGenerate && (
-        <Card className="glass-card-premium neon-border-primary mb-12 border-primary/20 p-8 relative overflow-visible">
-          <div className="absolute -top-4 -right-4 w-12 h-12 bg-primary/20 blur-xl rounded-full"></div>
-          <CardHeader className="p-0 mb-6">
-            <CardTitle className="text-3xl font-black tracking-tight text-gradient-primary">Design Your Learning Path</CardTitle>
+        <Card className="bg-white border border-gray-200 rounded-3xl p-8 mb-12 shadow-sm animate-in slide-in-from-top-4 duration-500">
+          <CardHeader className="p-0 mb-8">
+            <h2 className="text-2xl font-black tracking-tight text-black flex items-center gap-3">
+               <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white"><Sparkles size={16} /></div>
+               CONFIGURE NEW MATERIAL
+            </h2>
           </CardHeader>
-          <CardContent className="p-0">
-            {/* Tab Toggle: Text / Upload */}
-            <div className="flex gap-2 mb-8">
-              <button 
-                onClick={() => setActiveTab('text')}
-                className={`flex-1 py-3 rounded-xl text-xs font-black tracking-widest uppercase transition-all ${activeTab === 'text' ? 'bg-primary/20 border border-primary/40 text-primary' : 'bg-white/[0.03] border border-white/10 text-white/40 hover:text-white/60'}`}
-              >
-                <FileText size={14} className="inline mr-2" /> Paste Text
-              </button>
-              <button 
-                onClick={() => setActiveTab('upload')}
-                className={`flex-1 py-3 rounded-xl text-xs font-black tracking-widest uppercase transition-all ${activeTab === 'upload' ? 'bg-accent/20 border border-accent/40 text-accent' : 'bg-white/[0.03] border border-white/10 text-white/40 hover:text-white/60'}`}
-              >
-                <Upload size={14} className="inline mr-2" /> Upload File
-              </button>
+          
+          <CardContent className="p-0 space-y-8">
+            {/* Toggle tabs */}
+            <div className="flex p-1 bg-gray-50 rounded-xl border border-gray-100 max-w-sm">
+              <button onClick={() => setActiveTab('text')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'text' ? 'bg-white shadow-sm text-black border border-gray-100' : 'text-gray-400'}`}>Text Data</button>
+              <button onClick={() => setActiveTab('upload')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'upload' ? 'bg-white shadow-sm text-black border border-gray-100' : 'text-gray-400'}`}>File Sync</button>
             </div>
 
-            <form onSubmit={handleGenerate} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <form onSubmit={handleGenerate} className="grid grid-cols-1 lg:grid-cols-2 gap-10">
               <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Subject / Title</label>
-                  <Input 
-                    value={title} 
-                    onChange={e => setTitle(e.target.value)} 
-                    required 
-                    placeholder="e.g. Modern Architecture" 
-                    className="bg-white/[0.03] border-white/10 h-14 rounded-2xl focus:ring-primary/50 text-base"
-                  />
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">Title</label>
+                  <input value={title} onChange={e => setTitle(e.target.value)} required placeholder="e.g. Physics Quantum Logic" className="w-full bg-gray-50 border border-gray-100 h-12 px-4 rounded-xl focus:ring-1 focus:ring-black outline-none font-medium text-sm transition-all" />
                 </div>
-                
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Deadline (Days)</label>
-                  <Input 
-                    type="number"
-                    min="1"
-                    max="365"
-                    value={deadlineDays} 
-                    onChange={e => setDeadlineDays(e.target.value)} 
-                    required 
-                    placeholder="7"
-                    className="bg-white/[0.03] border-white/10 h-14 rounded-2xl focus:ring-primary/50 text-base w-full" 
-                  />
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">Timeline (Days)</label>
+                  <input type="number" min="1" max="30" value={deadlineDays} onChange={e => setDeadlineDays(e.target.value)} required className="w-full bg-gray-50 border border-gray-100 h-12 px-4 rounded-xl focus:ring-1 focus:ring-black outline-none font-medium text-sm transition-all" />
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div>
                 {activeTab === 'text' ? (
-                  <>  
-                    <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Study Material (Paste text, syllabus, or topics)</label>
-                    <textarea 
-                      className="w-full h-44 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-base text-white focus:ring-2 focus:ring-primary/50 focus:outline-none transition-all placeholder:text-white/20 resize-none font-medium"
-                      value={materialText} 
-                      onChange={e => setMaterialText(e.target.value)} 
-                      required={activeTab === 'text'}
-                      placeholder="Paste your notes or book contents here..."
-                    />
-                  </>
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">Material Content</label>
+                    <textarea value={materialText} onChange={e => setMaterialText(e.target.value)} required={activeTab === 'text'} placeholder="Paste your study notes here..." className="w-full h-32 bg-gray-50 border border-gray-100 p-4 rounded-xl focus:ring-1 focus:ring-black outline-none font-medium text-sm transition-all resize-none" />
+                  </div>
                 ) : (
-                  <>
-                    <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Upload File (PDF, DOCX, JPG)</label>
-                    <div 
-                      onClick={() => fileInputRef.current?.click()}
-                      onDrop={handleDrop}
-                      onDragOver={(e) => e.preventDefault()}
-                      className="w-full h-44 rounded-2xl border-2 border-dashed border-white/10 bg-white/[0.02] flex flex-col items-center justify-center cursor-pointer hover:border-accent/40 hover:bg-accent/5 transition-all"
-                    >
-                      {file ? (
-                        <div className="text-center space-y-2">
-                          <FileText size={32} className="text-accent mx-auto" />
-                          <p className="text-sm font-bold text-white/70">{file.name}</p>
-                          <p className="text-xs text-white/30">{(file.size / 1024).toFixed(1)} KB</p>
-                        </div>
-                      ) : (
-                        <div className="text-center space-y-2">
-                          <Upload size={32} className="text-white/20 mx-auto" />
-                          <p className="text-sm text-white/40">Drop file here or click to browse</p>
-                          <p className="text-[10px] text-white/20">PDF, DOCX, JPG, PNG (Max 10MB)</p>
-                        </div>
-                      )}
-                      <input 
-                        ref={fileInputRef}
-                        type="file" 
-                        accept=".pdf,.docx,.jpg,.jpeg,.png,.txt"
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">Sync PDF/DOCX/JPG</label>
+                    <div onClick={() => fileInputRef.current?.click()} className="w-full h-32 border-2 border-dashed border-gray-100 bg-gray-50/50 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-all group">
+                       {file ? (
+                         <div className="text-center font-bold text-xs"><FileText size={20} className="mx-auto mb-1 text-black"/> {file.name}</div>
+                       ) : (
+                         <div className="text-center text-gray-300 group-hover:text-gray-500 transition-colors"><Upload size={20} className="mx-auto mb-1"/> <span className="text-[10px] font-black uppercase tracking-widest">Select Source</span></div>
+                       )}
+                       <input ref={fileInputRef} type="file" accept=".pdf,.docx,.jpg,.jpeg,.png,.txt" onChange={handleFileChange} className="hidden" />
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
 
-              <div className="md:col-span-2">
-                <button type="submit" disabled={loading} className="uiverse-btn w-full !py-5 shadow-2xl shadow-primary/30">
-                  {loading ? (
-                    <div className="flex items-center justify-center gap-3">
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span className="font-black tracking-widest text-sm uppercase italic">Analyzing with Groq AI...</span>
-                    </div>
-                  ) : <span className="font-black tracking-widest text-sm uppercase">Generate Full AI Analysis</span>}
+              <div className="lg:col-span-2">
+                <button type="submit" disabled={loading} className="uiverse-btn w-full !py-4 transition-all">
+                  {loading ? <div className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> <span className="text-[10px] font-black tracking-widest uppercase">Analyzing...</span></div> : <span className="text-[10px] font-black tracking-widest uppercase">SYNC & ANALYZE NOW</span>}
                 </button>
               </div>
             </form>
@@ -257,147 +191,109 @@ export default function PersonalizedPage() {
         </Card>
       )}
 
-      {/* Expanded Plan View */}
+      {/* Expanded View — B&W Style */}
       {expandedPlan && (
-        <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-black tracking-tight text-white">{expandedPlan.title}</h2>
-            <button onClick={() => setExpandedPlan(null)} className="text-xs text-white/40 hover:text-white/70 font-bold uppercase tracking-widest">Close ✕</button>
+        <div className="mb-12 animate-in fade-in-up duration-500 space-y-6">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-5">
+            <h2 className="text-2xl font-black text-black tracking-tight">{expandedPlan.title}</h2>
+            <button onClick={() => setExpandedPlan(null)} className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 hover:text-black transition-colors">Close ✕</button>
           </div>
 
-          {/* Section Tabs */}
-          <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+          <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
             {tabs.map(tab => {
               const Icon = tab.icon;
               return (
-                <button 
-                  key={tab.key}
-                  onClick={() => setViewSection(tab.key)}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black tracking-widest uppercase whitespace-nowrap transition-all ${
-                    viewSection === tab.key 
-                      ? 'bg-primary/20 border border-primary/40 text-primary shadow-lg shadow-primary/10' 
-                      : 'bg-white/[0.03] border border-white/10 text-white/40 hover:text-white/60'
-                  }`}
-                >
-                  <Icon size={14} />
-                  {tab.label}
+                <button key={tab.key} onClick={() => setViewSection(tab.key)} className={`flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase whitespace-nowrap border transition-all ${viewSection === tab.key ? 'bg-black text-white border-black' : 'bg-white text-gray-400 border-gray-100 hover:border-gray-300'}`}>
+                  <Icon size={12} /> {tab.label}
                 </button>
               );
             })}
           </div>
 
-          {/* Section Content */}
-          <Card className="glass-card-premium border-white/5 p-8">
+          <Card className="bg-white border border-gray-100 p-8 rounded-3xl shadow-sm">
             {viewSection === 'summary' && (
               <div className="space-y-4">
-                <h3 className="text-lg font-black text-gradient-primary flex items-center gap-2"><BookOpen size={20} /> Summary</h3>
-                <p className="text-white/70 text-sm leading-relaxed whitespace-pre-wrap">{getNotes(expandedPlan).summary || 'No summary available.'}</p>
+                <h3 className="text-sm font-black text-black uppercase tracking-widest border-l-2 border-black pl-3 mb-6">Cognitive Summary</h3>
+                <p className="text-gray-500 text-sm leading-relaxed whitespace-pre-wrap">{getNotes(expandedPlan).summary || 'Extraction incomplete.'}</p>
               </div>
             )}
 
             {viewSection === 'topics' && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-black text-gradient-primary flex items-center gap-2"><Target size={20} /> Key Topics</h3>
-                <div className="flex flex-wrap gap-3">
-                  {(getNotes(expandedPlan).keyTopics || []).map((topic, i) => (
-                    <span key={i} className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-sm font-bold">{topic}</span>
-                  ))}
-                </div>
+              <div className="space-y-6">
+                 <h3 className="text-sm font-black text-black uppercase tracking-widest border-l-2 border-black pl-3 mb-6">Neural Nodes</h3>
+                 <div className="flex flex-wrap gap-2">
+                    {(getNotes(expandedPlan).keyTopics || []).map((topic, i) => (
+                      <span key={i} className="px-5 py-2 rounded-lg bg-gray-50 border border-gray-100 text-black text-xs font-black uppercase tracking-tight">{topic}</span>
+                    ))}
+                 </div>
               </div>
             )}
 
             {viewSection === 'points' && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-black text-gradient-primary flex items-center gap-2"><ListChecks size={20} /> Important Points</h3>
-                <ul className="space-y-3">
-                  {(getNotes(expandedPlan).importantPoints || []).map((point, i) => (
-                    <li key={i} className="flex items-start gap-3 text-white/70 text-sm">
-                      <span className="w-6 h-6 rounded-lg bg-accent/10 border border-accent/20 text-accent text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
+              <div className="space-y-6">
+                <h3 className="text-sm font-black text-black uppercase tracking-widest border-l-2 border-black pl-3 mb-6">Key Insights</h3>
+                <div className="space-y-3">
+                   {(getNotes(expandedPlan).importantPoints || []).map((point, i) => (
+                     <div key={i} className="flex gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <div className="w-6 h-6 rounded bg-black text-white text-[10px] font-black flex items-center justify-center shrink-0">{i+1}</div>
+                        <p className="text-sm text-gray-500 font-medium">{point}</p>
+                     </div>
+                   ))}
+                </div>
               </div>
             )}
 
             {viewSection === 'plan' && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-black text-gradient-primary flex items-center gap-2"><Calendar size={20} /> Study Plan</h3>
-                <div className="space-y-4">
-                  {(getStudyPlan(expandedPlan) || []).map((day, i) => (
-                    <div key={i} className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 space-y-2">
-                      <div className="flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-black flex items-center justify-center">D{day.day}</span>
-                        <span className="font-bold text-white/80">{day.title}</span>
-                      </div>
-                      <ul className="ml-14 space-y-1">
-                        {(day.tasks || []).map((task, j) => (
-                          <li key={j} className="text-white/50 text-sm flex items-center gap-2">
-                            <span className="w-1 h-1 rounded-full bg-accent/50"></span>
-                            {task}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+              <div className="space-y-8">
+                <h3 className="text-sm font-black text-black uppercase tracking-widest border-l-2 border-black pl-3 mb-6">Adaptive Timeline</h3>
+                <div className="space-y-4 max-w-2xl">
+                   {(getStudyPlan(expandedPlan) || []).map((day, i) => (
+                     <div key={i} className="relative pl-12 pb-8 last:pb-0">
+                        <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-white border-2 border-black flex items-center justify-center text-[10px] font-bold z-10">D{day.day}</div>
+                        <div className="absolute left-4 top-8 w-[1px] h-full bg-gray-100 last:hidden"></div>
+                        <div className="space-y-2">
+                           <h4 className="text-sm font-black text-black tracking-tight">{day.title}</h4>
+                           <ul className="space-y-1">
+                              {day.tasks.map((t, idx) => <li key={idx} className="text-xs text-gray-400 flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-black/20"/> {t}</li>)}
+                           </ul>
+                        </div>
+                     </div>
+                   ))}
                 </div>
               </div>
             )}
 
             {viewSection === 'quiz' && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-black text-gradient-primary flex items-center gap-2"><Brain size={20} /> Quiz ({(getNotes(expandedPlan).quiz || []).length} Questions)</h3>
+              <div className="space-y-10">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-black text-black uppercase tracking-widest border-l-2 border-black pl-3">Recall Assessment</h3>
+                  {quizSubmitted && <div className="text-xl font-black text-black italic">SCORE: {Object.keys(quizAnswers).filter(i => quizAnswers[i] === getNotes(expandedPlan).quiz[i]?.answer).length}/{getNotes(expandedPlan).quiz.length}</div>}
+                </div>
                 
-                {quizSubmitted && (
-                  <div className={`text-center p-4 rounded-xl border ${
-                    Object.keys(quizAnswers).filter(i => quizAnswers[i] === getNotes(expandedPlan).quiz[i]?.answer).length >= 7
-                      ? 'bg-green-500/10 border-green-500/30' : 'bg-red-500/10 border-red-500/30'
-                  }`}>
-                    <p className="text-2xl font-black">
-                      {Object.keys(quizAnswers).filter(i => quizAnswers[i] === getNotes(expandedPlan).quiz[i]?.answer).length} / {getNotes(expandedPlan).quiz.length} Correct
-                    </p>
-                  </div>
-                )}
-
-                {(getNotes(expandedPlan).quiz || []).map((q, qIdx) => (
-                  <div key={qIdx} className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 space-y-3">
-                    <p className="font-bold text-white/90 text-sm"><span className="text-primary mr-2">Q{qIdx + 1}.</span>{q.question}</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {Object.entries(q.options || {}).map(([key, value]) => {
-                        const isSelected = quizAnswers[qIdx] === key;
-                        const isCorrect = quizSubmitted && key === q.answer;
-                        const isWrong = quizSubmitted && isSelected && key !== q.answer;
-                        return (
-                          <button 
-                            key={key}
-                            onClick={() => { if (!quizSubmitted) setQuizAnswers(p => ({...p, [qIdx]: key})); }}
-                            disabled={quizSubmitted}
-                            className={`text-left p-2.5 rounded-xl border text-sm flex items-center gap-2 transition-all ${
-                              isCorrect ? 'bg-green-500/20 border-green-500/40 text-green-300' :
-                              isWrong ? 'bg-red-500/20 border-red-500/40 text-red-300' :
-                              isSelected ? 'bg-primary/20 border-primary/40 text-white' :
-                              'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] text-white/60'
-                            }`}
-                          >
-                            <span className="font-black text-[10px] w-5 h-5 flex items-center justify-center rounded bg-white/5 border border-white/10 shrink-0">{key}</span>
-                            <span className="flex-1 text-xs">{value}</span>
-                            {isCorrect && <CheckCircle size={14} className="text-green-400 shrink-0" />}
-                            {isWrong && <XCircle size={14} className="text-red-400 shrink-0" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-
-                {!quizSubmitted && getNotes(expandedPlan).quiz?.length > 0 && (
-                  <button 
-                    onClick={() => setQuizSubmitted(true)}
-                    disabled={Object.keys(quizAnswers).length < (getNotes(expandedPlan).quiz || []).length}
-                    className="uiverse-btn w-full !py-4 disabled:opacity-40"
-                  >
-                    Submit Quiz ({Object.keys(quizAnswers).length}/{(getNotes(expandedPlan).quiz || []).length})
-                  </button>
+                <div className="space-y-6">
+                   {(getNotes(expandedPlan).quiz || []).map((q, qIdx) => (
+                     <div key={qIdx} className="space-y-4">
+                        <p className="text-sm font-black text-black"><span className="text-gray-300 mr-2">#{qIdx+1}</span>{q.question}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                           {Object.entries(q.options || {}).map(([key, val]) => {
+                             const isSelected = quizAnswers[qIdx] === key;
+                             const isCorrect = quizSubmitted && key === q.answer;
+                             const isWrong = quizSubmitted && isSelected && key !== q.answer;
+                             return (
+                               <button key={key} onClick={() => !quizSubmitted && setQuizAnswers(p => ({...p, [qIdx]: key}))} className={`text-left p-4 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${isCorrect ? 'bg-black text-white border-black' : isWrong ? 'bg-gray-100 border-black' : isSelected ? 'bg-black text-white border-black' : 'bg-gray-50 border-gray-100 hover:border-gray-300'}`}>
+                                 <span><span className="opacity-30 mr-3">{key}</span> {val}</span>
+                                 {isCorrect && <CheckCircle size={14} />}
+                                 {isWrong && <XCircle size={14} />}
+                               </button>
+                             );
+                           })}
+                        </div>
+                     </div>
+                   ))}
+                </div>
+                
+                {!quizSubmitted && (
+                  <button onClick={() => setQuizSubmitted(true)} disabled={Object.keys(quizAnswers).length < (getNotes(expandedPlan).quiz || []).length} className="uiverse-btn w-full !py-4">SUBMIT FOR FEEDBACK</button>
                 )}
               </div>
             )}
@@ -405,47 +301,28 @@ export default function PersonalizedPage() {
         </div>
       )}
 
-      {/* Plans Grid */}
+      {/* Library Grid */}
       {!expandedPlan && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {materials.length === 0 && !showGenerate ? (
-            <Card className="col-span-full py-20 bg-white/[0.02] border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center space-y-4">
-              <div className="p-6 bg-white/[0.03] rounded-full text-white/10">
-                <FileText size={64} className="stroke-[1.5]" />
-              </div>
-              <div className="text-center space-y-1">
-                <p className="text-white/60 font-bold text-lg">Your Library is Empty</p>
-                <p className="text-white/20 text-sm font-medium">Create your first AI Study Plan to begin</p>
-              </div>
-            </Card>
+            <div className="col-span-full py-32 bg-white border border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-200"><BookOpen size={30} /></div>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">No cached nodes found</p>
+              <button onClick={() => setShowGenerate(true)} className="text-xs font-bold text-black underline underline-offset-4">GENERATE FIRST PLAN</button>
+            </div>
           ) : (
             Array.isArray(materials) && materials.map(plan => (
-              <Card key={plan.id} className="glass-card-premium neon-border-primary border-white/5 flex flex-col group h-full">
-                <CardHeader className="space-y-2">
-                  <div className="flex justify-between items-center mb-2">
-                    <div className="text-[10px] font-black tracking-widest text-accent flex items-center gap-1.5 uppercase bg-accent/10 px-2 py-1 rounded">
-                      <Calendar size={12} /> {new Date(plan.deadline).toLocaleDateString()}
-                    </div>
-                  </div>
-                  <CardTitle className="text-2xl font-black tracking-tight group-hover:text-primary transition-colors">{plan.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <p className="text-sm line-clamp-3 text-white/40 font-medium leading-relaxed mb-6">{getNotes(plan).summary || plan.material_text}</p>
-                  <div className="flex gap-4">
-                    <button 
-                      onClick={() => openPlanView(plan)}
-                      className="uiverse-btn-outline flex-1 !py-3 !text-[10px] font-black tracking-widest uppercase"
-                    >
-                      View Notes
-                    </button>
-                    <button 
-                      onClick={() => { openPlanView(plan); setViewSection('quiz'); }}
-                      className="uiverse-btn-outline flex-1 !py-3 !text-[10px] font-black tracking-widest uppercase !border-accent/40 !text-accent hover:!bg-accent hover:!text-white"
-                    >
-                      Take Quiz
-                    </button>
-                  </div>
-                </CardContent>
+              <Card key={plan.id} className="bg-white border border-gray-100 rounded-3xl p-6 flex flex-col group hover:border-black transition-all">
+                <div className="flex justify-between items-start mb-4">
+                   <div className="text-[9px] font-black tracking-widest text-gray-300 uppercase">{new Date(plan.deadline).toLocaleDateString()}</div>
+                </div>
+                <h3 className="text-lg font-black text-black leading-tight mb-2 uppercase italic">{plan.title}</h3>
+                <p className="text-xs text-gray-400 line-clamp-2 mb-6 font-medium font-sans">{getNotes(plan).summary || "Analysis pending."}</p>
+                
+                <div className="mt-auto flex gap-2">
+                   <button onClick={() => openPlanView(plan)} className="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border border-black rounded-xl hover:bg-black hover:text-white transition-all">Review</button>
+                   <button onClick={() => { openPlanView(plan); setViewSection('quiz'); }} className="px-4 py-3 border border-gray-100 rounded-xl hover:bg-gray-50 text-gray-400 transition-all"><Brain size={14} /></button>
+                </div>
               </Card>
             ))
           )}

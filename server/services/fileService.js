@@ -1,8 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const { PDFParse } = require('pdf-parse');
 const mammoth = require('mammoth');
 const axios = require('axios');
+
+// Polyfill for PDF.js / pdf-parse in Node environments
+if (typeof global.DOMMatrix === 'undefined') {
+  global.DOMMatrix = class DOMMatrix {};
+}
 
 const apiKey = process.env.GEMINI_API_KEY;
 
@@ -16,11 +20,10 @@ const extractTextFromFile = async (filePath, mimeType, originalName) => {
   try {
     // PDF
     if (mimeType === 'application/pdf' || ext === '.pdf') {
+      const pdf = require('pdf-parse');
       const dataBuffer = fs.readFileSync(filePath);
-      const parser = new PDFParse({ data: dataBuffer });
-      const result = await parser.getText();
-      await parser.destroy();
-      return result.text;
+      const data = await pdf(dataBuffer);
+      return data.text;
     }
 
     // DOCX

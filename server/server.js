@@ -83,7 +83,7 @@ try {
   loadedFeatures['/api/upload'] = '✅ Loaded';
 } catch (err) {
   loadedFeatures['/api/upload'] = `❌ FAILED: ${err.message}`;
-  console.error('🔥 FAILED to load /api/upload:', err.message);
+  console.error('🔥 FAILED to load /api/upload:', err.stack);
 }
 
 // Update health check to include loaded features

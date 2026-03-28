@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
-import { BarChart3, TrendingUp, Clock, Brain, Loader2, Sparkles } from 'lucide-react';
+import { BarChart3, TrendingUp, Clock, Brain, Loader2, Sparkles, Activity } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
 import api from '../lib/api';
 import { useScreenTime } from '../hooks/useScreenTime';
 
 const chartTheme = {
-  bg: 'rgba(255,255,255,0.02)',
-  grid: 'rgba(255,255,255,0.05)',
-  text: 'rgba(255,255,255,0.4)',
-  primary: '#7c3aed',
-  accent: '#06b6d4',
-  secondary: '#f59e0b',
-  green: '#22c55e',
-  red: '#ef4444',
+  bg: '#ffffff',
+  grid: '#f0f0f0',
+  text: '#888888',
+  primary: '#111111',  // Black
+  accent: '#444444',   // Dark Gray
+  secondary: '#888888', // Mid Gray
+  light: '#cccccc',    // Light Gray
 };
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-black/90 border border-white/10 rounded-xl px-4 py-3 shadow-2xl">
-        <p className="text-xs text-white/50 mb-1">{label}</p>
+      <div className="bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-card-md">
+        <p className="text-[10px] font-black uppercase tracking-widest text-gray-300 mb-2">{label}</p>
         {payload.map((p, i) => (
-          <p key={i} className="text-sm font-bold" style={{ color: p.color }}>
+          <p key={i} className="text-xs font-black flex items-center gap-2" style={{ color: '#111111' }}>
+            <span className="w-2 h-2 rounded-full" style={{ background: p.color || p.fill }} />
             {p.name}: {p.value}
           </p>
         ))}
@@ -50,8 +50,7 @@ export default function AnalyticsPage() {
       setAnalytics(data);
     } catch (err) {
       console.error('Failed to load analytics:', err);
-      const errorData = err.response?.data?.error || err.message || 'Failed to load analytics';
-      setError(typeof errorData === 'object' ? (errorData.message || JSON.stringify(errorData)) : errorData);
+      setError(err.response?.data?.error || err.message || 'Data retrieval failed');
     } finally {
       setLoading(false);
     }
@@ -72,14 +71,13 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="text-center py-20">
-        <div className="w-10 h-10 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-white/30 text-sm">Loading analytics...</p>
+      <div className="text-center py-20 grayscale opacity-40">
+        <Loader2 className="animate-spin text-black mx-auto mb-4" size={32} />
+        <p className="text-[10px] font-black uppercase tracking-widest text-black">Syncing metrics...</p>
       </div>
     );
   }
 
-  // Prepare chart data
   const screenTimeData = (analytics?.screenTime || []).map(s => ({
     date: new Date(s.session_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     minutes: Math.round(s.duration_seconds / 60),
@@ -93,11 +91,10 @@ export default function AnalyticsPage() {
   }));
 
   const levelProgressData = (analytics?.progress || []).map(p => ({
-    course: p.course?.title?.substring(0, 20) || 'Course',
+    course: p.course?.title?.substring(0, 15) || 'Node',
     level: p.level || 3,
   }));
 
-  // Combine screen time with quiz performance for correlation chart
   const correlationData = screenTimeData.map((st, i) => {
     const matchingQuiz = quizScoreData.find(q => q.date === st.date);
     return {
@@ -108,41 +105,42 @@ export default function AnalyticsPage() {
   }).filter(d => d.quizScore !== null);
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 w-full mb-20">
+    <div className="animate-fade-in-up w-full">
       
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm font-medium flex items-center justify-between">
-          <span>{error}</span>
-          <button onClick={fetchData} className="text-[10px] font-black tracking-widest uppercase px-3 py-1 bg-red-500/20 rounded-lg hover:bg-red-500/30 transition-colors">Retry</button>
+        <div className="mb-8 p-4 bg-white border border-black/10 rounded-xl flex items-center justify-between shadow-sm capitalize">
+          <span className="text-xs font-bold text-black/70">{error}</span>
+          <button onClick={fetchData} className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-black text-white rounded-lg">Retry</button>
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
-        <div className="space-y-1">
-          <h1 className="text-5xl font-black tracking-tighter text-white">
-            Analytics <span className="text-accent underline decoration-primary/30 underline-offset-8">Dashboard</span>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black uppercase leading-none italic">
+            Neural <span className="text-gray-300">Analytics</span>
           </h1>
-          <p className="text-white/40 font-medium tracking-widest uppercase text-[10px]">Performance visualization & insights</p>
+          <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400 mt-4 ml-1">Performance visualization node</p>
         </div>
         <button onClick={fetchInsights} disabled={insightsLoading}
-          className="uiverse-btn !text-xs !px-6 !py-3 font-black tracking-widest flex items-center gap-3 shadow-xl shadow-primary/20">
-          {insightsLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} className="text-accent" />}
-          {insightsLoading ? 'Analyzing...' : 'Generate AI Insights'}
+          className="uiverse-btn !rounded-xl flex items-center gap-2.5 active:scale-95 transition-transform">
+          {insightsLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} className="text-gray-300" />}
+          <span className="text-[10px] font-black uppercase tracking-widest">{insightsLoading ? 'CALCULATING...' : 'GENERATE AI INSIGHTS'}</span>
         </button>
       </div>
 
       {/* AI Insights Banner */}
       {insights && (
-        <Card className="glass-card-premium neon-border-primary p-8 mb-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="flex items-center gap-3 mb-4">
-            <Brain size={22} className="text-accent" />
-            <h3 className="text-lg font-black tracking-tight text-gradient-primary">AI Performance Insights</h3>
+        <Card className="bg-white border border-black rounded-[2rem] p-8 mb-12 shadow-sm animate-in zoom-in-95 duration-500">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white"><Brain size={20} /></div>
+            <h3 className="text-xl font-black text-black tracking-tight uppercase italic">Cognitive Intelligence Report</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {(insights.insights || []).map((insight, i) => (
-              <div key={i} className="flex items-center gap-3 text-sm text-white/60 bg-white/[0.02] p-4 rounded-xl border border-white/5">
-                <Sparkles size={14} className="text-accent shrink-0" />
-                {insight}
+              <div key={i} className="flex items-start gap-4 text-xs font-semibold text-gray-500 bg-gray-50 p-5 rounded-2xl border border-gray-100">
+                <div className="w-5 h-5 rounded bg-black text-white flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5">{i+1}</div>
+                <span className="leading-relaxed">{insight}</span>
               </div>
             ))}
           </div>
@@ -150,13 +148,13 @@ export default function AnalyticsPage() {
       )}
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
         
-        {/* Screen Time Chart */}
-        <Card className="glass-card-premium p-6 border-white/5">
-          <CardHeader className="p-0 mb-4">
-            <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
-              <Clock size={18} className="text-primary" /> Screen Time (minutes/day)
+        {/* Screen Time Chart — B&W Grayscale */}
+        <Card className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm">
+          <CardHeader className="p-0 mb-8">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-black flex items-center gap-3">
+              <Clock size={16} className="text-gray-300" /> Interaction Metrics
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -164,93 +162,93 @@ export default function AnalyticsPage() {
               <ResponsiveContainer width="100%" height={260}>
                 <AreaChart data={screenTimeData}>
                   <defs>
-                    <linearGradient id="colorScreenTime" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={chartTheme.primary} stopOpacity={0.3} />
-                      <stop offset="95%" stopColor={chartTheme.primary} stopOpacity={0} />
+                    <linearGradient id="colorBw" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#111111" stopOpacity={0.1} />
+                      <stop offset="95%" stopColor="#111111" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
-                  <XAxis dataKey="date" tick={{ fill: chartTheme.text, fontSize: 10 }} />
-                  <YAxis tick={{ fill: chartTheme.text, fontSize: 10 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="minutes" name="Minutes" stroke={chartTheme.primary} fill="url(#colorScreenTime)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="minutes" name="Engagement (min)" stroke="#111111" fill="url(#colorBw)" strokeWidth={3} />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex items-center justify-center text-white/20 text-sm">No screen time data yet</div>
+              <div className="h-[260px] flex items-center justify-center text-gray-200 text-[10px] font-black uppercase tracking-widest">No Interaction Data</div>
             )}
           </CardContent>
         </Card>
 
-        {/* Quiz Scores Chart */}
-        <Card className="glass-card-premium p-6 border-white/5">
-          <CardHeader className="p-0 mb-4">
-            <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
-              <BarChart3 size={18} className="text-accent" /> Quiz Scores Over Time
+        {/* Quiz Scores Chart — B&W Grayscale */}
+        <Card className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm">
+          <CardHeader className="p-0 mb-8">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-black flex items-center gap-3">
+              <Activity size={16} className="text-gray-300" /> Retention Accuracy
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             {quizScoreData.length > 0 ? (
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={quizScoreData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
-                  <XAxis dataKey="quiz" tick={{ fill: chartTheme.text, fontSize: 10 }} />
-                  <YAxis domain={[0, 100]} tick={{ fill: chartTheme.text, fontSize: 10 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
+                  <XAxis dataKey="quiz" axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
+                  <YAxis domain={[0, 100]} axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="score" name="Score" fill={chartTheme.accent} radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="score" name="Score (%)" fill="#111111" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex items-center justify-center text-white/20 text-sm">No quiz data yet</div>
+              <div className="h-[260px] flex items-center justify-center text-gray-200 text-[10px] font-black uppercase tracking-widest">No Retention Data</div>
             )}
           </CardContent>
         </Card>
 
-        {/* Screen Time vs Performance (correlation) */}
-        <Card className="glass-card-premium p-6 border-white/5">
-          <CardHeader className="p-0 mb-4">
-            <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
-              <TrendingUp size={18} className="text-green-400" /> Screen Time vs Performance
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            {correlationData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={260}>
-                <LineChart data={correlationData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
-                  <XAxis dataKey="date" tick={{ fill: chartTheme.text, fontSize: 10 }} />
-                  <YAxis tick={{ fill: chartTheme.text, fontSize: 10 }} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Line type="monotone" dataKey="screenTime" name="Screen Time (min)" stroke={chartTheme.primary} strokeWidth={2} dot={{ r: 4 }} />
-                  <Line type="monotone" dataKey="quizScore" name="Quiz Score (%)" stroke={chartTheme.green} strokeWidth={2} dot={{ r: 4 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[260px] flex items-center justify-center text-white/20 text-sm">Need more data for correlation</div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Level Progression */}
-        <Card className="glass-card-premium p-6 border-white/5">
-          <CardHeader className="p-0 mb-4">
-            <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
-              <TrendingUp size={18} className="text-yellow-400" /> Level Progression by Course
+        {/* Level Progression — B&W Grayscale */}
+        <Card className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm">
+          <CardHeader className="p-0 mb-8">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-black flex items-center gap-3">
+              <TrendingUp size={16} className="text-gray-300" /> Node Progression
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             {levelProgressData.length > 0 ? (
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={levelProgressData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
-                  <XAxis type="number" domain={[0, 5]} tick={{ fill: chartTheme.text, fontSize: 10 }} />
-                  <YAxis dataKey="course" type="category" tick={{ fill: chartTheme.text, fontSize: 10 }} width={120} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} horizontal={false} />
+                  <XAxis type="number" domain={[0, 5]} axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
+                  <YAxis dataKey="course" type="category" axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 9, fontWeight: 800 }} width={100} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="level" name="Level" fill={chartTheme.secondary} radius={[0, 6, 6, 0]} />
+                  <Bar dataKey="level" name="Sync Level" fill="#444444" radius={[0, 8, 8, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex items-center justify-center text-white/20 text-sm">No level data yet</div>
+              <div className="h-[260px] flex items-center justify-center text-gray-200 text-[10px] font-black uppercase tracking-widest">No Node Data</div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Combined View */}
+        <Card className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm">
+          <CardHeader className="p-0 mb-8">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-black flex items-center gap-3">
+              <TrendingUp size={16} className="text-gray-300" /> Efficiency Correlation
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            {correlationData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={260}>
+                <LineChart data={correlationData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Line type="monotone" dataKey="screenTime" name="Time Input" stroke="#111111" strokeWidth={3} dot={{ r: 4, fill: '#111111' }} />
+                  <Line type="monotone" dataKey="quizScore" name="Accuracy" stroke="#888888" strokeWidth={3} strokeDasharray="5 5" dot={{ r: 4, fill: '#888888' }} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[260px] flex items-center justify-center text-gray-200 text-[10px] font-black uppercase tracking-widest">Need Correlation Vectors</div>
             )}
           </CardContent>
         </Card>
