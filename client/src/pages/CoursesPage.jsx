@@ -133,84 +133,115 @@ export default function CoursesPage() {
     <div className="animate-fade-in-up w-full">
       
       {/* Page Header */}
-      <div className="mb-14">
-        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black uppercase italic leading-none">
-          Course <span className="text-gray-300">Catalog</span>
-        </h1>
-        <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400 mt-4 ml-1">
-          {userDomain ? `Adaptive nodes registered for: ${userDomain}` : 'Sync with new learning pathways'}
-        </p>
+      <div className="mb-20">
+        <motion.h1 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-5xl md:text-7xl font-black tracking-tighter text-black uppercase italic leading-[0.9] mb-6"
+        >
+          Spectral <span className="text-gradient-indigo">Catalog</span>
+        </motion.h1>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="text-[11px] font-black tracking-[0.4em] uppercase ml-1 opacity-60"
+        >
+          {userDomain ? `Adaptive nodes: ${userDomain}` : 'Sync with new learning pathways'}
+        </motion.p>
       </div>
       
-      {/* Courses Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
+      {/* Courses Grid with Stagger */}
+      <motion.div 
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+          }
+        }}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 pb-20"
+      >
         {Array.isArray(courses) && courses.map(course => (
-          <Card key={course.id} className="bg-white border border-gray-100 rounded-3xl p-7 flex flex-col group hover:border-black transition-all">
-            <CardHeader className="p-0 space-y-4 mb-8">
-              <div className="flex justify-between items-start">
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-[9px] font-black tracking-widest uppercase px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-100 text-black">
-                    {course.category}
-                  </span>
-                  {course.domain && course.domain !== 'General' && (
-                    <span className="text-[9px] font-black tracking-widest uppercase px-3 py-1.5 rounded-lg bg-black text-white">
-                      {course.domain}
+          <motion.div
+            key={course.id}
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              show: { opacity: 1, y: 0 }
+            }}
+          >
+            <Card className="card h-full flex flex-col group !border-l-[6px] !border-l-indigo-600 !p-8">
+              <CardHeader className="p-0 space-y-6 mb-10">
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-wrap gap-2">
+                    <span className="badge-indigo">
+                      {course.category}
                     </span>
+                    {course.domain && course.domain !== 'General' && (
+                      <span className="badge-teal">
+                        {course.domain}
+                      </span>
+                    )}
+                  </div>
+                  {course.is_playlist && (
+                     <div className="w-10 h-10 rounded-xl glass-luxe flex items-center justify-center glow-indigo" title="Video Content" style={{color:'#4F46E5'}}>
+                        <Play size={16} fill="currentColor" />
+                     </div>
                   )}
                 </div>
-                {course.is_playlist && (
-                   <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-black/20" title="Video Content">
-                      <Play size={14} fill="currentColor" />
-                   </div>
+                
+                <CardTitle className="text-2xl font-black uppercase leading-tight italic tracking-tight text-black">{course.title}</CardTitle>
+                <CardDescription className="line-clamp-3 text-sm font-medium leading-relaxed font-sans text-secondary opacity-80">
+                  {course.description}
+                </CardDescription>
+  
+                {/* AI Details — Glass Mesh */}
+                {courseInfoCache[course.id] ? (
+                  <div className="space-y-4 p-5 rounded-2xl glass-luxe border-indigo-100/30 animate-scale-in">
+                    <div>
+                      <p className="text-[10px] font-black tracking-widest uppercase mb-2 flex items-center gap-2 text-indigo-600">
+                         <Sparkles size={14} /> Utility Case
+                      </p>
+                      <p className="text-xs leading-relaxed font-semibold text-secondary">{courseInfoCache[course.id].whyLearn}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {(courseInfoCache[course.id].achievableRoles || []).map((r, i) => (
+                        <span key={i} className="badge-gray !bg-indigo-50/50 !text-indigo-700">{r}</span>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <button onClick={() => fetchCourseInfo(course)} disabled={loadingInfo[course.id]}
+                    className="text-[11px] font-black tracking-[0.2em] uppercase transition-all flex items-center gap-2 mt-4 hover:gap-3 text-indigo-600">
+                    {loadingInfo[course.id] ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                    {loadingInfo[course.id] ? 'Parsing...' : 'Neural Insights'}
+                  </button>
                 )}
-              </div>
+              </CardHeader>
               
-              <CardTitle className="text-xl font-black uppercase leading-tight italic tracking-tight">{course.title}</CardTitle>
-              <CardDescription className="line-clamp-2 text-gray-400 text-xs font-medium leading-relaxed font-sans">
-                {course.description}
-              </CardDescription>
-
-              {/* AI Details */}
-              {courseInfoCache[course.id] ? (
-                <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 animate-in fade-in duration-300">
-                  <div>
-                    <p className="text-[9px] font-black tracking-widest uppercase text-black mb-2 flex items-center gap-2">
-                       <Sparkles size={12} className="text-gray-300" /> Utility Case
-                    </p>
-                    <p className="text-xs text-gray-400 leading-relaxed font-medium">{courseInfoCache[course.id].whyLearn}</p>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {(courseInfoCache[course.id].achievableRoles || []).map((r, i) => (
-                      <span key={i} className="text-[9px] px-2 py-1 rounded bg-white border border-gray-200 text-black font-bold uppercase tracking-tight">{r}</span>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <button onClick={() => fetchCourseInfo(course)} disabled={loadingInfo[course.id]}
-                  className="text-[10px] font-black tracking-widest uppercase text-gray-300 hover:text-black transition-colors flex items-center gap-2 mt-2">
-                  {loadingInfo[course.id] ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                  {loadingInfo[course.id] ? 'Parsing...' : 'AI Insights'}
+              <CardFooter className="p-0 mt-auto pt-6 border-t border-indigo-50/50">
+                <button 
+                  onClick={() => handleLaunchCourse(course)} 
+                  className="btn-primary w-full !text-[11px] shadow-glow-indigo group-hover:scale-[1.03] transition-all"
+                >
+                  {enrolledCourses[course.id] ? 'RECALIBRATE SESSION' : 'INITIALIZE NODE'}
+                  <ArrowRight size={16} />
                 </button>
-              )}
-            </CardHeader>
-            
-            <CardFooter className="p-0 mt-auto">
-              <button 
-                onClick={() => handleLaunchCourse(course)} 
-                className="uiverse-btn w-full !rounded-xl !py-3.5 !text-[10px] font-black tracking-widest uppercase flex items-center justify-center gap-2 group-hover:scale-[1.02] transition-transform"
-              >
-                {enrolledCourses[course.id] ? 'RECALIBRATE SESSION' : 'INITIALIZE NODE'}
-                <ArrowRight size={14} />
-              </button>
-            </CardFooter>
-          </Card>
+              </CardFooter>
+            </Card>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {courses.length === 0 && (
-        <div className="text-center py-32 space-y-6 grayscale opacity-30">
-          <BrainCircuit size={64} className="mx-auto text-black" />
-          <p className="text-sm font-black uppercase tracking-widest">No spectral nodes found</p>
+        <div className="text-center py-32 space-y-6">
+          <div className="w-20 h-20 rounded-2xl mx-auto flex items-center justify-center" style={{background:'#EEF2FF'}}>
+            <BrainCircuit size={40} style={{color:'#4F46E5'}} />
+          </div>
+          <p className="text-sm font-black uppercase tracking-widest" style={{color:'#191C1E'}}>No Spectral Nodes Found</p>
+          <p className="text-xs" style={{color:'#464555'}}>No courses match your current domain. Try exploring all categories.</p>
         </div>
       )}
 
@@ -227,7 +258,7 @@ export default function CoursesPage() {
                 </h3>
                 <p className="text-gray-400 text-[9px] font-black mt-2 uppercase tracking-[0.3em] ml-1">Path: {activeCourse.title}</p>
               </div>
-              <button onClick={() => setShowLaunchTest(false)} className="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-black hover:bg-gray-50 rounded-full transition-all">
+              <button onClick={() => setShowLaunchTest(false)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-50 rounded-full transition-all">
                 <XCircle size={22} />
               </button>
             </div>
@@ -236,7 +267,7 @@ export default function CoursesPage() {
               {launchTestLoading ? (
                 <div className="text-center py-20 space-y-6">
                   <div className="w-10 h-10 border-2 border-black/10 border-t-black rounded-full animate-spin mx-auto"></div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 animate-pulse">Generating Neural Test Matrix...</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] animate-pulse" style={{color:'#4F46E5'}}>Generating Neural Test Matrix...</p>
                 </div>
               ) : launchTestData ? (
                 <div className="space-y-10">

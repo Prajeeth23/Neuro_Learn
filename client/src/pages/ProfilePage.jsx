@@ -87,32 +87,34 @@ export default function ProfilePage() {
     <div className="max-w-6xl mx-auto space-y-12 animate-fade-in-up pb-32">
       
       {/* Dossier Header */}
-      <div className="bg-white border border-gray-100 rounded-[3rem] p-10 shadow-card-lg flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none grayscale"><UserCircle size={200} /></div>
+      <div className="glass-luxe border-indigo-100/30 rounded-[3rem] p-12 shadow-2xl flex flex-col md:flex-row items-center gap-12 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none grayscale group-hover:scale-110 transition-transform duration-700">
+           <UserCircle size={300} />
+        </div>
         <div className="relative shrink-0">
-          <div className="w-32 h-32 rounded-[2.5rem] bg-black flex items-center justify-center text-4xl font-black text-white shadow-xl shadow-black/10">
+          <div className="w-40 h-40 rounded-[3rem] bg-black flex items-center justify-center text-5xl font-black text-white glow-indigo shadow-[0_20px_50px_rgba(0,0,0,0.3)] italic tracking-tighter">
             {initials}
           </div>
-          <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-black">
-             <Award size={20} />
+          <div className="absolute -bottom-4 -right-4 w-14 h-14 rounded-2xl glass-luxe bg-white border-indigo-50 shadow-xl flex items-center justify-center text-indigo-600">
+             <Award size={24} />
           </div>
         </div>
-        <div className="text-center md:text-left space-y-4">
-          <div className="space-y-1">
-             <h1 className="text-4xl font-black italic tracking-tighter text-black uppercase leading-none">{fullName}</h1>
-             <p className="text-[10px] font-black tracking-[0.3em] text-gray-400 uppercase">IDENTIFIER: {email.toUpperCase()}</p>
+        <div className="text-center md:text-left space-y-6">
+          <div className="space-y-2">
+             <h1 className="text-5xl md:text-6xl font-black italic tracking-tighter text-black uppercase leading-none">{fullName}</h1>
+             <p className="text-[11px] font-black tracking-[0.4em] uppercase opacity-40">System Node ID: {email.toUpperCase()}</p>
           </div>
-          <div className="flex flex-wrap justify-center md:justify-start gap-3">
-             <span className="px-3 py-1.5 bg-black text-white text-[9px] font-black rounded-lg uppercase tracking-widest leading-none">
+          <div className="flex flex-wrap justify-center md:justify-start gap-4">
+             <span className="px-5 py-2 glass-luxe bg-black text-white text-[10px] font-black rounded-xl uppercase tracking-widest leading-none glow-indigo">
                 {isAdmin ? 'ADMINISTRATOR' : 'PIONEER LEARNER'}
              </span>
              {userLevel && (
-               <span className="px-3 py-1.5 bg-gray-50 border border-gray-100 text-black text-[9px] font-black rounded-lg uppercase tracking-widest leading-none">
+               <span className="px-5 py-2 glass-luxe bg-emerald-50 text-emerald-700 border-emerald-100 text-[10px] font-black rounded-xl uppercase tracking-widest leading-none">
                   RANK: {userLevel}★ {userLevel === 5 ? 'ELITE' : userLevel === 4 ? 'STRUCTURALIST' : 'INITIATE'}
                </span>
              )}
-             <span className="px-3 py-1.5 bg-gray-50 border border-gray-100 text-gray-400 text-[9px] font-black rounded-lg uppercase tracking-widest leading-none">
-                AUTH: {provider.toUpperCase()}
+             <span className="px-5 py-2 glass-luxe bg-indigo-50 text-indigo-700 border-indigo-100 text-[10px] font-black rounded-xl uppercase tracking-widest leading-none">
+                PROTOCOL: {provider.toUpperCase()}
              </span>
           </div>
         </div>
@@ -120,77 +122,87 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Profile Synthesis */}
-        <Card className="lg:col-span-2 bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-sm">
-          <div className="flex items-center gap-4 mb-10 pb-6 border-b border-gray-50">
-             <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-black"><Settings size={20} /></div>
-             <h3 className="text-sm font-black text-black uppercase tracking-widest">Configuration Sync</h3>
+        <Card className="lg:col-span-2 card-luxe p-12">
+          <div className="flex items-center gap-6 mb-12 pb-8 border-b border-indigo-50/50">
+             <div className="w-14 h-14 rounded-2xl glass-luxe bg-indigo-50 text-indigo-600 flex items-center justify-center glow-indigo"><Settings size={24} /></div>
+             <div>
+               <h3 className="text-2xl font-black uppercase italic tracking-tighter text-black leading-none">Configuration Sync</h3>
+               <p className="text-[10px] font-black tracking-[0.2em] uppercase opacity-40 mt-1">Adjust learning parameters</p>
+             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">Universal Name</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900/40 ml-1">Universal Name</label>
               <input value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))}
-                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-black focus:border-black focus:outline-none transition-all uppercase" />
+                className="input-glass !h-14 uppercase" />
             </div>
-            <div className="space-y-2">
-              <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">Institutional Domain</label>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900/40 ml-1">Institutional Domain</label>
               <select value={profile.department} onChange={e => setProfile(p => ({ ...p, department: e.target.value }))}
-                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-black focus:border-black focus:outline-none transition-all uppercase">
+                className="input-glass !h-14 uppercase">
                 <option value="">SELECT DOMAIN</option>
                 {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
-            <div className="space-y-2">
-              <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">Temporal Phase</label>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900/40 ml-1">Temporal Phase</label>
               <select value={profile.year} onChange={e => setProfile(p => ({ ...p, year: e.target.value }))}
-                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-black focus:border-black focus:outline-none transition-all uppercase">
+                className="input-glass !h-14 uppercase">
                 <option value="">SELECT PHASE</option>
                 {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
-            <div className="space-y-2">
-              <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">Core Vector</label>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900/40 ml-1">Core Vector</label>
               <select value={profile.domain_of_interest} onChange={e => setProfile(p => ({ ...p, domain_of_interest: e.target.value }))}
-                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-black focus:border-black focus:outline-none transition-all uppercase">
+                className="input-glass !h-14 uppercase">
                 <option value="">SELECT VECTOR</option>
                 {DOMAINS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
           </div>
-          <div className="mt-12 flex items-center justify-between gap-6 pt-10 border-t border-gray-50">
-             <p className="text-[9px] font-black text-gray-200 uppercase tracking-widest italic">{saveMsg || 'STANDBY FOR SYNCHRONIZATION'}</p>
-             <Button variant="black" onClick={handleSave} disabled={saving} className="!rounded-xl !px-12 !py-4 shadow-xl shadow-black/5">
+          <div className="mt-16 flex items-center justify-between gap-8 pt-12 border-t border-indigo-50/50">
+             <div className="flex items-center gap-3">
+                <div className={`w-2 h-2 rounded-full ${saveMsg ? 'bg-emerald-500 animate-pulse' : 'bg-indigo-300'}`} />
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] italic text-indigo-900/60 leading-none">{saveMsg || 'READY FOR SYNCHRONIZATION'}</p>
+             </div>
+             <Button variant="black" onClick={handleSave} disabled={saving} className="btn-primary !rounded-2xl !px-16 !py-5 shadow-2xl">
                 {saving ? 'SYNCING...' : 'SAVE CONFIGURATION'}
              </Button>
           </div>
         </Card>
 
         {/* System Ledger */}
-        <Card className="bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-sm flex flex-col">
-          <div className="flex items-center gap-4 mb-10 pb-6 border-b border-gray-50">
-             <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-white font-black italic">!</div>
-             <h3 className="text-sm font-black text-black uppercase tracking-widest">System Ledger</h3>
+        <Card className="card-luxe p-12 flex flex-col relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-[50px] pointer-events-none" />
+          <div className="flex items-center gap-6 mb-12 pb-8 border-b border-indigo-50/50">
+             <div className="w-14 h-14 rounded-2xl glass-luxe bg-black text-white flex items-center justify-center glow-indigo font-black italic text-2xl">!</div>
+             <div>
+               <h3 className="text-2xl font-black uppercase italic tracking-tighter text-black leading-none">System Ledger</h3>
+               <p className="text-[10px] font-black tracking-[0.2em] uppercase opacity-40 mt-1">Core node meta</p>
+             </div>
           </div>
-          <div className="space-y-6 flex-1">
+          <div className="space-y-8 flex-1">
              {[
-               { icon: <Mail size={14} />, label: 'GATEWAY', val: email.toUpperCase() },
-               { icon: <Shield size={14} />, label: 'ACCESS', val: provider.toUpperCase() },
-               { icon: <Star size={14} />, label: 'ORIGIN', val: joinedDate.toUpperCase() },
-               { icon: <Award size={14} />, label: 'PRIORITY', val: isAdmin ? 'LEVEL 10' : 'LEVEL 01' },
+               { icon: <Mail size={16} />, label: 'GATEWAY', val: email.toUpperCase() },
+               { icon: <Shield size={16} />, label: 'ACCESS', val: provider.toUpperCase() },
+               { icon: <Star size={16} />, label: 'ORIGIN', val: joinedDate.toUpperCase() },
+               { icon: <Award size={16} />, label: 'PRIORITY', val: isAdmin ? 'LEVEL 10' : 'LEVEL 01' },
              ].map((item, i) => (
-               <div key={i} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
-                  <div className="flex items-center gap-3 text-gray-200">
+               <div key={i} className="flex justify-between items-center pb-4 border-b border-indigo-50/30 last:border-0 group">
+                  <div className="flex items-center gap-4 text-indigo-600 transition-transform group-hover:translate-x-1">
                      {item.icon}
-                     <span className="text-[8px] font-black uppercase tracking-[0.2em]">{item.label}</span>
+                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-900/40">{item.label}</span>
                   </div>
-                  <span className="text-[10px] font-black text-black tracking-tight">{item.val}</span>
+                  <span className="text-[11px] font-black tracking-tight text-black">{item.val}</span>
                </div>
              ))}
           </div>
-          <div className="mt-10 p-5 bg-gray-50 rounded-2xl border border-gray-100">
-             <p className="text-[8px] font-black text-gray-300 uppercase tracking-widest mb-1 text-center">SESSION PULSE</p>
-             <div className="flex items-center justify-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></div>
-                <span className="text-[10px] font-black text-black uppercase">LIVE ENCRYPTED</span>
+          <div className="mt-12 p-8 rounded-[2rem] glass-luxe bg-indigo-50/50 border-indigo-100 flex flex-col items-center justify-center space-y-3">
+             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600/60">SESSION PULSE</p>
+             <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-black animate-pulse shadow-[0_0_10px_rgba(0,0,0,0.5)]"></div>
+                <span className="text-[12px] font-black text-black uppercase tracking-widest italic">LIVE ENCRYPTED</span>
              </div>
           </div>
         </Card>
@@ -211,25 +223,25 @@ export default function ProfilePage() {
               </button>
            </div>
 
-           {careerRoles && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in duration-700">
+            {careerRoles && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 animate-in fade-in duration-1000">
                 {careerRoles.map((role, i) => (
                   <button key={i} onClick={() => fetchRoadmap(role)} 
-                    className={`text-left p-8 rounded-[2rem] border transition-all relative overflow-hidden group ${
-                      selectedRole?.title === role.title ? 'bg-black text-white border-black shadow-card-lg shadow-black/20' : 'bg-white border-gray-100 hover:border-black'
+                    className={`text-left p-10 rounded-[3rem] border transition-all relative overflow-hidden group scale-100 active:scale-95 ${
+                      selectedRole?.title === role.title ? 'glass-luxe bg-black text-white border-black shadow-2xl glow-indigo' : 'glass-luxe bg-white/40 border-indigo-50 hover:border-indigo-200'
                     }`}>
-                    <div className="relative z-10 space-y-4">
-                       <h4 className="text-sm font-black uppercase italic tracking-tight leading-none">{role.title}</h4>
-                       <p className={`text-[10px] font-medium leading-relaxed line-clamp-2 ${selectedRole?.title === role.title ? 'text-gray-400' : 'text-gray-300'}`}>{role.description}</p>
-                       <div className="flex gap-2">
-                          <span className={`text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border ${selectedRole?.title === role.title ? 'bg-white/10 border-white/10 text-white' : 'bg-gray-50 border-gray-100 text-gray-400'}`}>{role.avgSalary}</span>
+                    <div className="relative z-10 space-y-6">
+                       <h4 className="text-xl font-black uppercase italic tracking-tighter leading-none group-hover:text-indigo-600 transition-colors">{role.title}</h4>
+                        <p className={`text-[11px] font-black uppercase tracking-tighter leading-relaxed line-clamp-3 opacity-60 ${selectedRole?.title === role.title ? 'text-white/80' : 'text-indigo-900'}`}>{role.description}</p>
+                        <div className="flex gap-3">
+                           <span className={`text-[10px] font-black px-4 py-1.5 rounded-lg uppercase tracking-widest border ${selectedRole?.title === role.title ? 'bg-white/10 border-white/10 text-white' : 'glass-luxe bg-indigo-50 border-indigo-100 text-indigo-600'}`}>{role.avgSalary}</span>
                        </div>
                     </div>
-                    <div className={`absolute -bottom-2 -right-2 opacity-5 scale-150 grayscale transition-opacity ${selectedRole?.title === role.title ? 'opacity-20' : 'group-hover:opacity-10'}`}><Layers size={60} /></div>
+                    <div className={`absolute -bottom-4 -right-4 opacity-[0.05] grayscale transition-all duration-700 group-hover:scale-125 group-hover:opacity-10 ${selectedRole?.title === role.title ? 'scale-125 opacity-20' : ''}`}><Layers size={100} /></div>
                   </button>
                 ))}
               </div>
-           )}
+            )}
         </div>
       )}
 
@@ -250,30 +262,30 @@ export default function ProfilePage() {
                    <div className="w-1.5 h-10 bg-black" />
                    <h3 className="text-4xl font-black italic tracking-tighter text-black uppercase leading-none">{roadmap.title}</h3>
                 </div>
-                <p className="text-[10px] font-black tracking-[0.3em] text-gray-300 uppercase ml-5">PROJECTION DURATION: {roadmap.estimatedDuration.toUpperCase()}</p>
+                 <p className="text-[10px] font-black tracking-[0.3em] uppercase ml-5" style={{color:'#464555'}}>PROJECTION DURATION: {roadmap.estimatedDuration.toUpperCase()}</p>
              </div>
 
-             <div className="space-y-6">
+             <div className="space-y-10">
                 {(roadmap.phases || []).map((phase, i) => (
-                  <div key={i} className="group relative pl-12 border-l border-gray-100 pb-12 last:pb-0">
-                     <div className="absolute top-0 left-[-8px] w-4 h-4 rounded-full bg-white border-2 border-black z-10" />
-                     <div className="bg-gray-50 border border-gray-100 rounded-[2rem] p-8 space-y-4 hover:border-black transition-all">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                           <div className="space-y-1">
-                              <h4 className="text-lg font-black uppercase italic text-black">{phase.title}</h4>
-                              <p className="text-[9px] font-black uppercase text-gray-300 tracking-widest">PHASE {phase.phase} | {phase.duration.toUpperCase()}</p>
+                  <div key={i} className="group relative pl-16 border-l-2 border-indigo-50 pb-16 last:pb-0">
+                     <div className="absolute top-0 left-[-11px] w-5 h-5 rounded-full glass-luxe bg-white border-2 border-black z-10 glow-indigo" />
+                     <div className="glass-luxe bg-white/40 border-indigo-50/50 rounded-[3rem] p-10 space-y-6 hover:border-indigo-300 hover:translate-x-2 transition-all group shadow-sm">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                           <div className="space-y-2">
+                              <h4 className="text-3xl font-black uppercase italic text-black tracking-tighter">{phase.title}</h4>
+                               <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">SYNERGY PHASE {String(phase.phase).padStart(2, '0')} | {phase.duration.toUpperCase()}</p>
                            </div>
-                           <div className="flex flex-wrap gap-2">
+                           <div className="flex flex-wrap gap-3">
                               {(phase.skills || []).map((s, j) => (
-                                <span key={j} className="text-[9px] px-3 py-1 bg-black text-white rounded-lg font-black uppercase tracking-widest leading-none">{s}</span>
+                                <span key={j} className="text-[10px] px-5 py-2 glass-luxe bg-black text-white rounded-xl font-black uppercase tracking-widest leading-none glow-indigo group-hover:scale-110 transition-transform">{s}</span>
                               ))}
                            </div>
                         </div>
-                        <p className="text-xs text-gray-400 font-bold leading-relaxed max-w-2xl">{phase.description}</p>
-                        <div className="flex flex-wrap gap-2 pt-2">
-                           {(phase.tools || []).map((t, j) => (
-                             <span key={j} className="text-[8px] px-2 py-1 bg-white border border-gray-100 rounded-md text-gray-300 font-black uppercase tracking-widest">{t}</span>
-                           ))}
+                        <p className="text-sm text-indigo-900/60 font-black uppercase leading-relaxed max-w-4xl tracking-tight">{phase.description}</p>
+                        <div className="flex flex-wrap gap-3 pt-4 border-t border-indigo-50/50">
+                            {(phase.tools || []).map((t, j) => (
+                              <span key={j} className="text-[9px] px-4 py-2 rounded-xl font-black uppercase tracking-widest glass-luxe bg-indigo-50 border-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">{t}</span>
+                            ))}
                         </div>
                      </div>
                   </div>
@@ -282,12 +294,12 @@ export default function ProfilePage() {
 
              {roadmap.tips?.length > 0 && (
                <div className="pt-10 border-t border-gray-100">
-                  <h4 className="text-[9px] font-black tracking-[0.3em] text-gray-300 uppercase mb-6 text-center">PRACTICAL GUIDELINES</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {roadmap.tips.map((tip, i) => (
-                      <div key={i} className="p-6 bg-gray-50 border border-gray-100 rounded-2xl flex gap-4">
-                         <Star size={14} className="text-black shrink-0 mt-0.5" />
-                         <p className="text-[11px] text-gray-400 font-bold leading-relaxed">{tip}</p>
+                   <h4 className="text-[9px] font-black tracking-[0.3em] uppercase mb-6 text-center" style={{color:'#464555'}}>PRACTICAL GUIDELINES</h4>
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                     {roadmap.tips.map((tip, i) => (
+                       <div key={i} className="p-6 rounded-2xl flex gap-4" style={{background:'#EEF2FF', border:'1px solid #E2DFFF'}}>
+                          <Star size={14} style={{color:'#4F46E5'}} className="shrink-0 mt-0.5" />
+                          <p className="text-[11px] font-bold leading-relaxed" style={{color:'#464555'}}>{tip}</p>
                       </div>
                     ))}
                   </div>
@@ -305,11 +317,11 @@ export default function ProfilePage() {
               <p className="text-[9px] font-black tracking-[0.3em] text-gray-400 uppercase">DOMAIN ENROLLMENT LOG</p>
            </div>
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {enrolledCourses.map((progress, i) => (
-                <div key={i} className="p-8 bg-white border border-gray-100 rounded-[2rem] shadow-sm hover:border-black transition-all flex justify-between items-center group">
-                  <div className="space-y-1">
-                    <p className="font-black text-black uppercase italic tracking-tight text-sm leading-none">{progress.course?.title || 'NODE'}</p>
-                    <p className="text-[9px] font-black tracking-widest uppercase text-gray-300 italic">{progress.course?.category?.toUpperCase() || ''}</p>
+               {enrolledCourses.map((progress, i) => (
+                 <div key={i} className="p-8 bg-white rounded-[2rem] shadow-sm transition-all flex justify-between items-center group" style={{border:'1px solid #E0E3E5'}}>
+                   <div className="space-y-1">
+                     <p className="font-black uppercase italic tracking-tight text-sm leading-none" style={{color:'#191C1E'}}>{progress.course?.title || 'NODE'}</p>
+                     <span className="text-[9px] font-black tracking-widest uppercase inline-block rounded-md px-2 py-0.5" style={{background:'#EEF2FF', color:'#4F46E5'}}>{progress.course?.category?.toUpperCase() || ''}</span>
                   </div>
                   <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex flex-col items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
                     <span className="text-xs font-black">{progress.level}★</span>
