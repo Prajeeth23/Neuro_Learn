@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, XCircle, Trophy, RotateCcw, ArrowRight, ArrowLeft, Loader2, Sparkles, BrainCircuit, Maximize, ShieldAlert } from 'lucide-react';
+import { CheckCircle, XCircle, Trophy, RotateCcw, ArrowRight, ArrowLeft, BrainCircuit, Maximize, ShieldAlert } from 'lucide-react';
 import api from '../lib/api';
 
 export default function QuizPage() {
@@ -18,29 +18,63 @@ export default function QuizPage() {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [calculatedScore, setCalculatedScore] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(() => document.fullscreenElement ? true : false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+  const submittedRef = useRef(false);
+  const warningTimerRef = useRef(null);
 
+  // Enter fullscreen automatically on mount
+  useEffect(() => {
+    const tryEnterFullscreen = () => {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    };
+    // Small delay to ensure DOM is ready
+    const t = setTimeout(tryEnterFullscreen, 300);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Track fullscreen state and force re-entry if quiz is not done
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const inFs = !!document.fullscreenElement;
+      setIsFullscreen(inFs);
+
+      // If they exited fullscreen and haven't submitted yet → force back in
+      if (!inFs && !submittedRef.current) {
+        setShowWarning(true);
+        clearTimeout(warningTimerRef.current);
+        // Auto re-enter after 2 seconds
+        warningTimerRef.current = setTimeout(() => {
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          }
+          setShowWarning(false);
+        }, 2000);
+      }
     };
-    
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      clearTimeout(warningTimerRef.current);
+    };
   }, []);
 
   const enterFullscreen = () => {
     if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(err => console.error(err));
+      document.documentElement.requestFullscreen().catch(() => {});
     }
   };
 
   const exitFullscreen = () => {
     if (document.fullscreenElement && document.exitFullscreen) {
-      document.exitFullscreen().catch(err => console.error(err));
+      document.exitFullscreen().catch(() => {});
     }
   };
 
+  // Fetch quiz questions
   useEffect(() => {
     async function fetchQuiz() {
       try {
@@ -76,7 +110,10 @@ export default function QuizPage() {
     questions.forEach((q, idx) => { if (selectedAnswers[idx] === q.answer) correct++; });
     const score = Math.round((correct / questions.length) * 100);
     setCalculatedScore(score);
+    submittedRef.current = true;
     setSubmitted(true);
+    // Exit fullscreen now that quiz is done
+    exitFullscreen();
     try {
       if (id && courseId) {
         await api.post(`/assessments/module/${id}/submit`, { score, courseId });
@@ -84,9 +121,10 @@ export default function QuizPage() {
     } catch (err) { console.error('Failed to submit quiz', err); }
   };
 
+  // --- LOADING STATE ---
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-8 grayscale opacity-40">
+      <div className="min-h-screen flex flex-col items-center justify-center space-y-8 bg-white">
         <div className="w-16 h-16 border-2 border-black/10 border-t-black rounded-full animate-spin"></div>
         <div className="text-center space-y-4">
           <p className="text-2xl font-black tracking-tighter text-black uppercase italic">Neural Sync in Progress</p>
@@ -96,6 +134,7 @@ export default function QuizPage() {
     );
   }
 
+  // --- RESULTS STATE ---
   if (submitted) {
     const correct = questions.filter((q, idx) => selectedAnswers[idx] === q.answer).length;
     return (
@@ -108,9 +147,9 @@ export default function QuizPage() {
             <CardTitle className="text-5xl font-black italic tracking-tighter mb-2">{calculatedScore}%</CardTitle>
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300">{correct} OF {questions.length} NODES SYNCHRONIZED</p>
             <p className="text-sm mt-8 text-gray-400 font-medium px-10 leading-relaxed">
-              {calculatedScore >= 85 ? '🌟 Neural alignment optimized. Exceptional focus achieved.' : 
-               calculatedScore >= 70 ? '✅ Target threshold met. Knowledge successfully indexed.' : 
-               '💪 Alignment incomplete. Recommendation: Review synopsys and recalibrate pulse.'}
+              {calculatedScore >= 85 ? '🌟 Neural alignment optimized. Exceptional focus achieved.' :
+               calculatedScore >= 70 ? '✅ Target threshold met. Knowledge successfully indexed.' :
+               '💪 Alignment incomplete. Recommendation: Review synopsis and recalibrate pulse.'}
             </p>
           </div>
 
@@ -134,10 +173,10 @@ export default function QuizPage() {
           </div>
 
           <div className="flex gap-4">
-            <Button onClick={() => { exitFullscreen(); navigate(courseId ? `/dashboard/courses/${courseId}` : '/dashboard/courses'); }} variant="outline" className="flex-1 !rounded-xl !py-4">
+            <Button onClick={() => navigate(courseId ? `/dashboard/courses/${courseId}` : '/dashboard/courses')} variant="outline" className="flex-1 !rounded-xl !py-4">
               <ArrowLeft size={14} className="mr-2" /> EXIT NODE
             </Button>
-            <Button onClick={() => { window.location.reload(); }} variant="black" className="flex-1 !rounded-xl !py-4">
+            <Button onClick={() => window.location.reload()} variant="black" className="flex-1 !rounded-xl !py-4">
               <RotateCcw size={14} className="mr-2" /> RECALIBRATE
             </Button>
           </div>
@@ -146,21 +185,22 @@ export default function QuizPage() {
     );
   }
 
-  if (!isFullscreen) {
+  // --- FULLSCREEN WARNING OVERLAY (flashes briefly when ESC is pressed) ---
+  if (showWarning || !isFullscreen) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
-        <div className="w-20 h-20 bg-black text-white rounded-[2rem] flex items-center justify-center shadow-lg shadow-black/10">
+      <div className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+        <div className="w-20 h-20 bg-black text-white rounded-[2rem] flex items-center justify-center shadow-lg shadow-black/10 animate-pulse">
           <ShieldAlert size={32} />
         </div>
-        <div className="text-center space-y-4 max-w-md">
-          <p className="text-2xl font-black tracking-tighter text-black uppercase italic">Secure Mode Required</p>
-          <p className="text-sm font-medium text-gray-500 leading-relaxed px-6">
-            This assessment requires secure full-screen mode to prevent distractions and ensure integrity. Please enter full screen to continue.
+        <div className="text-center space-y-4 max-w-md px-6">
+          <p className="text-2xl font-black tracking-tighter text-black uppercase italic">Secure Mode Active</p>
+          <p className="text-sm font-medium text-gray-500 leading-relaxed">
+            Exiting full-screen is not allowed during an assessment. Returning you to secure mode automatically...
           </p>
         </div>
         <Button onClick={enterFullscreen} variant="black" className="px-8 !py-4 !rounded-xl text-xs font-black tracking-widest uppercase mt-4">
           <Maximize size={16} className="mr-3 inline-block" />
-          ENTER FULLSCREEN
+          RESUME FULLSCREEN NOW
         </Button>
       </div>
     );
@@ -168,6 +208,7 @@ export default function QuizPage() {
 
   if (!q) return null;
 
+  // --- QUIZ STATE ---
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-6 animate-fade-in-up">
       <Card className="w-full max-w-2xl bg-white border border-gray-100 rounded-[3rem] p-10 shadow-card-lg">
