@@ -239,30 +239,32 @@ export default function CoursesPage() {
         </div>
       )}
 
-      {/* Launch Test Modal — Blue & Black Premium Theme */}
+      {/* Launch Test Modal — Full Screen Premium Theme */}
       {showLaunchTest && activeCourse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-[#0f0f1a] border border-indigo-900/50 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl shadow-indigo-900/30 flex flex-col">
-
-            {/* Modal Header */}
-            <div className="px-8 py-6 border-b border-indigo-900/30 sticky top-0 bg-[#0f0f1a]/95 backdrop-blur-md z-10 flex justify-between items-center rounded-t-3xl"
-              style={{ background: 'linear-gradient(135deg, #0f0f1a 0%, #1a1040 100%)' }}>
+        <div className="fixed inset-0 z-50 bg-[#0f0f1a] overflow-y-auto flex flex-col animate-in slide-in-from-bottom-4 duration-300">
+          
+          {/* Header */}
+          <div className="px-4 py-6 md:px-8 border-b border-indigo-900/40 sticky top-0 bg-[#0f0f1a]/95 backdrop-blur-xl z-20 shadow-lg shadow-black/30"
+            style={{ background: 'linear-gradient(135deg, rgba(15,15,26,0.98) 0%, rgba(26,16,64,0.95) 100%)' }}>
+            <div className="max-w-4xl mx-auto w-full flex justify-between items-center">
               <div className="flex items-center gap-4">
-                <div className="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-                  <BrainCircuit size={20} />
+                <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]">
+                  <BrainCircuit size={22} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-white tracking-tight">SYNC ASSESSMENT</h3>
-                  <p className="text-indigo-400 text-[10px] font-semibold mt-0.5 uppercase tracking-widest">{activeCourse.title}</p>
+                  <h3 className="text-xl md:text-2xl font-black text-white tracking-tight">SYNC ASSESSMENT</h3>
+                  <p className="text-indigo-400 text-[10px] md:text-xs font-bold mt-1 uppercase tracking-widest">{activeCourse.title}</p>
                 </div>
               </div>
               <button onClick={() => setShowLaunchTest(false)}
-                className="w-10 h-10 flex items-center justify-center text-indigo-400 hover:text-white hover:bg-indigo-800/50 rounded-xl transition-all">
-                <XCircle size={22} />
+                className="w-10 h-10 flex items-center justify-center text-indigo-400 border border-indigo-900/50 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/50 rounded-xl transition-all">
+                <XCircle size={20} />
               </button>
             </div>
+          </div>
 
-            <div className="p-8 flex-1">
+          {/* Content Area */}
+          <div className="flex-1 w-full max-w-4xl mx-auto p-4 py-10 md:p-8">
               {launchTestLoading ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-6">
                   <div className="w-14 h-14 rounded-full border-2 border-indigo-800 border-t-indigo-400 animate-spin" />
@@ -342,7 +344,6 @@ export default function CoursesPage() {
                 </div>
               )}
             </div>
-          </div>
         </div>
       )}
     </div>
