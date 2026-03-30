@@ -60,48 +60,40 @@ export default function SignupPage() {
 
       {/* Left Branding Panel */}
       <div
-        className="hidden lg:flex flex-col justify-between w-2/5 p-16 relative overflow-hidden mesh-gradient-aura"
+        className="hidden lg:flex flex-col justify-between w-2/5 p-12 relative overflow-hidden"
+        style={{ background: 'linear-gradient(145deg, #3525CD 0%, #4F46E5 50%, #6D63F0 100%)' }}
       >
-        {/* Floating Orbs for depth */}
-        <div className="absolute top-[-10%] right-[-10%] w-[80%] h-[80%] rounded-full bg-indigo-400/20 blur-[120px] animate-floating" />
-        <div className="absolute bottom-[-5%] left-[-5%] w-[60%] h-[60%] rounded-full bg-teal-400/20 blur-[100px] animate-floating-slow" />
+        <div style={{ position:'absolute', top:'-80px', right:'-80px', width:'320px', height:'320px', borderRadius:'50%', background:'rgba(255,255,255,0.07)', pointerEvents:'none' }} />
+        <div style={{ position:'absolute', bottom:'60px', left:'-60px', width:'240px', height:'240px', borderRadius:'50%', background:'rgba(255,255,255,0.05)', pointerEvents:'none' }} />
 
-        <div className="flex items-center gap-4 relative z-10 group cursor-pointer" onClick={() => navigate('/')}>
-          <div className="w-12 h-12 rounded-2xl glass-luxe flex items-center justify-center glow-indigo shadow-2xl transition-transform group-hover:scale-110">
-            <GraduationCap size={24} color="#ffffff" />
+        <div className="flex items-center gap-3 relative z-10">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background:'rgba(255,255,255,0.2)' }}>
+            <GraduationCap size={20} color="#ffffff" />
           </div>
-          <span className="font-black text-2xl text-white tracking-tighter uppercase italic">
-            Neuro<span className="text-indigo-200">Learn</span>
-          </span>
+          <span className="font-bold text-xl text-white" style={{ letterSpacing:'-0.02em' }}>NeuroLearn</span>
         </div>
 
-        <div className="relative z-10 space-y-10">
+        <div className="relative z-10 space-y-6">
           <div>
-            <span className="inline-block px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-8 glass-luxe !bg-white/10 !text-white/90 border-white/20">
-              JOIN THE PROTOCOL
-            </span>
-            <h2 className="text-5xl md:text-7xl font-black text-white leading-[0.85] tracking-tighter italic uppercase mb-8">
-              Start <br /> Learning <br /> <span className="text-indigo-200">Smarter.</span>
+            <h2 className="text-3xl font-bold text-white leading-snug" style={{ letterSpacing:'-0.02em' }}>
+              Start learning<br />smarter today.
             </h2>
-            <p className="max-w-md text-sm font-semibold text-white/60 leading-relaxed uppercase tracking-wide">
-              Join thousands of pioneers mastering complex domains with AI-driven neural paths.
+            <p className="mt-3 text-base" style={{ color:'rgba(255,255,255,0.7)' }}>
+              Join thousands of learners who use AI-powered tools to master new skills faster.
             </p>
           </div>
-          
-          <div className="space-y-4">
-            {['No-Cost Initialization', 'Predictive Career Mapping', 'Synaptic Growth Tracking'].map(f => (
-              <div key={f} className="flex items-center gap-4">
-                <div className="w-6 h-6 rounded-xl glass-luxe flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-white glow-indigo" />
-                </div>
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/80">{f}</span>
+          {['Free to get started', 'AI-personalized roadmap', 'Track progress in real-time'].map(f => (
+            <div key={f} className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background:'rgba(255,255,255,0.2)' }}>
+                <div className="w-2 h-2 rounded-full bg-white" />
               </div>
-            ))}
-          </div>
+              <span className="text-sm font-medium" style={{ color:'rgba(255,255,255,0.85)' }}>{f}</span>
+            </div>
+          ))}
         </div>
 
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] relative z-10 text-white/30">
-          © 2026 NEURAL PROTOCOL / ALL RIGHTS RESERVED
+        <p className="text-xs relative z-10" style={{ color:'rgba(255,255,255,0.4)' }}>
+          © 2025 NeuroLearn. All rights reserved.
         </p>
       </div>
 
@@ -136,63 +128,66 @@ export default function SignupPage() {
             </div>
           ) : (
             <>
-              <div className="mb-10">
-                <h1 className="text-4xl font-black text-black italic tracking-tighter uppercase leading-none mb-4">
-                  New <span className="text-indigo-600">Pioneer</span>
-                </h1>
-                <p className="text-[11px] font-black tracking-[0.2em] uppercase opacity-40"> Initialize your learning footprint </p>
+              <div className="mb-8">
+                <h1 className="text-2xl font-bold mb-1.5" style={{ color:'#191C1E', letterSpacing:'-0.02em' }}>Create your account</h1>
+                <p className="text-sm" style={{ color:'#777587' }}>Get started with your free NeuroLearn account.</p>
               </div>
 
               {error && (
-                <div className="flex items-start gap-4 p-5 mb-8 rounded-2xl animate-scale-in glass-luxe bg-rose-50 border-rose-200">
-                  <AlertCircle size={18} className="text-rose-600 shrink-0 mt-0.5" />
-                  <p className="text-xs font-bold text-rose-800 leading-relaxed uppercase tracking-tight">{error}</p>
+                <div className="flex items-start gap-3 p-4 mb-6 rounded-xl animate-scale-in" style={{ background:'#FFF1F2', border:'1px solid #FFE4E6' }}>
+                  <AlertCircle size={16} style={{ color:'#E11D48', marginTop:'1px', flexShrink:0 }} />
+                  <p className="text-sm" style={{ color:'#E11D48' }}>{error}</p>
                 </div>
               )}
 
               {/* Google */}
               <button
                 onClick={handleGoogleLogin}
-                className="w-full flex items-center justify-center gap-4 py-4 mb-8 rounded-2xl glass-luxe bg-white border-indigo-50 hover:border-indigo-200 transition-all group"
+                className="w-full flex items-center justify-center gap-3 py-3 mb-6 rounded-xl font-medium text-sm transition-all duration-200"
+                style={{ background:'#ffffff', border:'1.5px solid #ECEEF0', color:'#191C1E', boxShadow:'0 1px 3px rgba(25,28,30,0.06)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor='#C3C0FF'; e.currentTarget.style.boxShadow='0 4px 12px rgba(79,70,229,0.1)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor='#ECEEF0'; e.currentTarget.style.boxShadow='0 1px 3px rgba(25,28,30,0.06)'; }}
               >
-                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-black">Sync with Google</span>
+                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4" />
+                Continue with Google
               </button>
 
               {/* Divider */}
-              <div className="relative flex items-center mb-10">
-                <div className="flex-1 h-px bg-indigo-50" />
-                <span className="px-6 text-[10px] font-black uppercase tracking-[0.3em] text-indigo-900/40">Credential Proxy</span>
-                <div className="flex-1 h-px bg-indigo-50" />
+              <div className="relative flex items-center mb-6">
+                <div className="flex-1" style={{ height:'1px', background:'#ECEEF0' }} />
+                <span className="px-4 text-xs font-medium" style={{ color:'#777587' }}>or create with email</span>
+                <div className="flex-1" style={{ height:'1px', background:'#ECEEF0' }} />
               </div>
 
-              <form onSubmit={handleSignup} className="space-y-5">
+              <form onSubmit={handleSignup} className="space-y-4">
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900/40 mb-3 ml-1">Universal Name</label>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color:'#464555' }}>Full name</label>
                   <input
                     type="text"
                     placeholder="John Doe"
                     value={name}
                     onChange={e => setName(e.target.value)}
                     required
-                    className="input-glass !h-14"
+                    className="input-field"
+                    style={{ height:'44px' }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900/40 mb-3 ml-1">Synapse ID / Email</label>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color:'#464555' }}>Email address</label>
                   <input
                     type="email"
-                    placeholder="you@neural.engine"
+                    placeholder="you@example.com"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     required
-                    className="input-glass !h-14"
+                    className="input-field"
+                    style={{ height:'44px' }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900/40 mb-3 ml-1">Encryption / Password</label>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color:'#464555' }}>Password</label>
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -200,14 +195,16 @@ export default function SignupPage() {
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       required
-                      className="input-glass !h-14 pr-14"
+                      className="input-field pr-11"
+                      style={{ height:'44px' }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(v => !v)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-indigo-400 hover:text-indigo-600 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                      style={{ color:'#777587', background:'none', border:'none', cursor:'pointer' }}
                     >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </div>
@@ -215,16 +212,17 @@ export default function SignupPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary w-full !py-5 mt-6 group"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm text-white transition-all duration-200 mt-2"
+                  style={{
+                    background: loading ? '#818CF8' : 'linear-gradient(135deg,#3525CD,#4F46E5)',
+                    border: 'none',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    boxShadow: loading ? 'none' : '0 4px 12px rgba(79,70,229,0.3)',
+                  }}
+                  onMouseEnter={e => { if (!loading) e.currentTarget.style.boxShadow='0 6px 20px rgba(79,70,229,0.4)'; }}
+                  onMouseLeave={e => { if (!loading) e.currentTarget.style.boxShadow='0 4px 12px rgba(79,70,229,0.3)'; }}
                 >
-                  {loading ? (
-                     <><Loader2 size={24} className="animate-spin" /> <span className="text-[12px] font-black tracking-[0.2em] uppercase">Initializing...</span></>
-                  ) : (
-                    <div className="flex items-center justify-center gap-4">
-                       <span className="text-[12px] font-black tracking-[0.2em] uppercase">Create Account</span>
-                       <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-                    </div>
-                  )}
+                  {loading ? <><Loader2 size={16} className="animate-spin" /> Creating account…</> : <>Create Account <ArrowRight size={16} /></>}
                 </button>
               </form>
 

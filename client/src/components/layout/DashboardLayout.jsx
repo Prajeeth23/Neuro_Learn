@@ -210,18 +210,12 @@ export default function DashboardLayout() {
   );
 
   return (
-    <div className="min-h-screen flex font-sans relative overflow-hidden mesh-gradient-aura">
-
-      {/* ===== PRISM AURA BACKGROUND ELEMENTS ===== */}
-      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-indigo-500/10 blur-[120px] animate-floating" />
-      <div className="absolute bottom-[5%] right-[-5%] w-[35%] h-[35%] rounded-full bg-teal-500/10 blur-[100px] animate-floating-slow" />
-      <div className="absolute top-[30%] right-[10%] w-[25%] h-[25%] rounded-full bg-violet-500/10 blur-[80px] animate-floating" />
-
+    <div className="min-h-screen flex font-sans" style={{ background: '#F8FAFC' }}>
 
       {/* ===== PERSISTENT DESKTOP SIDEBAR ===== */}
       <aside
-        className="hidden lg:flex flex-col fixed top-0 left-0 bottom-0 z-30 card !rounded-none !border-y-0 !border-l-0"
-        style={{ width: '240px' }}
+        className="hidden lg:flex flex-col fixed top-0 left-0 bottom-0 z-30"
+        style={{ width: '240px', background: '#ffffff', borderRight: '1px solid #F2F4F6' }}
       >
         <DrawerContent />
       </aside>
@@ -261,10 +255,13 @@ export default function DashboardLayout() {
 
         {/* ===== TOP NAVIGATION BAR ===== */}
         <header
-          className="sticky top-0 z-20 flex items-center justify-between px-5 lg:px-8 glass-luxe"
+          className="sticky top-0 z-20 flex items-center justify-between px-5 lg:px-8"
           style={{
-            height: '70px',
-            borderBottom: '1px solid rgba(79, 70, 229, 0.1)',
+            height: '60px',
+            background: 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            borderBottom: '1px solid #F2F4F6',
           }}
         >
           {/* Left: Hamburger (mobile) + Page Title */}
@@ -372,18 +369,8 @@ export default function DashboardLayout() {
         </header>
 
         {/* ===== PAGE CONTENT ===== */}
-        <main className="flex-1 px-5 lg:px-8 py-10 relative z-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 15, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -15, scale: 1.02 }}
-              transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-            >
-              <Outlet />
-            </motion.div>
-          </AnimatePresence>
+        <main className="flex-1 px-5 lg:px-8 py-7">
+          <Outlet />
         </main>
       </div>
     </div>

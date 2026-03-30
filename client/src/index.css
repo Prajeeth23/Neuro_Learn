@@ -49,21 +49,17 @@
     --rose-100:             #FFE4E6;
     --rose-50:              #FFF1F2;
 
-    /* Shadows — Prism Luxe */
-    --shadow-sm:   0 1px 3px rgba(25, 28, 30, 0.04);
-    --shadow-md:   0 8px 30px rgba(79, 70, 229, 0.08);
-    --shadow-lg:   0 12px 48px rgba(79, 70, 229, 0.12);
-    --shadow-float: 0 20px 40px rgba(0, 0, 0, 0.06);
-
-    /* Glass Effect */
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.4);
+    /* Shadows */
+    --shadow-sm:   0 1px 3px rgba(25, 28, 30, 0.06);
+    --shadow-md:   0 4px 16px rgba(25, 28, 30, 0.08);
+    --shadow-lg:   0 8px 32px rgba(25, 28, 30, 0.1);
+    --shadow-float: 0 8px 24px rgba(25, 28, 30, 0.04);
 
     /* Radius */
-    --radius-sm:   8px;
-    --radius-md:   12px;
-    --radius-lg:   18px;
-    --radius-xl:   28px;
+    --radius-sm:   6px;
+    --radius-md:   10px;
+    --radius-lg:   14px;
+    --radius-xl:   20px;
     --radius-full: 9999px;
   }
 
@@ -90,27 +86,26 @@
     min-height: 100vh;
   }
 
-  /* Typography Scale — Editorial Prism */
-  h1 { font-size: 2.5rem;    font-weight: 900; letter-spacing: -0.05em; line-height: 1.1; color: var(--text-primary); }
-  h2 { font-size: 1.75rem;   font-weight: 800; letter-spacing: -0.04em; line-height: 1.2; color: var(--text-primary); }
-  h3 { font-size: 1.25rem;    font-weight: 700; letter-spacing: -0.03em; color: var(--text-primary); }
-  h4 { font-size: 1rem;       font-weight: 600; color: var(--text-primary); }
-  p  { font-size: 0.9375rem; font-weight: 500; color: var(--text-secondary); line-height: 1.7; }
-  small { font-size: 0.8125rem; color: var(--text-muted); font-weight: 500; }
+  /* Typography Scale — Editorial */
+  h1 { font-size: 2rem;     font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; color: var(--text-primary); }
+  h2 { font-size: 1.5rem;   font-weight: 600; letter-spacing: -0.02em; line-height: 1.3; color: var(--text-primary); }
+  h3 { font-size: 1.125rem; font-weight: 600; letter-spacing: -0.01em; color: var(--text-primary); }
+  h4 { font-size: 0.9375rem; font-weight: 500; color: var(--text-primary); }
+  p  { font-size: 0.875rem; font-weight: 400; color: var(--text-secondary); line-height: 1.6; }
+  small { font-size: 0.75rem; color: var(--text-muted); }
 }
 
 @layer components {
 
   /* === BUTTONS === */
 
-  /* Primary — Luxe Indigo Gradient */
+  /* Primary — Indigo Gradient */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 font-black text-white rounded-2xl cursor-pointer border-none transition-all duration-300;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 font-semibold text-white rounded-xl cursor-pointer border-none transition-all duration-200;
     background: linear-gradient(135deg, var(--indigo-700) 0%, var(--indigo-600) 100%);
-    font-size: 0.8125rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+    font-size: 0.875rem;
+    letter-spacing: -0.01em;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
   }
   .btn-primary:hover {
     transform: translateY(-1px);
@@ -147,32 +142,35 @@
   .uiverse-btn { @apply btn-primary; }
   .uiverse-btn-outline { @apply btn-secondary; }
 
-  /* Standard Glass Luxe Card */
+  /* === CARDS === */
+
+  /* Standard Card */
   .card {
-    @apply relative overflow-hidden;
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border);
+    background: var(--surface);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    overflow: hidden;
   }
   .card:hover {
-    box-shadow: var(--shadow-lg);
-    border-color: rgba(79, 70, 229, 0.3);
-    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
   }
 
-  /* Glass Premium Version */
-  .card-luxe {
-    @apply card;
+  /* Elevated Card */
+  .card-elevated {
+    background: var(--surface);
     border-radius: var(--radius-xl);
-    background: rgba(255, 255, 255, 0.8);
+    box-shadow: var(--shadow-md);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
   }
-  .card-luxe:hover {
-    transform: translateY(-6px) scale(1.01);
+  .card-elevated:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
   }
+
+  /* Legacy aliases */
+  .glass-card { @apply card; }
+  .glass-card-premium { @apply card-elevated; }
 
   /* === STAT CARDS with accent border === */
   .stat-card {
@@ -412,38 +410,26 @@
   }
 }
 
-@keyframes floating {
-  0%   { transform: translate(0, 0) rotate(0deg); }
-  33%  { transform: translate(20px, -30px) rotate(5deg); }
-  66%  { transform: translate(-15px, 20px) rotate(-5deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+/* ===== KEYFRAMES ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(79, 70, 229, 0.4); }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-/* Mesh Gradients */
-.mesh-gradient-aura {
-  background: 
-    radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.08) 0, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.08) 0, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(13, 148, 136, 0.08) 0, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(217, 119, 6, 0.08) 0, transparent 50%);
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-.animate-floating {
-  animation: floating 8s ease-in-out infinite;
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
-
-.animate-floating-slow {
-  animation: floating 12s ease-in-out infinite;
-}
-
-.glow-indigo { filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.4)); }
-.glow-violet { filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.4)); }
-.glow-teal   { filter: drop-shadow(0 0 8px rgba(13, 148, 136, 0.4)); }
 
 .animate-fade-in-up {
   animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;

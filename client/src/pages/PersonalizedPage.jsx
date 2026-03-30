@@ -116,93 +116,74 @@ export default function PersonalizedPage() {
       )}
 
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-20 px-1">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
         <div>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-black uppercase italic leading-[0.9] mb-6">
-            Neural <span className="text-gradient-indigo">Tutor</span>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black uppercase leading-none italic">
+            AI <span className="text-gray-300">Tutor</span>
           </h1>
-          <p className="text-[11px] font-black tracking-[0.4em] uppercase opacity-60">Personalized Learning Node / AI Engine v.3</p>
+          <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400 mt-4 ml-1">Personalized Study Node</p>
         </div>
         <button 
           onClick={() => { setShowGenerate(!showGenerate); setExpandedPlan(null); }} 
-          className="btn-primary group !py-4 px-8"
+          className="uiverse-btn !rounded-xl flex items-center gap-2.5 active:scale-95 transition-transform"
         >
-          {showGenerate ? <div className="flex items-center gap-2"><XCircle size={18}/> <span className="text-[11px] font-black uppercase tracking-widest">CLOSE PANEL</span></div> : <div className="flex items-center gap-2"><Sparkles size={18} className="group-hover:rotate-12 transition-transform"/> <span className="text-[11px] font-black uppercase tracking-widest">INITIALIZE NODE</span></div>}
+          {showGenerate ? <div className="flex items-center gap-2"><XCircle size={15}/> <span>CLOSE PANEL</span></div> : <div className="flex items-center gap-2"><Sparkles size={15}/> <span>INITIALIZE PLAN</span></div>}
         </button>
       </div>
 
-      {/* Generator Form — Glass Luxe Style */}
+      {/* Generator Form — B&W Style */}
       {showGenerate && (
-        <Card className="card-luxe !bg-white/90 !p-10 mb-16 animate-in slide-in-from-top-4 duration-500 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] pointer-events-none" />
-          <CardHeader className="p-0 mb-10">
-            <h2 className="text-3xl font-black tracking-tighter text-black flex items-center gap-4 italic uppercase">
-               <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center text-white glow-indigo"><Sparkles size={20} /></div>
-               Configure Study Node
+        <Card className="bg-white border border-gray-200 rounded-3xl p-8 mb-12 shadow-sm animate-in slide-in-from-top-4 duration-500">
+          <CardHeader className="p-0 mb-8">
+            <h2 className="text-2xl font-black tracking-tight text-black flex items-center gap-3">
+               <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white"><Sparkles size={16} /></div>
+               CONFIGURE NEW MATERIAL
             </h2>
           </CardHeader>
           
-          <CardContent className="p-0 space-y-10">
+          <CardContent className="p-0 space-y-8">
             {/* Toggle tabs */}
-            <div className="flex p-1.5 glass-luxe !bg-indigo-50/20 border-indigo-100/30 w-fit">
-              <button onClick={() => setActiveTab('text')} className={`px-8 py-3 text-[11px] font-black uppercase tracking-widest rounded-xl transition-all ${activeTab === 'text' ? 'bg-white shadow-xl text-black' : 'text-gray-400 hover:text-indigo-600'}`}>Raw Text</button>
-              <button onClick={() => setActiveTab('upload')} className={`px-8 py-3 text-[11px] font-black uppercase tracking-widest rounded-xl transition-all ${activeTab === 'upload' ? 'bg-white shadow-xl text-black' : 'text-gray-400 hover:text-indigo-600'}`}>File Sync</button>
+            <div className="flex p-1 bg-gray-50 rounded-xl border border-gray-100 max-w-sm">
+              <button onClick={() => setActiveTab('text')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'text' ? 'bg-white shadow-sm text-black border border-gray-100' : 'text-gray-400'}`}>Text Data</button>
+              <button onClick={() => setActiveTab('upload')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'upload' ? 'bg-white shadow-sm text-black border border-gray-100' : 'text-gray-400'}`}>File Sync</button>
             </div>
- 
-            <form onSubmit={handleGenerate} className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <div className="space-y-8">
+
+            <form onSubmit={handleGenerate} className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+              <div className="space-y-6">
                 <div>
-                  <label className="text-[11px] font-black text-indigo-900/40 uppercase tracking-[0.2em] mb-3 block">Display Title</label>
-                  <input value={title} onChange={e => setTitle(e.target.value)} required placeholder="e.g. Quantum Electrodynamics" className="input-glass" />
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">Title</label>
+                  <input value={title} onChange={e => setTitle(e.target.value)} required placeholder="e.g. Physics Quantum Logic" className="w-full bg-gray-50 border border-gray-100 h-12 px-4 rounded-xl focus:ring-1 focus:ring-black outline-none font-medium text-sm transition-all" />
                 </div>
                 <div>
-                  <label className="text-[11px] font-black text-indigo-900/40 uppercase tracking-[0.2em] mb-3 block">Target Horizon (Days)</label>
-                  <input type="number" min="1" max="30" value={deadlineDays} onChange={e => setDeadlineDays(e.target.value)} required className="input-glass" />
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">Timeline (Days)</label>
+                  <input type="number" min="1" max="30" value={deadlineDays} onChange={e => setDeadlineDays(e.target.value)} required className="w-full bg-gray-50 border border-gray-100 h-12 px-4 rounded-xl focus:ring-1 focus:ring-black outline-none font-medium text-sm transition-all" />
                 </div>
               </div>
- 
-              <div className="h-full">
+
+              <div>
                 {activeTab === 'text' ? (
-                  <div className="h-full">
-                    <label className="text-[11px] font-black text-indigo-900/40 uppercase tracking-[0.2em] mb-3 block">Source Material</label>
-                    <textarea value={materialText} onChange={e => setMaterialText(e.target.value)} required={activeTab === 'text'} placeholder="Inject study notes for neural processing..." className="input-glass !h-[calc(100%-2.5rem)] min-h-[160px] resize-none" />
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">Material Content</label>
+                    <textarea value={materialText} onChange={e => setMaterialText(e.target.value)} required={activeTab === 'text'} placeholder="Paste your study notes here..." className="w-full h-32 bg-gray-50 border border-gray-100 p-4 rounded-xl focus:ring-1 focus:ring-black outline-none font-medium text-sm transition-all resize-none" />
                   </div>
                 ) : (
-                  <div className="h-full">
-                    <label className="text-[11px] font-black text-indigo-900/40 uppercase tracking-[0.2em] mb-3 block">Neural Input Stream (PDF/IMG)</label>
-                    <div onClick={() => fileInputRef.current?.click()} className="w-full h-[calc(100%-2.5rem)] min-h-[160px] glass-luxe border-indigo-100/30 border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-white/50 transition-all group rounded-3xl">
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">Sync PDF/DOCX/JPG</label>
+                    <div onClick={() => fileInputRef.current?.click()} className="w-full h-32 border-2 border-dashed border-gray-100 bg-gray-50/50 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-all group">
                        {file ? (
-                         <div className="text-center">
-                           <div className="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center text-white glow-indigo mx-auto mb-4 shadow-xl">
-                             <FileText size={24} />
-                           </div>
-                           <p className="text-xs font-black uppercase tracking-tight text-indigo-900">{file.name}</p>
-                         </div>
+                         <div className="text-center font-bold text-xs"><FileText size={20} className="mx-auto mb-1 text-black"/> {file.name}</div>
                        ) : (
-                         <div className="text-center opacity-30 group-hover:opacity-100 transition-opacity">
-                           <Upload size={32} className="mx-auto mb-4 text-indigo-600" />
-                           <span className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-900">Select Neural Source</span>
-                         </div>
+                         <div className="text-center text-gray-300 group-hover:text-gray-500 transition-colors"><Upload size={20} className="mx-auto mb-1"/> <span className="text-[10px] font-black uppercase tracking-widest">Select Source</span></div>
                        )}
                        <input ref={fileInputRef} type="file" accept=".pdf,.docx,.jpg,.jpeg,.png,.txt" onChange={handleFileChange} className="hidden" />
                     </div>
                   </div>
                 )}
               </div>
- 
+
               <div className="lg:col-span-2">
-                <button type="submit" disabled={loading} className="btn-primary w-full !py-5 group">
-                  {loading ? (
-                    <div className="flex items-center justify-center gap-4">
-                      <Loader2 size={24} className="animate-spin" />
-                      <span className="text-[12px] font-black tracking-[0.2em] uppercase">Processing Neural Data...</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center gap-4">
-                      <Zap size={20} className="group-hover:scale-125 transition-transform text-indigo-300" />
-                      <span className="text-[12px] font-black tracking-[0.2em] uppercase">Synchronize Study Node</span>
-                    </div>
-                  )}
+                <button type="submit" disabled={loading} className="uiverse-btn w-full !py-4 transition-all">
+                  {loading ? <div className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> <span className="text-[10px] font-black tracking-widest uppercase">Analyzing...</span></div> : <span className="text-[10px] font-black tracking-widest uppercase">SYNC & ANALYZE NOW</span>}
                 </button>
               </div>
             </form>
@@ -218,12 +199,12 @@ export default function PersonalizedPage() {
             <button onClick={() => setExpandedPlan(null)} className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 hover:text-black transition-colors">Close ✕</button>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar">
+          <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
             {tabs.map(tab => {
               const Icon = tab.icon;
               return (
-                <button key={tab.key} onClick={() => setViewSection(tab.key)} className={`flex items-center gap-3 px-8 py-3 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase whitespace-nowrap transition-all ${viewSection === tab.key ? 'glass-luxe bg-black text-white glow-indigo border-black' : 'glass-luxe bg-white text-indigo-900/40 border-indigo-50/50 hover:bg-indigo-50/50'}`}>
-                  <Icon size={14} /> {tab.label}
+                <button key={tab.key} onClick={() => setViewSection(tab.key)} className={`flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase whitespace-nowrap border transition-all ${viewSection === tab.key ? 'bg-black text-white border-black' : 'bg-white text-gray-400 border-gray-100 hover:border-gray-300'}`}>
+                  <Icon size={12} /> {tab.label}
                 </button>
               );
             })}
@@ -283,50 +264,26 @@ export default function PersonalizedPage() {
             )}
 
             {viewSection === 'quiz' && (
-              <div className="space-y-12">
-                <div className="flex items-center justify-between border-b border-indigo-50/30 pb-10">
-                  <div>
-                    <h3 className="text-2xl font-black text-black tracking-tighter italic uppercase mb-1">Recall Assessment</h3>
-                    <p className="text-[10px] font-black tracking-[0.2em] uppercase opacity-40">Knowledge retention checkpoint</p>
-                  </div>
-                  {quizSubmitted && (
-                    <div className="px-8 py-3 glass-luxe bg-black text-white glow-indigo rounded-2xl">
-                      <span className="text-[10px] font-black uppercase tracking-widest opacity-60 mr-4">RETENTION SCORE</span>
-                      <span className="text-2xl font-black italic">{Object.keys(quizAnswers).filter(i => quizAnswers[i] === getNotes(expandedPlan).quiz[i]?.answer).length}/{getNotes(expandedPlan).quiz.length}</span>
-                    </div>
-                  )}
+              <div className="space-y-10">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-black text-black uppercase tracking-widest border-l-2 border-black pl-3">Recall Assessment</h3>
+                  {quizSubmitted && <div className="text-xl font-black text-black italic">SCORE: {Object.keys(quizAnswers).filter(i => quizAnswers[i] === getNotes(expandedPlan).quiz[i]?.answer).length}/{getNotes(expandedPlan).quiz.length}</div>}
                 </div>
                 
-                <div className="space-y-10">
+                <div className="space-y-6">
                    {(getNotes(expandedPlan).quiz || []).map((q, qIdx) => (
-                     <div key={qIdx} className="space-y-6">
-                        <div className="flex items-start gap-4">
-                          <span className="text-2xl font-black text-indigo-600/20 italic leading-none">{String(qIdx+1).padStart(2, '0')}</span>
-                          <p className="text-lg font-black text-black leading-tight tracking-tight">{q.question}</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10">
+                     <div key={qIdx} className="space-y-4">
+                        <p className="text-sm font-black text-black"><span className="text-gray-300 mr-2">#{qIdx+1}</span>{q.question}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                            {Object.entries(q.options || {}).map(([key, val]) => {
                              const isSelected = quizAnswers[qIdx] === key;
                              const isCorrect = quizSubmitted && key === q.answer;
                              const isWrong = quizSubmitted && isSelected && key !== q.answer;
-                             
-                             let btnStyle = "glass-luxe bg-white border-indigo-50/50 text-indigo-900/60 hover:border-indigo-200 hover:bg-indigo-50/30";
-                             if (isSelected && !quizSubmitted) btnStyle = "glass-luxe bg-indigo-600 text-white border-indigo-600 glow-indigo";
-                             if (isCorrect) btnStyle = "glass-luxe bg-emerald-500 text-white border-emerald-500 glow-teal shadow-[0_0_20px_rgba(16,185,129,0.3)]";
-                             if (isWrong) btnStyle = "glass-luxe bg-rose-500 text-white border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]";
-
                              return (
-                               <button 
-                                 key={key} 
-                                 onClick={() => !quizSubmitted && setQuizAnswers(p => ({...p, [qIdx]: key}))} 
-                                 className={`text-left p-6 rounded-2xl border text-sm font-bold transition-all flex items-center justify-between group ${btnStyle}`}
-                               >
-                                 <span className="flex items-center gap-4">
-                                   <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black transition-colors ${isSelected || isCorrect || isWrong ? 'bg-white/20' : 'bg-indigo-50 text-indigo-400 group-hover:bg-indigo-100'}`}>{key}</span> 
-                                   <span className="leading-snug">{val}</span>
-                                 </span>
-                                 {isCorrect && <CheckCircle size={18} fill="currentColor" className="text-white/40" />}
-                                 {isWrong && <XCircle size={18} fill="currentColor" className="text-white/40" />}
+                               <button key={key} onClick={() => !quizSubmitted && setQuizAnswers(p => ({...p, [qIdx]: key}))} className={`text-left p-4 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${isCorrect ? 'bg-black text-white border-black' : isWrong ? 'bg-gray-100 border-black' : isSelected ? 'bg-black text-white border-black' : 'bg-gray-50 border-gray-100 hover:border-gray-300'}`}>
+                                 <span><span className="opacity-30 mr-3">{key}</span> {val}</span>
+                                 {isCorrect && <CheckCircle size={14} />}
+                                 {isWrong && <XCircle size={14} />}
                                </button>
                              );
                            })}
@@ -336,16 +293,7 @@ export default function PersonalizedPage() {
                 </div>
                 
                 {!quizSubmitted && (
-                  <button 
-                    onClick={() => setQuizSubmitted(true)} 
-                    disabled={Object.keys(quizAnswers).length < (getNotes(expandedPlan).quiz || []).length} 
-                    className="btn-primary w-full !py-5 shadow-2xl disabled:opacity-30"
-                  >
-                    <div className="flex items-center justify-center gap-4">
-                      <Sparkles size={20} />
-                      <span className="text-[12px] font-black tracking-[0.2em] uppercase">Evaluate Knowledge Retention</span>
-                    </div>
-                  </button>
+                  <button onClick={() => setQuizSubmitted(true)} disabled={Object.keys(quizAnswers).length < (getNotes(expandedPlan).quiz || []).length} className="uiverse-btn w-full !py-4">SUBMIT FOR FEEDBACK</button>
                 )}
               </div>
             )}
@@ -355,26 +303,25 @@ export default function PersonalizedPage() {
 
       {/* Library Grid */}
       {!expandedPlan && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {materials.length === 0 && !showGenerate ? (
-            <div className="col-span-full py-40 glass-luxe !bg-white/40 border-indigo-100/30 rounded-[3rem] shadow-sm flex flex-col items-center justify-center space-y-6">
-              <div className="w-24 h-24 rounded-[2rem] bg-indigo-50 flex items-center justify-center text-indigo-400 glow-indigo"><BookOpen size={40} /></div>
-              <p className="text-[12px] font-black uppercase tracking-[0.4em] text-indigo-900/40">No cached nodes discovered</p>
-              <button onClick={() => setShowGenerate(true)} className="btn-primary !px-10 !py-4 text-[11px]">INITIALIZE FIRST NODE</button>
+            <div className="col-span-full py-32 bg-white border border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-200"><BookOpen size={30} /></div>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">No cached nodes found</p>
+              <button onClick={() => setShowGenerate(true)} className="text-xs font-bold text-black underline underline-offset-4">GENERATE FIRST PLAN</button>
             </div>
           ) : (
             Array.isArray(materials) && materials.map(plan => (
-              <Card key={plan.id} className="card-luxe !p-8 flex flex-col group hover:scale-[1.03] transition-all relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-[50px] pointer-events-none group-hover:bg-indigo-500/10 transition-colors" />
-                <div className="flex justify-between items-start mb-10">
-                   <div className="px-4 py-1.5 glass-luxe !bg-white/50 border-indigo-50/50 rounded-full text-[10px] font-black tracking-widest text-indigo-600/60 uppercase">{new Date(plan.deadline).toLocaleDateString().toUpperCase()}</div>
+              <Card key={plan.id} className="bg-white border border-gray-100 rounded-3xl p-6 flex flex-col group hover:border-black transition-all">
+                <div className="flex justify-between items-start mb-4">
+                   <div className="text-[9px] font-black tracking-widest text-gray-300 uppercase">{new Date(plan.deadline).toLocaleDateString()}</div>
                 </div>
-                <h3 className="text-2xl font-black text-black leading-[0.9] mb-4 uppercase italic tracking-tighter group-hover:text-indigo-700 transition-colors">{plan.title}</h3>
-                <p className="text-xs text-secondary opacity-40 line-clamp-2 mb-10 font-black uppercase leading-relaxed tracking-tighter">{getNotes(plan).summary || "Analysis pending..."}</p>
+                <h3 className="text-lg font-black text-black leading-tight mb-2 uppercase italic">{plan.title}</h3>
+                <p className="text-xs text-gray-400 line-clamp-2 mb-6 font-medium font-sans">{getNotes(plan).summary || "Analysis pending."}</p>
                 
-                <div className="mt-auto flex gap-4">
-                   <button onClick={() => openPlanView(plan)} className="flex-1 btn-primary !py-3 !text-[11px] !rounded-2xl">REVIEW NODE</button>
-                   <button onClick={() => { openPlanView(plan); setViewSection('quiz'); }} className="w-14 h-14 glass-luxe !bg-white/50 !rounded-2xl flex items-center justify-center text-indigo-400 hover:bg-indigo-600 hover:text-white transition-all glow-indigo"><Brain size={18} /></button>
+                <div className="mt-auto flex gap-2">
+                   <button onClick={() => openPlanView(plan)} className="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border border-black rounded-xl hover:bg-black hover:text-white transition-all">Review</button>
+                   <button onClick={() => { openPlanView(plan); setViewSection('quiz'); }} className="px-4 py-3 border border-gray-100 rounded-xl hover:bg-gray-50 text-gray-400 transition-all"><Brain size={14} /></button>
                 </div>
               </Card>
             ))
