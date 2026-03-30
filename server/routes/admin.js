@@ -27,6 +27,22 @@ router.get('/check', authMiddleware, adminMiddleware, (req, res) => {
   res.json({ isAdmin: true });
 });
 
+// Get all courses specifically for admin list (bypassing filters)
+router.get('/courses', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('courses')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json(data || []);
+  } catch (err) {
+    console.error('Admin course list error:', err);
+    res.status(500).json({ error: 'Failed to fetch admin course list' });
+  }
+});
+
 // Add a new course from playlist url
 router.post('/courses', authMiddleware, adminMiddleware, async (req, res) => {
   const { title, playlist_url, domain } = req.body;
@@ -48,13 +64,13 @@ router.post('/courses', authMiddleware, adminMiddleware, async (req, res) => {
 
     const { data: course, error: courseError } = await supabase
       .from('courses')
-      .insert({ title, description, category, domain: domain || 'General' })
+      .insert({ title, description, category, domain: domain || 'General', is_playlist: true })
       .select()
       .single();
     
     if (courseError) {
-      console.error('Course insert error:', courseError);
-      throw courseError;
+      console.error('Course insert error details:', JSON.stringify(courseError));
+      throw new Error(`Database insert failed: ${courseError.message}`);
     }
 
     const { data: moduleData, error: moduleError } = await supabase
@@ -70,14 +86,14 @@ router.post('/courses', authMiddleware, adminMiddleware, async (req, res) => {
       .single();
       
     if (moduleError) {
-      console.error('Module insert error:', moduleError);
-      throw moduleError;
+      console.error('Module insert error details:', JSON.stringify(moduleError));
+      throw new Error(`Module creation failed: ${moduleError.message}`);
     }
 
     res.status(201).json({ course, module: moduleData });
   } catch (err) {
-    console.error('Error creating course:', err);
-    res.status(500).json({ error: 'Failed to create course' });
+    console.error('Admin course creation crash:', err);
+    res.status(500).json({ error: err.message || 'Failed to create course' });
   }
 });
 

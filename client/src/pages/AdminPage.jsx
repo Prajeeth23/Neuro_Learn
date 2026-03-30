@@ -32,7 +32,7 @@ export default function AdminPage() {
 
   const fetchCourses = async () => {
     try {
-      const { data } = await api.get('/courses');
+      const { data } = await api.get('/admin/courses');
       setCourses(data || []);
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Failed to load courses');
