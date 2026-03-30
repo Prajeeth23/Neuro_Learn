@@ -36,7 +36,7 @@ export default function LearningTrackerPage() {
   if (loading) {
     return (
       <div className="py-32 flex flex-col items-center justify-center space-y-8 grayscale opacity-40">
-        <Loader2 className="animate-spin text-black" size={48} />
+        <Loader2 className="animate-spin text-indigo-900" size={48} />
         <p className="text-[10px] font-black tracking-[0.4em] uppercase">Aggregating Learning Nodes...</p>
       </div>
     );
@@ -46,17 +46,19 @@ export default function LearningTrackerPage() {
 
   return (
     <div className="animate-fade-in-up w-full mb-32 space-y-12">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-10">
-        <div className="space-y-4">
-          <h1 className="text-5xl font-extrabold tracking-tight text-[#191C1E] leading-none">
-            Learning <span className="text-[#4F46E5]">Pulse</span>
-          </h1>
-          <p className="text-[#777587] text-[11px] font-semibold tracking-wider uppercase ml-1">Real-time Performance Metrics / Neural Activity Log</p>
+      <div className="mb-16 text-center flex flex-col items-center">
+        <div className="inline-flex items-center gap-2 px-5 py-2 bg-indigo-600 rounded-full mb-5 shadow-lg shadow-indigo-200">
+          <Activity size={13} className="text-white" />
+          <span className="text-[11px] font-bold tracking-widest uppercase text-white">Real-time Performance Metrics / Neural Activity Log</span>
         </div>
+        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-none mb-4" style={{fontFamily:'Inter,sans-serif'}}>
+          <span className="text-[#191C1E]">Learning </span><span className="text-[#4F46E5]">Pulse</span>
+        </h1>
+        <div className="w-20 h-1 rounded-full bg-indigo-500 mb-8" />
         <button
           onClick={fetchInsights}
           disabled={insightsLoading}
-          className="bg-[#4F46E5] text-white px-8 py-4 rounded-xl text-xs font-bold tracking-tight hover:bg-[#3525CD] transition-all flex items-center gap-3 shadow-xl shadow-indigo-100"
+          className="bg-indigo-600 text-white px-8 py-4 rounded-xl text-xs font-bold tracking-tight hover:bg-indigo-700 transition-all flex items-center gap-3 shadow-xl shadow-indigo-100"
         >
           {insightsLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
           {insightsLoading ? 'CALIBRATING...' : 'AI INSIGHT SYNC'}
@@ -145,19 +147,19 @@ export default function LearningTrackerPage() {
         {/* Node Progress */}
         <div className="space-y-8">
            <div className="space-y-1">
-              <h3 className="text-3xl font-black italic tracking-tighter text-black uppercase leading-none">Node Maturity</h3>
+              <h3 className="text-3xl font-black italic tracking-tighter text-indigo-900 uppercase leading-none">Node Maturity</h3>
               <p className="text-[9px] font-black tracking-[0.3em] text-gray-400 uppercase">Synchronized domain levels</p>
            </div>
            <div className="grid grid-cols-1 gap-4">
               {(analytics?.progress || []).map((p, i) => (
-                <div key={i} className="p-6 bg-white border border-gray-100 rounded-2xl flex justify-between items-center group hover:border-black transition-all">
+                <div key={i} className="p-6 bg-white border border-gray-100 rounded-2xl flex justify-between items-center group hover:border-indigo-600 transition-all">
                   <div className="space-y-1">
-                    <p className="text-sm font-black uppercase italic text-black">{p.course?.title || 'NODE'}</p>
+                    <p className="text-sm font-black uppercase italic text-indigo-900">{p.course?.title || 'NODE'}</p>
                     <p className="text-[9px] font-black uppercase tracking-widest text-gray-300 italic">{p.course?.category?.toUpperCase() || ''}</p>
                   </div>
                   <div className="flex items-center gap-6">
-                     <span className="text-xl font-black italic tracking-tighter text-black">{p.level}★</span>
-                     <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-200 group-hover:text-black transition-all"><ChevronRight size={18} /></div>
+                     <span className="text-xl font-black italic tracking-tighter text-indigo-900">{p.level}★</span>
+                     <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-200 group-hover:text-indigo-900 transition-all"><ChevronRight size={18} /></div>
                   </div>
                 </div>
               ))}
@@ -167,21 +169,21 @@ export default function LearningTrackerPage() {
         {/* Historical Logs */}
         <div className="space-y-8">
            <div className="space-y-1">
-              <h3 className="text-3xl font-black italic tracking-tighter text-black uppercase leading-none">Historical Logs</h3>
+              <h3 className="text-3xl font-black italic tracking-tighter text-indigo-900 uppercase leading-none">Historical Logs</h3>
               <p className="text-[9px] font-black tracking-[0.3em] text-gray-400 uppercase">Recent Calibration Signatures</p>
            </div>
            <div className="space-y-3">
               {(analytics?.quizResults || []).slice(0, 8).map((q, i) => (
-                <div key={i} className="p-4 bg-gray-50/50 border border-gray-100 rounded-xl flex items-center justify-between group hover:bg-white hover:border-black transition-all">
+                <div key={i} className="p-4 bg-gray-50/50 border border-gray-100 rounded-xl flex items-center justify-between group hover:bg-white hover:border-indigo-600 transition-all">
                   <div className="flex items-center gap-5">
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-black italic border ${
-                      q.score >= 70 ? 'bg-black text-white border-black shadow-lg shadow-black/10' :
+                      q.score >= 70 ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-900/10' :
                       'bg-white text-gray-400 border-gray-100'
                     }`}>
                       {q.score}%
                     </div>
                     <div>
-                      <p className="text-[11px] font-black uppercase text-black italic tracking-tight">{q.quiz_type?.toUpperCase() || 'PROBE'}</p>
+                      <p className="text-[11px] font-black uppercase text-indigo-900 italic tracking-tight">{q.quiz_type?.toUpperCase() || 'PROBE'}</p>
                       <p className="text-[8px] font-black text-gray-300 uppercase tracking-widest">{new Date(q.created_at).toLocaleDateString().toUpperCase()}</p>
                     </div>
                   </div>

@@ -132,28 +132,33 @@ export default function CoursesPage() {
   return (
     <div className="animate-fade-in-up w-full">
       
-      {/* Page Header */}
-      <div className="mb-14">
-        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black uppercase italic leading-none">
-          Course <span className="text-gray-300">Catalog</span>
+      {/* Page Header — Centered Blue, Professional */}
+      <div className="mb-16 text-center flex flex-col items-center">
+        <div className="inline-flex items-center gap-2 px-5 py-2 bg-indigo-600 rounded-full mb-5 shadow-lg shadow-indigo-200">
+          <BrainCircuit size={13} className="text-white" />
+          <span className="text-[11px] font-bold tracking-widest uppercase text-white">
+            {userDomain ? `Adaptive nodes registered for: ${userDomain}` : 'Sync with new learning pathways'}
+          </span>
+        </div>
+        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-none mb-4" style={{fontFamily:'Inter,sans-serif'}}>
+          <span className="text-[#191C1E]">Course </span><span className="text-[#4F46E5]">Catalog</span>
         </h1>
-        <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400 mt-4 ml-1">
-          {userDomain ? `Adaptive nodes registered for: ${userDomain}` : 'Sync with new learning pathways'}
-        </p>
+        <div className="w-20 h-1 rounded-full bg-indigo-500 mb-4" />
+        <p className="text-[#777587] text-sm font-medium max-w-md">Explore curated learning pathways powered by AI</p>
       </div>
       
       {/* Courses Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
         {Array.isArray(courses) && courses.map(course => (
-          <Card key={course.id} className="bg-white border border-gray-100 rounded-3xl p-7 flex flex-col group hover:border-black transition-all">
+          <Card key={course.id} className="bg-white border border-[#ECEEF0] rounded-3xl p-7 flex flex-col group hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-50 transition-all duration-300">
             <CardHeader className="p-0 space-y-4 mb-8">
               <div className="flex justify-between items-start">
                 <div className="flex flex-wrap gap-2">
-                  <span className="text-[9px] font-black tracking-widest uppercase px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-100 text-black">
+                  <span className="text-[9px] font-semibold tracking-wider uppercase px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600">
                     {course.category}
                   </span>
                   {course.domain && course.domain !== 'General' && (
-                    <span className="text-[9px] font-black tracking-widest uppercase px-3 py-1.5 rounded-lg bg-black text-white">
+                    <span className="text-[9px] font-semibold tracking-wider uppercase px-3 py-1.5 rounded-lg bg-[#4F46E5] text-white">
                       {course.domain}
                     </span>
                   )}
@@ -165,8 +170,8 @@ export default function CoursesPage() {
                 )}
               </div>
               
-              <CardTitle className="text-xl font-black uppercase leading-tight italic tracking-tight">{course.title}</CardTitle>
-              <CardDescription className="line-clamp-2 text-gray-400 text-xs font-medium leading-relaxed font-sans">
+              <CardTitle className="text-xl font-bold leading-tight tracking-tight text-[#191C1E]">{course.title}</CardTitle>
+              <CardDescription className="line-clamp-2 text-[#777587] text-xs font-medium leading-relaxed">
                 {course.description}
               </CardDescription>
 
@@ -197,9 +202,9 @@ export default function CoursesPage() {
             <CardFooter className="p-0 mt-auto">
               <button 
                 onClick={() => handleLaunchCourse(course)} 
-                className="uiverse-btn w-full !rounded-xl !py-3.5 !text-[10px] font-black tracking-widest uppercase flex items-center justify-center gap-2 group-hover:scale-[1.02] transition-transform"
+                className="w-full bg-[#4F46E5] hover:bg-[#3525CD] text-white rounded-xl py-3.5 text-xs font-semibold tracking-wide flex items-center justify-center gap-2 transition-all duration-200 shadow-md shadow-indigo-100"
               >
-                {enrolledCourses[course.id] ? 'RECALIBRATE SESSION' : 'INITIALIZE NODE'}
+                {enrolledCourses[course.id] ? 'Continue Learning' : 'Start Course'}
                 <ArrowRight size={14} />
               </button>
             </CardFooter>

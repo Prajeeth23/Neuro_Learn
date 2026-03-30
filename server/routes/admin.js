@@ -138,6 +138,40 @@ router.delete('/courses/:id', authMiddleware, adminMiddleware, async (req, res) 
 // USER MANAGEMENT
 // =====================================================
 
+// Promote user to admin by email
+router.post('/promote', authMiddleware, adminMiddleware, async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email is required' });
+
+  try {
+    const { data: user, error: findError } = await supabase
+      .from('users')
+      .select('id, role')
+      .eq('email', email)
+      .single();
+
+    if (findError || !user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.role === 'admin') {
+      return res.status(400).json({ error: 'User is already an admin' });
+    }
+
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ role: 'admin' })
+      .eq('id', user.id);
+
+    if (updateError) throw updateError;
+
+    res.json({ message: `Access elevated. ${email} is now an Admin.` });
+  } catch (err) {
+    console.error('Error promoting user:', err);
+    res.status(500).json({ error: 'Failed to promote user' });
+  }
+});
+
 // Get all users with basic stats
 router.get('/users', authMiddleware, adminMiddleware, async (req, res) => {
   try {
