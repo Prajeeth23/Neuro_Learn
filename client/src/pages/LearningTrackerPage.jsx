@@ -48,15 +48,15 @@ export default function LearningTrackerPage() {
     <div className="animate-fade-in-up w-full mb-32 space-y-12">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-10">
         <div className="space-y-4">
-          <h1 className="text-5xl font-black tracking-tighter text-black uppercase italic leading-none">
-            Learning <span className="text-gray-300">Pulse</span>
+          <h1 className="text-5xl font-extrabold tracking-tight text-[#191C1E] leading-none">
+            Learning <span className="text-[#4F46E5]">Pulse</span>
           </h1>
-          <p className="text-gray-400 text-[9px] font-black tracking-[0.4em] uppercase ml-1">Real-time Performance Metrics / Neural Activity Log</p>
+          <p className="text-[#777587] text-[11px] font-semibold tracking-wider uppercase ml-1">Real-time Performance Metrics / Neural Activity Log</p>
         </div>
         <button
           onClick={fetchInsights}
           disabled={insightsLoading}
-          className="bg-black text-white px-8 py-4 rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-gray-800 transition-all flex items-center gap-3 shadow-xl shadow-black/5"
+          className="bg-[#4F46E5] text-white px-8 py-4 rounded-xl text-xs font-bold tracking-tight hover:bg-[#3525CD] transition-all flex items-center gap-3 shadow-xl shadow-indigo-100"
         >
           {insightsLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
           {insightsLoading ? 'CALIBRATING...' : 'AI INSIGHT SYNC'}
@@ -66,53 +66,61 @@ export default function LearningTrackerPage() {
       {/* Stats Cluster */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
-          { label: 'SCREEN TIME', val: summary.totalScreenTimeMinutes || 0, unit: 'MIN', icon: <Clock size={20} /> },
-          { label: 'CALIBRATION', val: summary.avgQuizScore || 0, unit: '%', icon: <Target size={20} /> },
-          { label: 'ACTIVE NODES', val: summary.coursesEnrolled || 0, unit: 'DOM', icon: <BookOpen size={20} /> },
-          { label: 'NEURAL RANK', val: summary.avgLevel || 3, unit: '★', icon: <Star size={20} /> },
-        ].map((stat, i) => (
-          <Card key={i} className="bg-white border border-gray-100 p-8 rounded-[2.5rem] shadow-sm hover:shadow-card-lg transition-all duration-500 group">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">{stat.label}</h3>
-              <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-black group-hover:bg-black group-hover:text-white transition-all">{stat.icon}</div>
-            </div>
-            <p className="text-5xl font-black tracking-tighter italic text-black leading-none">{stat.val}<span className="text-sm text-gray-200 ml-2 not-italic font-bold tracking-normal">{stat.unit}</span></p>
-          </Card>
-        ))}
+          { label: 'SCREEN TIME', val: summary.totalScreenTimeMinutes || 0, unit: 'MIN', icon: <Clock size={20} />, color: 'indigo' },
+          { label: 'CALIBRATION', val: summary.avgQuizScore || 0, unit: '%', icon: <Target size={20} />, color: 'teal' },
+          { label: 'ACTIVE NODES', val: summary.coursesEnrolled || 0, unit: 'DOM', icon: <BookOpen size={20} />, color: 'violet' },
+          { label: 'NEURAL RANK', val: summary.avgLevel || 3, unit: '★', icon: <Star size={20} />, color: 'amber' },
+        ].map((stat, i) => {
+          const colors = {
+            indigo: 'text-indigo-600 bg-indigo-50',
+            teal: 'text-teal-600 bg-teal-50',
+            violet: 'text-violet-600 bg-violet-50',
+            amber: 'text-amber-600 bg-amber-50'
+          };
+          return (
+            <Card key={i} className="bg-white border border-[#ECEEF0] p-8 rounded-[2.5rem] shadow-sm hover:shadow-card-lg transition-all duration-500 group">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#777587]">{stat.label}</h3>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${colors[stat.color]}`}>{stat.icon}</div>
+              </div>
+              <p className="text-5xl font-extrabold tracking-tight text-[#191C1E] leading-none">{stat.val}<span className="text-sm text-[#C7C4D8] ml-2 font-bold tracking-normal">{stat.unit}</span></p>
+            </Card>
+          );
+        })}
       </div>
 
       {/* AI Diagnostic Layer */}
       {insights && (
-        <Card className="bg-black text-white p-12 rounded-[3.5rem] shadow-xl shadow-black/10 animate-in zoom-in duration-500 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-12 opacity-10 grayscale pointer-events-none"><Brain size={180} /></div>
+        <Card className="bg-gradient-to-br from-[#1E1B4B] to-[#312E81] text-white p-12 rounded-[3.5rem] shadow-xl shadow-indigo-200/50 animate-in zoom-in duration-500 relative overflow-hidden border-none text-white">
+          <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none text-white"><Brain size={180} /></div>
           <div className="relative z-10 space-y-12">
             <div className="flex items-center gap-4 border-b border-white/10 pb-8">
-               <Zap className="text-white" size={28} />
-               <h3 className="text-2xl font-black italic tracking-tighter uppercase leading-none">Neural Insights</h3>
+               <Zap className="text-[#818CF8]" size={28} />
+               <h3 className="text-2xl font-bold tracking-tight uppercase leading-none">Neural Insights</h3>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-white">
               <div className="space-y-4">
-                <h4 className="text-[9px] font-black tracking-[0.3em] uppercase text-gray-500">OPTIVE STUDY WINDOW</h4>
-                <p className="text-sm font-bold text-gray-300 leading-relaxed uppercase italic">{insights.bestStudyTime}</p>
+                <h4 className="text-[10px] font-bold tracking-widest uppercase text-indigo-300/60">OPTIMAL STUDY WINDOW</h4>
+                <p className="text-sm font-semibold text-indigo-100 leading-relaxed uppercase">{insights.bestStudyTime}</p>
               </div>
               <div className="space-y-4">
-                <h4 className="text-[9px] font-black tracking-[0.3em] uppercase text-gray-500">NEXT SYNC TARGET</h4>
-                <p className="text-sm font-bold text-gray-300 leading-relaxed uppercase italic">{insights.nextRecommendation}</p>
+                <h4 className="text-[10px] font-bold tracking-widest uppercase text-indigo-300/60">NEXT SYNC TARGET</h4>
+                <p className="text-sm font-semibold text-indigo-100 leading-relaxed uppercase">{insights.nextRecommendation}</p>
               </div>
               <div className="space-y-4">
-                <h4 className="text-[9px] font-black tracking-[0.3em] uppercase text-gray-500">RECALIBRATION REQUIRED</h4>
+                <h4 className="text-[10px] font-bold tracking-widest uppercase text-indigo-300/60">RECALIBRATION REQUIRED</h4>
                 <div className="flex flex-wrap gap-2">
                   {(insights.weakAreas || []).map((area, i) => (
-                    <span key={i} className="text-[8px] px-3 py-1 bg-white/10 border border-white/10 rounded-lg text-white font-black tracking-widest uppercase">{area}</span>
+                    <span key={i} className="text-[9px] px-3 py-1 bg-white/10 border border-white/10 rounded-lg text-white font-bold tracking-tight uppercase">{area}</span>
                   ))}
                 </div>
               </div>
               <div className="space-y-4">
-                <h4 className="text-[9px] font-black tracking-[0.3em] uppercase text-gray-500">MAINTENANCE NODES</h4>
+                <h4 className="text-[10px] font-bold tracking-widest uppercase text-indigo-300/60">MAINTENANCE NODES</h4>
                 <div className="flex flex-wrap gap-2">
                   {(insights.revisionSuggestions || []).map((topic, i) => (
-                    <span key={i} className="text-[8px] px-3 py-1 bg-white/10 border border-white/10 rounded-lg text-white font-black tracking-widest uppercase">{topic}</span>
+                    <span key={i} className="text-[9px] px-3 py-1 bg-white/10 border border-white/10 rounded-lg text-white font-bold tracking-tight uppercase">{topic}</span>
                   ))}
                 </div>
               </div>
@@ -122,8 +130,8 @@ export default function LearningTrackerPage() {
               <div className="pt-10 border-t border-white/10 flex flex-wrap gap-4">
                 {insights.insights.map((insight, i) => (
                   <div key={i} className="flex-1 min-w-[300px] flex items-start gap-4 p-5 bg-white/5 rounded-2xl border border-white/5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 shrink-0" />
-                    <p className="text-[11px] text-gray-400 font-bold leading-relaxed">{insight}</p>
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#818CF8] mt-1.5 shrink-0" />
+                    <p className="text-[11px] text-indigo-100 font-medium leading-relaxed">{insight}</p>
                   </div>
                 ))}
               </div>

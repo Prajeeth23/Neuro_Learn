@@ -13,7 +13,8 @@ export default function DashboardLayout() {
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Controls desktop sidebar
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);   // Controls mobile drawer
   const drawerRef = useRef(null);
 
   useEffect(() => {
@@ -213,12 +214,20 @@ export default function DashboardLayout() {
     <div className="min-h-screen flex font-sans" style={{ background: '#F8FAFC' }}>
 
       {/* ===== PERSISTENT DESKTOP SIDEBAR ===== */}
-      <aside
-        className="hidden lg:flex flex-col fixed top-0 left-0 bottom-0 z-30"
-        style={{ width: '240px', background: '#ffffff', borderRight: '1px solid #F2F4F6' }}
-      >
-        <DrawerContent />
-      </aside>
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.aside
+            initial={{ x: -240 }}
+            animate={{ x: 0 }}
+            exit={{ x: -240 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="hidden lg:flex flex-col fixed top-0 left-0 bottom-0 z-30"
+            style={{ width: '240px', background: '#ffffff', borderRight: '1px solid #F2F4F6' }}
+          >
+            <DrawerContent onClose={() => setIsSidebarOpen(false)} />
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       {/* ===== MOBILE / TABLET DRAWER ===== */}
       <AnimatePresence>
@@ -251,7 +260,10 @@ export default function DashboardLayout() {
       </AnimatePresence>
 
       {/* ===== MAIN CONTENT AREA ===== */}
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-[240px]">
+      <div 
+        className="flex-1 flex flex-col min-h-screen transition-all duration-300"
+        style={{ marginLeft: isSidebarOpen && window.innerWidth >= 1024 ? '240px' : '0' }}
+      >
 
         {/* ===== TOP NAVIGATION BAR ===== */}
         <header
@@ -264,9 +276,23 @@ export default function DashboardLayout() {
             borderBottom: '1px solid #F2F4F6',
           }}
         >
-          {/* Left: Hamburger (mobile) + Page Title */}
+          {/* Left: Hamburger (mobile & desktop) + Page Title */}
           <div className="flex items-center gap-3">
-            {/* Hamburger button — visible on mobile/tablet only */}
+            {/* Desktop Hamburger */}
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="hidden lg:flex p-2 rounded-xl transition-all duration-200"
+              style={{ 
+                color: isSidebarOpen ? '#4F46E5' : '#464555',
+                background: isSidebarOpen ? '#EEF2FF' : 'transparent'
+              }}
+              onMouseEnter={e => { if(!isSidebarOpen) e.currentTarget.style.background = '#F2F4F6' }}
+              onMouseLeave={e => { if(!isSidebarOpen) e.currentTarget.style.background = 'transparent' }}
+            >
+              <Menu size={20} />
+            </button>
+
+            {/* Mobile Hamburger */}
             <button
               onClick={() => setIsDrawerOpen(true)}
               className="lg:hidden p-2 rounded-xl transition-colors -ml-1"

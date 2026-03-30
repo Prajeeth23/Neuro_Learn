@@ -7,12 +7,12 @@ import { useScreenTime } from '../hooks/useScreenTime';
 
 const chartTheme = {
   bg: '#ffffff',
-  grid: '#f0f0f0',
-  text: '#888888',
-  primary: '#111111',  // Black
-  accent: '#444444',   // Dark Gray
-  secondary: '#888888', // Mid Gray
-  light: '#cccccc',    // Light Gray
+  grid: '#f1f5f9',
+  text: '#64748b',
+  primary: '#4f46e5',  // Indigo 600
+  accent: '#10b981',   // Emerald 500 (Teal-ish)
+  secondary: '#8b5cf6', // Violet 500
+  light: '#e2e8f0',    // Slate 200
 };
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -117,10 +117,10 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
         <div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black uppercase leading-none italic">
-            Neural <span className="text-gray-300">Analytics</span>
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#191C1E] leading-none">
+            Neural <span className="text-[#4F46E5]">Analytics</span>
           </h1>
-          <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400 mt-4 ml-1">Performance visualization node</p>
+          <p className="text-[11px] font-semibold tracking-wider uppercase text-[#777587] mt-3 ml-1">Performance visualization node</p>
         </div>
         <button onClick={fetchInsights} disabled={insightsLoading}
           className="uiverse-btn !rounded-xl flex items-center gap-2.5 active:scale-95 transition-transform">
@@ -131,12 +131,13 @@ export default function AnalyticsPage() {
 
       {/* AI Insights Banner */}
       {insights && (
-        <Card className="bg-white border border-black rounded-[2rem] p-8 mb-12 shadow-sm animate-in zoom-in-95 duration-500">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white"><Brain size={20} /></div>
-            <h3 className="text-xl font-black text-black tracking-tight uppercase italic">Cognitive Intelligence Report</h3>
+        <Card className="bg-white border border-[#ECEEF0] rounded-[2rem] p-8 mb-12 shadow-sm animate-in zoom-in-95 duration-500 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#F5F3FF] rounded-full blur-3xl -mr-32 -mt-32 opacity-50" />
+          <div className="flex items-center gap-3 mb-8 relative z-10">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-200"><Brain size={20} /></div>
+            <h3 className="text-xl font-bold text-[#191C1E] tracking-tight">Cognitive Intelligence Report</h3>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
             {(insights.insights || []).map((insight, i) => (
               <div key={i} className="flex items-start gap-4 text-xs font-semibold text-gray-500 bg-gray-50 p-5 rounded-2xl border border-gray-100">
                 <div className="w-5 h-5 rounded bg-black text-white flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5">{i+1}</div>
@@ -171,7 +172,7 @@ export default function AnalyticsPage() {
                   <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="minutes" name="Engagement (min)" stroke="#111111" fill="url(#colorBw)" strokeWidth={3} />
+                  <Area type="monotone" dataKey="minutes" name="Engagement (min)" stroke="#6366f1" fill="url(#colorBw)" strokeWidth={3} />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -195,7 +196,7 @@ export default function AnalyticsPage() {
                   <XAxis dataKey="quiz" axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
                   <YAxis domain={[0, 100]} axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="score" name="Score (%)" fill="#111111" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="score" name="Score (%)" fill="#4f46e5" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -219,7 +220,7 @@ export default function AnalyticsPage() {
                   <XAxis type="number" domain={[0, 5]} axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 10, fontWeight: 700 }} />
                   <YAxis dataKey="course" type="category" axisLine={false} tickLine={false} tick={{ fill: chartTheme.text, fontSize: 9, fontWeight: 800 }} width={100} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="level" name="Sync Level" fill="#444444" radius={[0, 8, 8, 0]} />
+                  <Bar dataKey="level" name="Sync Level" fill="#8b5cf6" radius={[0, 8, 8, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

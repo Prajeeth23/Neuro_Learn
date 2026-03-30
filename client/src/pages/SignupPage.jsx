@@ -19,27 +19,54 @@ export default function SignupPage() {
     if (session) navigate('/dashboard');
   }, [session, navigate]);
 
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setMessage('');
+
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address.');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: name } }
+        options: { 
+          data: { full_name: name },
+          emailRedirectTo: window.location.origin + '/login'
+        }
       });
+      
       if (authError) throw authError;
 
-      if (data.session) {
+      if (data.user && !data.session) {
+        setMessage('Registration successful! Please check your email to verify your account before logging in.');
+      } else if (data.session) {
+        // If auto-logged in
         await supabase.from('users').upsert({ id: data.user.id, email, name });
         navigate('/dashboard');
-      } else {
-        setMessage('Account created! Please check your email to verify your address.');
       }
     } catch (err) {
-      setError(err.message);
+      console.error('Signup error:', err);
+      setError(err.message || 'An unexpected error occurred during signup.');
     } finally {
       setLoading(false);
     }
