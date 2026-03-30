@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { CheckCircle, XCircle, BrainCircuit, Sparkles, Loader2, ArrowRight, ShieldCheck, Target } from 'lucide-react';
+import { BrainCircuit, Loader2, ArrowRight, ShieldCheck, Target, Maximize, ShieldAlert } from 'lucide-react';
 import api from '../lib/api';
 
 export default function AssessmentPage() {
@@ -18,6 +18,56 @@ export default function AssessmentPage() {
   const [result, setResult] = useState(null);
   const [courseName, setCourseName] = useState('');
   const [courseContext, setCourseContext] = useState('');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+  const submittedRef = useRef(false);
+  const warningTimerRef = useRef(null);
+
+  // Auto-enter fullscreen when assessment starts (not on intro screen)
+  useEffect(() => {
+    if (!started || submitted) return;
+    const t = setTimeout(() => {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [started, submitted]);
+
+  // Track fullscreen, force back in if ESC is pressed mid-assessment
+  useEffect(() => {
+    const handleFsChange = () => {
+      const inFs = !!document.fullscreenElement;
+      setIsFullscreen(inFs);
+      if (!inFs && started && !submittedRef.current) {
+        setShowWarning(true);
+        clearTimeout(warningTimerRef.current);
+        warningTimerRef.current = setTimeout(() => {
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          }
+          setShowWarning(false);
+        }, 2000);
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      clearTimeout(warningTimerRef.current);
+    };
+  }, [started]);
+
+  const enterFullscreen = () => {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
+  };
+
+  const exitFullscreen = () => {
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
 
   useEffect(() => {
     async function fetchCourse() {
@@ -65,7 +115,9 @@ export default function AssessmentPage() {
     let correct = 0;
     questions.forEach((q, idx) => { if (selectedAnswers[idx] === q.answer) correct++; });
     const score = Math.round((correct / questions.length) * 100);
+    submittedRef.current = true;
     setSubmitted(true);
+    exitFullscreen();
     try {
       const { data } = await api.post(`/assessments/initial/${courseId}/submit`, { score });
       setResult({
@@ -159,6 +211,27 @@ export default function AssessmentPage() {
              BEGIN LEARNING PROTOCOL <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" size={18} />
           </Button>
         </Card>
+      </div>
+    );
+  }
+
+  // Fullscreen warning / re-entry prompt (shown when ESC is pressed mid-assessment)
+  if (started && !submitted && (showWarning || !isFullscreen)) {
+    return (
+      <div className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+        <div className="w-20 h-20 bg-black text-white rounded-[2rem] flex items-center justify-center shadow-lg shadow-black/10 animate-pulse">
+          <ShieldAlert size={32} />
+        </div>
+        <div className="text-center space-y-4 max-w-md px-6">
+          <p className="text-2xl font-black tracking-tighter text-black uppercase italic">Secure Mode Active</p>
+          <p className="text-sm font-medium text-gray-500 leading-relaxed">
+            Exiting full-screen is not allowed during an assessment. Returning you to secure mode automatically...
+          </p>
+        </div>
+        <Button onClick={enterFullscreen} variant="black" className="px-8 !py-4 !rounded-xl text-xs font-black tracking-widest uppercase mt-4">
+          <Maximize size={16} className="mr-3 inline-block" />
+          RESUME FULLSCREEN NOW
+        </Button>
       </div>
     );
   }
