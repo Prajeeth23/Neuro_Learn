@@ -32,7 +32,7 @@ export default function CoursesPage() {
         setUserDomain(domain);
 
         const [coursesRes, progressRes] = await Promise.all([
-          api.get(domain ? `/courses?domain=${encodeURIComponent(domain)}` : '/courses'),
+          api.get('/courses'),
           api.get('/progress').catch(() => ({ data: [] }))
         ]);
         
@@ -137,7 +137,7 @@ export default function CoursesPage() {
         <div className="inline-flex items-center gap-2 px-5 py-2 bg-indigo-600 rounded-full mb-5 shadow-lg shadow-indigo-200">
           <BrainCircuit size={13} className="text-white" />
           <span className="text-[11px] font-bold tracking-widest uppercase text-white">
-            {userDomain ? `Adaptive nodes registered for: ${userDomain}` : 'Sync with new learning pathways'}
+            All Available Courses
           </span>
         </div>
         <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-none mb-4" style={{fontFamily:'Inter,sans-serif'}}>
