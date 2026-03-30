@@ -239,68 +239,84 @@ export default function CoursesPage() {
         </div>
       )}
 
-      {/* Launch Test Modal - B&W */}
+      {/* Launch Test Modal — Blue & Black Premium Theme */}
       {showLaunchTest && activeCourse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300">
-          <div className="bg-white border border-gray-200 rounded-[2rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#0f0f1a] border border-indigo-900/50 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl shadow-indigo-900/30 flex flex-col">
+
             {/* Modal Header */}
-            <div className="p-8 border-b border-gray-100 sticky top-0 bg-white/95 backdrop-blur-md z-10 flex justify-between items-center">
-              <div>
-                <h3 className="text-2xl font-black text-black tracking-tight flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center text-white"><BrainCircuit size={18} /></div>
-                  SYNC ASSESSMENT
-                </h3>
-                <p className="text-gray-400 text-[9px] font-black mt-2 uppercase tracking-[0.3em] ml-1">Path: {activeCourse.title}</p>
+            <div className="px-8 py-6 border-b border-indigo-900/30 sticky top-0 bg-[#0f0f1a]/95 backdrop-blur-md z-10 flex justify-between items-center rounded-t-3xl"
+              style={{ background: 'linear-gradient(135deg, #0f0f1a 0%, #1a1040 100%)' }}>
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                  <BrainCircuit size={20} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-white tracking-tight">SYNC ASSESSMENT</h3>
+                  <p className="text-indigo-400 text-[10px] font-semibold mt-0.5 uppercase tracking-widest">{activeCourse.title}</p>
+                </div>
               </div>
-              <button onClick={() => setShowLaunchTest(false)} className="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-black hover:bg-gray-50 rounded-full transition-all">
+              <button onClick={() => setShowLaunchTest(false)}
+                className="w-10 h-10 flex items-center justify-center text-indigo-400 hover:text-white hover:bg-indigo-800/50 rounded-xl transition-all">
                 <XCircle size={22} />
               </button>
             </div>
 
-            <div className="p-8">
+            <div className="p-8 flex-1">
               {launchTestLoading ? (
-                <div className="text-center py-20 space-y-6">
-                  <div className="w-10 h-10 border-2 border-black/10 border-t-black rounded-full animate-spin mx-auto"></div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 animate-pulse">Generating Neural Test Matrix...</p>
+                <div className="flex flex-col items-center justify-center py-20 gap-6">
+                  <div className="w-14 h-14 rounded-full border-2 border-indigo-800 border-t-indigo-400 animate-spin" />
+                  <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-indigo-400 animate-pulse">Generating Neural Test Matrix...</p>
                 </div>
               ) : launchTestData ? (
-                <div className="space-y-10">
+                <div className="space-y-8">
+
+                  {/* Score Result Card */}
                   {quizSubmitted && (
-                    <div className="text-center p-8 rounded-3xl border border-black bg-black text-white animate-in zoom-in-95 duration-500">
-                      <p className="text-4xl font-black italic mb-2 tracking-tighter">{quizScore}%</p>
-                      <p className="text-xs font-medium opacity-60 tracking-tight">
-                        {quizScore >= 60 ? 'Threshold achieved. Entry granted.' : "Threshold not met. System will adapt to lower complexity."}
+                    <div className="text-center p-8 rounded-2xl border border-indigo-700 bg-indigo-950/80 animate-in zoom-in-95 duration-500">
+                      <div className="text-6xl font-black text-white mb-2 tracking-tighter">{quizScore}%</div>
+                      <p className="text-indigo-300 text-sm font-medium">
+                        {quizScore >= 60 ? '✅ Threshold achieved. Entry granted.' : '⚠️ Threshold not met. System will adapt to lower complexity.'}
                       </p>
-                      <button onClick={() => window.location.href=`/dashboard/courses/${activeCourse.id}`} className="mt-6 px-10 py-3 bg-white text-black text-[10px] font-black tracking-widest uppercase rounded-xl hover:bg-gray-200 transition-colors">PROCEED TO COURSE</button>
+                      <button
+                        onClick={() => window.location.href = `/dashboard/courses/${activeCourse.id}`}
+                        className="mt-6 px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold tracking-widest uppercase rounded-xl transition-colors shadow-lg shadow-indigo-900/50">
+                        PROCEED TO COURSE →
+                      </button>
                     </div>
                   )}
-                  
+
+                  {/* Questions */}
                   <div className="space-y-8">
                     {launchTestData.map((q, qIdx) => (
                       <div key={qIdx} className="space-y-4">
-                        <div className="flex gap-4">
-                           <div className="w-7 h-7 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-[10px] font-black shrink-0">#{(qIdx+1).toString().padStart(2, '0')}</div>
-                           <p className="font-bold text-black text-sm pt-1">{q.question}</p>
+                        <div className="flex gap-4 items-start">
+                          <div className="w-8 h-8 rounded-xl bg-indigo-900 border border-indigo-700 flex items-center justify-center text-[10px] font-black text-indigo-300 shrink-0 mt-0.5">
+                            {(qIdx + 1).toString().padStart(2, '0')}
+                          </div>
+                          <p className="font-semibold text-white text-sm leading-relaxed">{q.question}</p>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 ml-11">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-12">
                           {Object.entries(q.options).map(([key, value]) => {
                             const isSelected = answers[qIdx] === key;
                             const isCorrect = quizSubmitted && key === q.answer;
                             const isWrong = quizSubmitted && isSelected && key !== q.answer;
                             return (
-                              <button key={key} onClick={() => !quizSubmitted && setAnswers(prev => ({ ...prev, [qIdx]: key }))} disabled={quizSubmitted}
-                                className={`text-left p-3.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
-                                  isCorrect   ? 'bg-black text-white border-black' :
-                                  isWrong     ? 'bg-gray-100 border-black' :
-                                  isSelected  ? 'bg-black text-white border-black' :
-                                                'bg-white border-gray-100 hover:border-gray-300'
+                              <button key={key}
+                                onClick={() => !quizSubmitted && setAnswers(prev => ({ ...prev, [qIdx]: key }))}
+                                disabled={quizSubmitted}
+                                className={`text-left p-4 rounded-xl border text-xs font-semibold transition-all duration-200 flex items-center gap-3 ${
+                                  isCorrect  ? 'bg-green-900/60 border-green-500 text-green-200' :
+                                  isWrong    ? 'bg-red-900/40 border-red-600 text-red-300' :
+                                  isSelected ? 'bg-indigo-700 border-indigo-500 text-white shadow-lg shadow-indigo-900/50' :
+                                               'bg-white/5 border-indigo-900/50 text-indigo-200 hover:bg-indigo-900/40 hover:border-indigo-600'
                                 }`}>
-                                <div className="flex items-center gap-3">
-                                   <span className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-black ${isSelected ? 'bg-white/20' : 'bg-gray-50'}`}>{key}</span>
-                                   <span>{value}</span>
-                                </div>
-                                {isCorrect && <CheckCircle size={14} />}
-                                {isWrong && <XCircle size={14} />}
+                                <span className={`w-6 h-6 flex items-center justify-center rounded-lg text-[10px] font-black shrink-0 ${
+                                  isSelected ? 'bg-white/20 text-white' : 'bg-indigo-900 text-indigo-300'
+                                }`}>{key}</span>
+                                <span className="leading-snug">{value}</span>
+                                {isCorrect && <CheckCircle size={14} className="ml-auto shrink-0 text-green-400" />}
+                                {isWrong   && <XCircle    size={14} className="ml-auto shrink-0 text-red-400" />}
                               </button>
                             );
                           })}
@@ -308,16 +324,22 @@ export default function CoursesPage() {
                       </div>
                     ))}
                   </div>
-                  
+
+                  {/* Submit Button */}
                   {!quizSubmitted && (
-                    <button onClick={submitLaunchTest} disabled={Object.keys(answers).length < launchTestData.length}
-                      className="uiverse-btn w-full !py-4 shadow-xl shadow-black/5 disabled:opacity-30">
+                    <button
+                      onClick={submitLaunchTest}
+                      disabled={Object.keys(answers).length < launchTestData.length}
+                      className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm font-bold tracking-widest uppercase rounded-2xl transition-all shadow-xl shadow-indigo-900/40 flex items-center justify-center gap-3">
+                      <BrainCircuit size={16} />
                       SUBMIT ASSESSMENT ({Object.keys(answers).length}/{launchTestData.length})
                     </button>
                   )}
                 </div>
               ) : (
-                <div className="text-center text-red-500 py-10 font-bold">Failed to initialize matrix.</div>
+                <div className="text-center py-20 text-red-400 font-semibold text-sm">
+                  Failed to initialize assessment matrix. Please try again.
+                </div>
               )}
             </div>
           </div>
