@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Play, Activity, Cpu, Code2, ArrowRight, Sparkles, Brain, Target, Zap, GraduationCap } from 'lucide-react';
+import { Activity, Cpu, Code2, ArrowRight, Sparkles, Brain, Target, Zap, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -47,9 +47,9 @@ export default function LandingPage() {
       <main className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-24 pb-32 max-w-5xl mx-auto">
 
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-[#E0E3E5] rounded-full mb-8 animate-fade-in-up"
-             style={{ boxShadow: '0 2px 8px rgba(25,28,30,0.04)' }}>
+          style={{ boxShadow: '0 2px 8px rgba(25,28,30,0.04)' }}>
           <span className="w-2 h-2 rounded-full bg-[#4F46E5] animate-pulse"></span>
-          <span className="text-xs font-semibold" style={{ color: '#464555' }}>NeuroLearn 3.0 is now live</span>
+          <span className="text-xs font-semibold" style={{ color: '#464555' }}>NeuroLearn</span>
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight mb-8" style={{ color: '#191C1E', letterSpacing: '-0.03em' }}>
@@ -68,30 +68,10 @@ export default function LandingPage() {
             onClick={() => navigate('/login')}
             className="btn-primary !px-8 !py-3.5 !text-base shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
           >
-            Start Learning Free <ArrowRight className="ml-2" size={18} />
-          </button>
-          <button
-            className="btn-secondary !px-8 !py-3.5 !text-base bg-white w-full sm:w-auto flex items-center gap-2"
-          >
-            <Play fill="currentColor" size={14} className="text-[#4F46E5] ml-1" />
-            Watch Demo
+            Start Learning Free <ArrowRight className="ml-2" size={20} />
           </button>
         </div>
 
-        {/* Global Level Stats */}
-        <div id="stats" className="mt-32 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 w-full pt-16 border-t border-[#ECEEF0]">
-          {[
-            { label: 'Active Learners', val: '50k+', color: '#4F46E5' },
-            { label: 'Courses Mastered', val: '120k+', color: '#0D9488' },
-            { label: 'Completion Rate', val: '94%', color: '#D97706' },
-            { label: 'Avg. Rating', val: '4.9/5', color: '#7C3AED' }
-          ].map((s, i) => (
-            <div key={i} className="text-left">
-              <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: '#777587' }}>{s.label}</p>
-              <p className="text-3xl md:text-4xl font-bold tracking-tight" style={{ color: s.color }}>{s.val}</p>
-            </div>
-          ))}
-        </div>
       </main>
 
       {/* Feature Grid */}
@@ -115,7 +95,7 @@ export default function LandingPage() {
 
         {/* Card 2 - Center piece */}
         <div className="card p-8 flex flex-col justify-between h-80 relative overflow-hidden group shadow-md"
-             style={{ background: 'linear-gradient(135deg, #3525CD 0%, #4F46E5 100%)' }}>
+          style={{ background: 'linear-gradient(135deg, #3525CD 0%, #4F46E5 100%)' }}>
           <div className="absolute -right-10 -bottom-10 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-700">
             <Cpu size={240} strokeWidth={1} color="#ffffff" />
           </div>
@@ -145,7 +125,7 @@ export default function LandingPage() {
           <div className="flex items-end gap-1.5 h-12 w-full mt-6">
             {[40, 70, 45, 90, 60, 80].map((h, i) => (
               <div key={i} className={`flex-1 rounded-t-sm transition-all duration-500`}
-                   style={{ height: `${h}%`, background: i === 3 ? '#0D9488' : '#ECEEF0' }}></div>
+                style={{ height: `${h}%`, background: i === 3 ? '#0D9488' : '#ECEEF0' }}></div>
             ))}
           </div>
         </div>
