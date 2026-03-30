@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, XCircle, Trophy, RotateCcw, ArrowRight, ArrowLeft, Loader2, Sparkles, BrainCircuit } from 'lucide-react';
+import { CheckCircle, XCircle, Trophy, RotateCcw, ArrowRight, ArrowLeft, Loader2, Sparkles, BrainCircuit, Maximize, ShieldAlert } from 'lucide-react';
 import api from '../lib/api';
 
 export default function QuizPage() {
@@ -18,6 +18,28 @@ export default function QuizPage() {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [calculatedScore, setCalculatedScore] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(() => document.fullscreenElement ? true : false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const enterFullscreen = () => {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(err => console.error(err));
+    }
+  };
+
+  const exitFullscreen = () => {
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(err => console.error(err));
+    }
+  };
 
   useEffect(() => {
     async function fetchQuiz() {
@@ -112,14 +134,34 @@ export default function QuizPage() {
           </div>
 
           <div className="flex gap-4">
-            <Button onClick={() => navigate(courseId ? `/dashboard/courses/${courseId}` : '/dashboard/courses')} variant="outline" className="flex-1 !rounded-xl !py-4">
+            <Button onClick={() => { exitFullscreen(); navigate(courseId ? `/dashboard/courses/${courseId}` : '/dashboard/courses'); }} variant="outline" className="flex-1 !rounded-xl !py-4">
               <ArrowLeft size={14} className="mr-2" /> EXIT NODE
             </Button>
-            <Button onClick={() => window.location.reload()} variant="black" className="flex-1 !rounded-xl !py-4">
+            <Button onClick={() => { window.location.reload(); }} variant="black" className="flex-1 !rounded-xl !py-4">
               <RotateCcw size={14} className="mr-2" /> RECALIBRATE
             </Button>
           </div>
         </Card>
+      </div>
+    );
+  }
+
+  if (!isFullscreen) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+        <div className="w-20 h-20 bg-black text-white rounded-[2rem] flex items-center justify-center shadow-lg shadow-black/10">
+          <ShieldAlert size={32} />
+        </div>
+        <div className="text-center space-y-4 max-w-md">
+          <p className="text-2xl font-black tracking-tighter text-black uppercase italic">Secure Mode Required</p>
+          <p className="text-sm font-medium text-gray-500 leading-relaxed px-6">
+            This assessment requires secure full-screen mode to prevent distractions and ensure integrity. Please enter full screen to continue.
+          </p>
+        </div>
+        <Button onClick={enterFullscreen} variant="black" className="px-8 !py-4 !rounded-xl text-xs font-black tracking-widest uppercase mt-4">
+          <Maximize size={16} className="mr-3 inline-block" />
+          ENTER FULLSCREEN
+        </Button>
       </div>
     );
   }
