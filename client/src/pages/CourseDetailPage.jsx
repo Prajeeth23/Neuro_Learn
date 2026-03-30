@@ -165,36 +165,22 @@ export default function CourseDetailPage() {
                   )}
 
                   {showQuiz && quizData && (
-                    <div className="space-y-10">
-                      <div className="flex items-center justify-between">
-                         <h3 className="text-sm font-black text-black uppercase tracking-widest border-l-2 border-black pl-4">Retention Accuracy</h3>
-                         {quizSubmitted && <div className="text-2xl font-black italic">SCORE: {quizScore}%</div>}
+                    <div className="py-20 text-center space-y-10">
+                      <div className="w-20 h-20 mx-auto rounded-[1.5rem] bg-black flex items-center justify-center text-white shadow-xl shadow-black/10">
+                        <BrainCircuit size={40} />
                       </div>
-
-                      <div className="space-y-8">
-                        {quizData.map((q, qIdx) => (
-                          <div key={qIdx} className="space-y-4">
-                             <p className="font-bold text-black text-sm flex gap-4"><span className="text-gray-200">#{(qIdx+1).toString().padStart(2, '0')}</span> {q.question}</p>
-                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 ml-12">
-                               {Object.entries(q.options).map(([key, value]) => {
-                                 const isSelected = selectedAnswers[qIdx] === key;
-                                 const isCorrect = quizSubmitted && key === q.answer;
-                                 const isWrong = quizSubmitted && isSelected && key !== q.answer;
-                                 return (
-                                   <button key={key} onClick={() => handleQuizSelect(qIdx, key)} disabled={quizSubmitted} className={`text-left p-4 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${isCorrect ? 'bg-black text-white border-black' : isWrong ? 'bg-gray-100 border-black' : isSelected ? 'bg-black text-white border-black' : 'bg-gray-50 border-gray-100 hover:border-gray-300'}`}>
-                                      <span><span className="opacity-30 mr-3">{key}</span> {value}</span>
-                                      {(isCorrect || isWrong) && (isCorrect ? <CheckCircle size={14} /> : <XCircle size={14} />)}
-                                   </button>
-                                 );
-                               })}
-                             </div>
-                          </div>
-                        ))}
+                      <div className="space-y-4">
+                        <h3 className="text-2xl font-black text-black uppercase italic tracking-tighter">Secure Assessment Ready</h3>
+                        <p className="text-gray-400 text-sm font-medium max-w-sm mx-auto leading-relaxed">
+                          To maintain academic integrity, this assessment will be conducted in a secure, full-screen environment.
+                        </p>
                       </div>
-
-                      {!quizSubmitted && (
-                        <button onClick={handleQuizSubmit} disabled={Object.keys(selectedAnswers).length < quizData.length} className="uiverse-btn w-full !py-4 opacity-100 disabled:opacity-30">SUBMIT ASSESSMENT</button>
-                      )}
+                      <button 
+                        onClick={() => window.location.href = `/dashboard/quiz/${currentModule.id}?courseId=${course.id}&topic=${encodeURIComponent(currentModule.title)}`}
+                        className="uiverse-btn !px-12 !py-5 !rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-2xl shadow-black/10"
+                      >
+                        LAUNCH SECURE QUIZ
+                      </button>
                     </div>
                   )}
                 </Card>

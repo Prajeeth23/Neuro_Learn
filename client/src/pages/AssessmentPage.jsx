@@ -23,17 +23,6 @@ export default function AssessmentPage() {
   const submittedRef = useRef(false);
   const warningTimerRef = useRef(null);
 
-  // Auto-enter fullscreen when assessment starts (not on intro screen)
-  useEffect(() => {
-    if (!started || submitted) return;
-    const t = setTimeout(() => {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
-    }, 300);
-    return () => clearTimeout(t);
-  }, [started, submitted]);
-
   // Track fullscreen, force back in if ESC is pressed mid-assessment
   useEffect(() => {
     const handleFsChange = () => {
@@ -88,6 +77,9 @@ export default function AssessmentPage() {
   }, [courseId]);
 
   const handleStart = async () => {
+    // TRIGGER FULLSCREEN ON USER GESTURE (MANDATORY)
+    enterFullscreen();
+    
     setStarted(true);
     setLoading(true);
     try {

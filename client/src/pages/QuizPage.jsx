@@ -12,28 +12,9 @@ export default function QuizPage() {
   const courseId = searchParams.get('courseId');
   const topic = searchParams.get('topic') || 'General Knowledge';
 
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [currentQIndex, setCurrentQIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [submitted, setSubmitted] = useState(false);
-  const [calculatedScore, setCalculatedScore] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showWarning, setShowWarning] = useState(false);
+  const [quizStarted, setQuizStarted] = useState(false);
   const submittedRef = useRef(false);
   const warningTimerRef = useRef(null);
-
-  // Enter fullscreen automatically on mount
-  useEffect(() => {
-    const tryEnterFullscreen = () => {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
-    };
-    // Small delay to ensure DOM is ready
-    const t = setTimeout(tryEnterFullscreen, 300);
-    return () => clearTimeout(t);
-  }, []);
 
   // Track fullscreen state and force re-entry if quiz is not done
   useEffect(() => {
@@ -134,6 +115,33 @@ export default function QuizPage() {
     );
   }
 
+  // --- INTRO / READY STATE ---
+  if (!quizStarted && !loading && !submitted) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center p-6 animate-fade-in-up">
+        <Card className="w-full max-w-xl bg-white border border-gray-100 rounded-[3rem] p-12 shadow-card-lg text-center">
+          <div className="w-20 h-20 mx-auto mb-10 rounded-[1.5rem] bg-black flex items-center justify-center text-white shadow-xl shadow-black/10">
+            <ShieldAlert size={40} />
+          </div>
+          <h1 className="text-3xl font-black mb-4 tracking-tighter text-black uppercase italic">
+            Secure <span className="text-gray-300">Session</span>
+          </h1>
+          <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400 mb-8">{topic}</p>
+          <p className="text-gray-500 mb-12 text-sm font-medium px-4 leading-relaxed">
+            This assessment is conducted in Secure Mode. You must remain in full-screen until submission. Exiting will trigger a security intervention.
+          </p>
+          
+          <Button variant="black" className="w-full !py-6 !rounded-2xl shadow-xl shadow-black/5 active:scale-[0.98]" onClick={() => {
+            enterFullscreen();
+            setQuizStarted(true);
+          }}>
+            START SECURE ASSESSMENT
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   // --- RESULTS STATE ---
   if (submitted) {
     const correct = questions.filter((q, idx) => selectedAnswers[idx] === q.answer).length;
@@ -186,7 +194,7 @@ export default function QuizPage() {
   }
 
   // --- FULLSCREEN WARNING OVERLAY (flashes briefly when ESC is pressed) ---
-  if (showWarning || !isFullscreen) {
+  if (quizStarted && !submitted && (showWarning || !isFullscreen)) {
     return (
       <div className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
         <div className="w-20 h-20 bg-black text-white rounded-[2rem] flex items-center justify-center shadow-lg shadow-black/10 animate-pulse">
