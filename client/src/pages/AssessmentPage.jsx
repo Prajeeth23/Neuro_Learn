@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { BrainCircuit, Loader2, ArrowRight, ShieldCheck, Target, Maximize, ShieldAlert } from 'lucide-react';
+import { BrainCircuit, Loader2, ArrowRight, ShieldCheck, Target, Maximize, ShieldAlert, XCircle } from 'lucide-react';
 import api from '../lib/api';
 import { useSecureMode } from '../hooks/useSecureMode';
 
@@ -21,7 +21,7 @@ export default function AssessmentPage() {
   const [courseName, setCourseName] = useState('');
   const [courseContext, setCourseContext] = useState('');
 
-  const { isFullscreen, showWarning, enterFullscreen } = useSecureMode(started && !submitted);
+  const { isFullscreen, showWarning, enterFullscreen, exitFullscreen } = useSecureMode(started && !submitted);
 
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function AssessmentPage() {
 
   if (!started) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 animate-fade-in-up">
+      <div className="flex-1 w-full min-h-screen flex flex-col items-center justify-center p-6 bg-[#F8FAFC] animate-fade-in-up">
         <Card className="max-w-xl bg-white border border-gray-100 rounded-[3rem] p-10 shadow-card-lg text-center">
           <div className="w-20 h-20 mx-auto mb-10 rounded-[1.5rem] bg-black flex items-center justify-center text-white shadow-xl shadow-black/10">
             <ShieldCheck size={40} />
@@ -137,7 +137,7 @@ export default function AssessmentPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-8 grayscale opacity-40">
+      <div className="flex-1 w-full min-h-screen flex flex-col items-center justify-center space-y-8 grayscale opacity-40 bg-[#F8FAFC]">
         <Loader2 className="animate-spin text-black" size={48} />
         <div className="text-center space-y-3">
           <p className="text-2xl font-black tracking-tighter text-black uppercase italic">Generating Node Map</p>
@@ -149,7 +149,7 @@ export default function AssessmentPage() {
 
   if (submitted && result) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center p-6 animate-fade-in-up">
+      <div className="flex-1 w-full min-h-screen flex flex-col items-center justify-center p-6 bg-[#F8FAFC] animate-fade-in-up">
         <Card className="w-full max-w-xl bg-white border border-gray-100 rounded-[3rem] p-12 shadow-card-lg text-center">
           <div className="w-24 h-24 mx-auto mb-10 rounded-[2rem] bg-black flex items-center justify-center text-white border-4 border-gray-50 shadow-xl shadow-black/10">
             <span className="text-4xl font-black italic">{result.level}★</span>
@@ -180,7 +180,7 @@ export default function AssessmentPage() {
   // Fullscreen warning / re-entry prompt (shown when ESC is pressed mid-assessment)
   if (started && !submitted && (showWarning || !isFullscreen)) {
     return (
-      <div className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+      <div className="fixed inset-0 z-[9999] bg-[#F8FAFC] flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
         <div className="w-20 h-20 bg-black text-white rounded-[2rem] flex items-center justify-center shadow-lg shadow-black/10 animate-pulse">
           <ShieldAlert size={32} />
         </div>
@@ -190,10 +190,23 @@ export default function AssessmentPage() {
             Exiting full-screen is not allowed during an assessment. Returning you to secure mode automatically...
           </p>
         </div>
-        <Button onClick={enterFullscreen} variant="black" className="px-8 !py-4 !rounded-xl text-xs font-black tracking-widest uppercase mt-4">
-          <Maximize size={16} className="mr-3 inline-block" />
-          RESUME FULLSCREEN NOW
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-4 mt-4">
+          <Button 
+            onClick={() => { 
+                exitFullscreen(); 
+                navigate(courseId ? `/dashboard/courses/${courseId}` : '/dashboard/courses'); 
+            }} 
+            variant="outline" 
+            className="px-8 !py-4 !rounded-xl text-xs font-black tracking-widest uppercase border-red-500 text-red-500 hover:bg-red-50"
+          >
+            <XCircle size={16} className="mr-3 inline-block" />
+            EXIT ASSESSMENT
+          </Button>
+          <Button onClick={enterFullscreen} variant="black" className="px-8 !py-4 !rounded-xl text-xs font-black tracking-widest uppercase">
+            <Maximize size={16} className="mr-3 inline-block" />
+            RESUME FULLSCREEN
+          </Button>
+        </div>
       </div>
     );
   }
@@ -202,7 +215,7 @@ export default function AssessmentPage() {
   const q = questions[currentQIndex];
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center p-6 animate-fade-in-up">
+    <div className="flex-1 w-full min-h-screen flex flex-col items-center justify-center p-6 bg-[#F8FAFC] animate-fade-in-up">
       <Card className="w-full max-w-2xl bg-white border border-gray-100 rounded-[3rem] p-10 shadow-card-lg">
         <CardHeader className="p-0 border-b border-gray-50 pb-10 mb-10">
           <div className="flex items-center justify-between mb-10">

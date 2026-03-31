@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useBlocker } from 'react-router-dom';
+
 import { useUI } from '../contexts/UIContext';
 
 /**
@@ -50,16 +50,6 @@ export const useSecureMode = (active) => {
     };
   }, [active, enterFullscreen]);
 
-  // 3. Block Navigation (React Router 6.7+)
-  useBlocker(({ nextLocation }) => {
-    if (active) {
-      const confirmLeave = window.confirm(
-        "Secure Assessment in progress. Navigating away will lose your progress and may be flagged. Are you sure?"
-      );
-      return !confirmLeave;
-    }
-    return false;
-  });
 
   // 4. Browser Protection (beforeunload, right-click, keyboard)
   useEffect(() => {

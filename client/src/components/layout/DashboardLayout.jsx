@@ -400,7 +400,7 @@ export default function DashboardLayout() {
         )}
 
         {/* ===== PAGE CONTENT ===== */}
-        <main className="flex-1 px-5 lg:px-8 py-7">
+        <main className={`flex-1 ${isSecureMode ? 'p-0 flex flex-col bg-[#F8FAFC]' : 'px-5 lg:px-8 py-7'}`}>
           <Outlet />
         </main>
       </div>

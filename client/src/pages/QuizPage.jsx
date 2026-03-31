@@ -85,7 +85,7 @@ export default function QuizPage() {
   // --- INTRO / READY STATE ---
   if (!quizStarted && !loading && !submitted) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center p-6 animate-fade-in-up">
+      <div className="flex-1 w-full min-h-screen flex flex-col items-center justify-center p-6 bg-[#F8FAFC] animate-fade-in-up">
         <Card className="w-full max-w-xl bg-white border border-gray-100 rounded-[3rem] p-12 shadow-card-lg text-center">
           <div className="w-20 h-20 mx-auto mb-10 rounded-[1.5rem] bg-black flex items-center justify-center text-white shadow-xl shadow-black/10">
             <ShieldAlert size={40} />
@@ -113,7 +113,7 @@ export default function QuizPage() {
   if (submitted) {
     const correct = questions.filter((q, idx) => selectedAnswers[idx] === q.answer).length;
     return (
-      <div className="min-h-[60vh] flex items-center justify-center p-6 animate-fade-in-up">
+      <div className="flex-1 w-full min-h-screen flex flex-col items-center justify-center p-6 bg-[#F8FAFC] animate-fade-in-up">
         <Card className="w-full max-w-2xl bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-card-lg text-center">
           <div className="mb-10">
             <div className={`w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-8 border ${calculatedScore >= 70 ? 'bg-black text-white border-black' : 'bg-gray-50 text-black border-gray-100'}`}>
@@ -163,7 +163,7 @@ export default function QuizPage() {
   // --- FULLSCREEN WARNING OVERLAY (flashes briefly when ESC is pressed) ---
   if (quizStarted && !submitted && (showWarning || !isFullscreen)) {
     return (
-      <div className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+      <div className="fixed inset-0 z-[9999] bg-[#F8FAFC] flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
         <div className="w-20 h-20 bg-black text-white rounded-[2rem] flex items-center justify-center shadow-lg shadow-black/10 animate-pulse">
           <ShieldAlert size={32} />
         </div>
@@ -173,10 +173,23 @@ export default function QuizPage() {
             Exiting full-screen is not allowed during an assessment. Returning you to secure mode automatically...
           </p>
         </div>
-        <Button onClick={enterFullscreen} variant="black" className="px-8 !py-4 !rounded-xl text-xs font-black tracking-widest uppercase mt-4">
-          <Maximize size={16} className="mr-3 inline-block" />
-          RESUME FULLSCREEN NOW
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-4 mt-4">
+          <Button 
+            onClick={() => { 
+                exitFullscreen(); 
+                navigate(courseId ? `/dashboard/courses/${courseId}` : '/dashboard/courses'); 
+            }} 
+            variant="outline" 
+            className="px-8 !py-4 !rounded-xl text-xs font-black tracking-widest uppercase border-red-500 text-red-500 hover:bg-red-50"
+          >
+            <XCircle size={16} className="mr-3 inline-block" />
+            EXIT QUIZ
+          </Button>
+          <Button onClick={enterFullscreen} variant="black" className="px-8 !py-4 !rounded-xl text-xs font-black tracking-widest uppercase">
+            <Maximize size={16} className="mr-3 inline-block" />
+            RESUME FULLSCREEN
+          </Button>
+        </div>
       </div>
     );
   }
@@ -185,7 +198,7 @@ export default function QuizPage() {
 
   // --- QUIZ STATE ---
   return (
-    <div className="min-h-[60vh] flex items-center justify-center p-6 animate-fade-in-up">
+    <div className="flex-1 w-full min-h-screen flex flex-col items-center justify-center p-6 bg-[#F8FAFC] animate-fade-in-up">
       <Card className="w-full max-w-2xl bg-white border border-gray-100 rounded-[3rem] p-10 shadow-card-lg">
         <CardHeader className="p-0 border-b border-gray-50 pb-10 mb-10">
           <div className="flex items-center justify-between mb-10">
