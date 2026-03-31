@@ -38,8 +38,8 @@ const evaluateProgress = (currentLevel, quizScore) => {
 const getRecommendedModules = async (courseId, currentLevel) => {
   let minDiff = 1, maxDiff = 5;
   
-  if (currentLevel === 3) { maxDiff = 2; }
-  else if (currentLevel === 4) { minDiff = 2; maxDiff = 3; }
+  if (currentLevel === 3) { maxDiff = 3; }
+  else if (currentLevel === 4) { minDiff = 2; maxDiff = 4; }
   else if (currentLevel === 5) { minDiff = 3; maxDiff = 5; }
 
   const { data, error } = await supabase
