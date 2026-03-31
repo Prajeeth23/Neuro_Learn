@@ -86,13 +86,13 @@ router.post('/generate', authMiddleware, async (req, res) => {
   }
 });
 
-// Upload file → extract text → full AI analysis
-router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
+// Upload files → extract text → full AI analysis
+router.post('/upload', authMiddleware, upload.array('files', 5), async (req, res) => {
   const userId = req.user.id;
 
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded' });
     }
 
     const { title, deadline_days } = req.body;
@@ -100,15 +100,19 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
       return res.status(400).json({ error: 'Title and deadline (days) are required.' });
     }
 
-    // Extract text from file
-    const extractedText = await fileService.extractTextFromFile(
-      req.file.path,
-      req.file.mimetype,
-      req.file.originalname
-    );
+    // Extract text from all files
+    let extractedText = '';
+    for (const file of req.files) {
+      const text = await fileService.extractTextFromFile(
+        file.path,
+        file.mimetype,
+        file.originalname
+      );
+      extractedText += text + '\n\n---\n\n';
+    }
 
     if (!extractedText || extractedText.trim().length < 20) {
-      return res.status(400).json({ error: 'Could not extract sufficient text from the uploaded file.' });
+      return res.status(400).json({ error: 'Could not extract sufficient text from the uploaded files.' });
     }
 
     // Full AI analysis
@@ -137,10 +141,27 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
       console.error('Supabase Insert Error (Personalized Upload):', error);
       throw new Error(`Failed to save to database: ${error.message}`);
     }
-    res.json({ message: 'File analyzed successfully', plan: data, analysis });
+    res.json({ message: 'Files analyzed successfully', plan: data, analysis });
   } catch (err) {
     console.error(`[AI Error Logging] ${err.stack}`);
     console.error('File Upload Analysis Error:', err.stack);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete a personalized study plan
+router.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+    const { error } = await req.supabaseClient
+      .from('personalized_materials')
+      .delete()
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id);
+    
+    if (error) throw error;
+    res.json({ message: 'Study plan deleted successfully' });
+  } catch (err) {
+    console.error('Delete Plan Error:', err.stack);
     res.status(500).json({ error: err.message });
   }
 });

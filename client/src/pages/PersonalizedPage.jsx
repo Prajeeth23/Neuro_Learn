@@ -12,7 +12,7 @@ export default function PersonalizedPage() {
   const [title, setTitle] = useState('');
   const [materialText, setMaterialText] = useState('');
   const [deadlineDays, setDeadlineDays] = useState('7');
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
@@ -46,9 +46,9 @@ export default function PersonalizedPage() {
     setLoading(true);
     setError(null);
     try {
-      if (activeTab === 'upload' && file) {
+      if (activeTab === 'upload' && files.length > 0) {
         const formData = new FormData();
-        formData.append('file', file);
+        files.forEach(f => formData.append('files', f));
         formData.append('title', title);
         formData.append('deadline_days', deadlineDays);
         await api.post('/personalized/upload', formData, {
@@ -62,7 +62,7 @@ export default function PersonalizedPage() {
         });
       }
       setShowGenerate(false);
-      setTitle(''); setMaterialText(''); setDeadlineDays('7'); setFile(null);
+      setTitle(''); setMaterialText(''); setDeadlineDays('7'); setFiles([]);
       await loadMaterials();
     } catch (err) {
       setError(err.response?.data?.error || "Generation failed. Please try again.");
@@ -72,8 +72,21 @@ export default function PersonalizedPage() {
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) setFile(selectedFile);
+    if (e.target.files && e.target.files.length > 0) {
+      setFiles(Array.from(e.target.files));
+    }
+  };
+
+  const handleDeletePlan = async (id, e) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this AI-generated study node?")) return;
+    try {
+      await api.delete(`/personalized/${id}`);
+      await loadMaterials();
+      if (expandedPlan?.id === id) setExpandedPlan(null);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to delete plan");
+    }
   };
 
   const openPlanView = (plan) => {
@@ -177,14 +190,14 @@ export default function PersonalizedPage() {
                   </div>
                 ) : (
                   <div>
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">Sync PDF/DOCX/JPG</label>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-1">Sync PDF/DOCX/JPG (Up to 5 files)</label>
                     <div onClick={() => fileInputRef.current?.click()} className="w-full h-32 border-2 border-dashed border-gray-100 bg-gray-50/50 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-all group">
-                       {file ? (
-                         <div className="text-center font-bold text-xs"><FileText size={20} className="mx-auto mb-1 text-indigo-900"/> {file.name}</div>
+                       {files.length > 0 ? (
+                         <div className="text-center font-bold text-xs"><FileText size={20} className="mx-auto mb-1 text-indigo-900"/> {files.length} {files.length === 1 ? 'file' : 'files'} selected</div>
                        ) : (
-                         <div className="text-center text-gray-300 group-hover:text-gray-500 transition-colors"><Upload size={20} className="mx-auto mb-1"/> <span className="text-[10px] font-black uppercase tracking-widest">Select Source</span></div>
+                         <div className="text-center text-gray-300 group-hover:text-gray-500 transition-colors"><Upload size={20} className="mx-auto mb-1"/> <span className="text-[10px] font-black uppercase tracking-widest">Select Source(s)</span></div>
                        )}
-                       <input ref={fileInputRef} type="file" accept=".pdf,.docx,.jpg,.jpeg,.png,.txt" onChange={handleFileChange} className="hidden" />
+                       <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.jpg,.jpeg,.png,.txt" onChange={handleFileChange} className="hidden" />
                     </div>
                   </div>
                 )}
@@ -328,9 +341,10 @@ export default function PersonalizedPage() {
                 <h3 className="text-lg font-black text-indigo-900 leading-tight mb-2 uppercase italic">{plan.title}</h3>
                 <p className="text-xs text-gray-400 line-clamp-2 mb-6 font-medium font-sans">{getNotes(plan).summary || "Analysis pending."}</p>
                 
-                <div className="mt-auto flex gap-2">
+                <div className="mt-auto flex gap-2 relative z-10">
                    <button onClick={() => openPlanView(plan)} className="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border border-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all">Review</button>
                    <button onClick={() => { openPlanView(plan); setViewSection('quiz'); }} className="px-4 py-3 border border-gray-100 rounded-xl hover:bg-gray-50 text-gray-400 transition-all"><Brain size={14} /></button>
+                   <button onClick={(e) => handleDeletePlan(plan.id, e)} className="px-4 py-3 border border-gray-100 rounded-xl hover:bg-red-50 text-red-500 hover:border-red-200 transition-all" title="Delete Plan"><XCircle size={14} /></button>
                 </div>
               </Card>
             ))
