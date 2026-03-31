@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
-import { CheckCircle, XCircle, BrainCircuit, Sparkles, Loader2, ArrowRight, Play } from 'lucide-react';
+import { CheckCircle, XCircle, BrainCircuit, Sparkles, Loader2, ArrowRight, Play, Maximize, ShieldAlert } from 'lucide-react';
 import api from '../lib/api';
 import { useScreenTime } from '../hooks/useScreenTime';
+import { useSecureMode } from '../hooks/useSecureMode';
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
@@ -22,6 +23,8 @@ export default function CoursesPage() {
   const [answers, setAnswers] = useState({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [quizScore, setQuizScore] = useState(0);
+
+  const { isFullscreen, showWarning, enterFullscreen, exitFullscreen } = useSecureMode(showLaunchTest && !quizSubmitted);
 
   useScreenTime();
 
@@ -92,6 +95,10 @@ export default function CoursesPage() {
     setAnswers({});
     setQuizSubmitted(false);
     setQuizScore(0);
+    
+    // Trigger fullscreen (gesture mandatory)
+    enterFullscreen();
+
     try {
       const { data } = await api.post('/ai/launch-test', {
         courseTitle: course.title,
@@ -114,6 +121,10 @@ export default function CoursesPage() {
     const score = Math.round((correct / launchTestData.length) * 100);
     setQuizScore(score);
     setQuizSubmitted(true);
+    
+    // Exit fullscreen now that quiz is done
+    exitFullscreen();
+
     try {
       await api.post(`/assessments/initial/${activeCourse.id}/submit`, { score });
       setEnrolledCourses(prev => ({ ...prev, [activeCourse.id]: true }));
@@ -242,6 +253,25 @@ export default function CoursesPage() {
       {/* Launch Test Modal — Full Screen Premium Theme */}
       {showLaunchTest && activeCourse && (
         <div className="fixed inset-0 z-50 bg-[#0f0f1a] overflow-y-auto flex flex-col animate-in slide-in-from-bottom-4 duration-300">
+          
+          {/* Warning Overlay */}
+          {(showWarning || !isFullscreen) && !quizSubmitted && (
+            <div className="absolute inset-0 z-[100] bg-white flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+              <div className="w-20 h-20 bg-black text-white rounded-[2rem] flex items-center justify-center shadow-lg shadow-black/10 animate-pulse">
+                <ShieldAlert size={32} />
+              </div>
+              <div className="text-center space-y-4 max-w-md px-6">
+                <p className="text-2xl font-black tracking-tighter text-black uppercase italic">Secure Mode Active</p>
+                <p className="text-sm font-medium text-gray-500 leading-relaxed">
+                  Assessments must be completed in full-screen. Returning you to secure mode automatically...
+                </p>
+              </div>
+              <button onClick={enterFullscreen} className="px-8 py-4 rounded-xl text-[10px] font-black tracking-widest uppercase mt-4 bg-black text-white flex items-center gap-3">
+                <Maximize size={16} />
+                RESUME FULLSCREEN NOW
+              </button>
+            </div>
+          )}
           
           {/* Header */}
           <div className="px-4 py-6 md:px-8 border-b border-indigo-900/40 sticky top-0 bg-[#0f0f1a]/95 backdrop-blur-xl z-20 shadow-lg shadow-black/30"

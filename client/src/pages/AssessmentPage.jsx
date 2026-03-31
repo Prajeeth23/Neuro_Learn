@@ -4,6 +4,8 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../compone
 import { Button } from '../components/ui/Button';
 import { BrainCircuit, Loader2, ArrowRight, ShieldCheck, Target, Maximize, ShieldAlert } from 'lucide-react';
 import api from '../lib/api';
+import { useSecureMode } from '../hooks/useSecureMode';
+
 
 export default function AssessmentPage() {
   const { courseId } = useParams();
@@ -18,45 +20,9 @@ export default function AssessmentPage() {
   const [result, setResult] = useState(null);
   const [courseName, setCourseName] = useState('');
   const [courseContext, setCourseContext] = useState('');
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showWarning, setShowWarning] = useState(false);
-  const submittedRef = useRef(false);
-  const warningTimerRef = useRef(null);
 
-  // Track fullscreen, force back in if ESC is pressed mid-assessment
-  useEffect(() => {
-    const handleFsChange = () => {
-      const inFs = !!document.fullscreenElement;
-      setIsFullscreen(inFs);
-      if (!inFs && started && !submittedRef.current) {
-        setShowWarning(true);
-        clearTimeout(warningTimerRef.current);
-        warningTimerRef.current = setTimeout(() => {
-          if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen().catch(() => {});
-          }
-          setShowWarning(false);
-        }, 2000);
-      }
-    };
-    document.addEventListener('fullscreenchange', handleFsChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFsChange);
-      clearTimeout(warningTimerRef.current);
-    };
-  }, [started]);
+  const { isFullscreen, showWarning, enterFullscreen } = useSecureMode(started && !submitted);
 
-  const enterFullscreen = () => {
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }
-  };
-
-  const exitFullscreen = () => {
-    if (document.fullscreenElement && document.exitFullscreen) {
-      document.exitFullscreen().catch(() => {});
-    }
-  };
 
   useEffect(() => {
     async function fetchCourse() {
@@ -107,11 +73,15 @@ export default function AssessmentPage() {
     let correct = 0;
     questions.forEach((q, idx) => { if (selectedAnswers[idx] === q.answer) correct++; });
     const score = Math.round((correct / questions.length) * 100);
-    submittedRef.current = true;
     setSubmitted(true);
-    exitFullscreen();
+
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    }
+
     try {
       const { data } = await api.post(`/assessments/initial/${courseId}/submit`, { score });
+
       setResult({
         score,
         correct,

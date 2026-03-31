@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, Trophy, RotateCcw, ArrowRight, ArrowLeft, BrainCircuit, Maximize, ShieldAlert } from 'lucide-react';
 import api from '../lib/api';
+import { useSecureMode } from '../hooks/useSecureMode';
 
 export default function QuizPage() {
   const { id } = useParams();
@@ -13,47 +14,14 @@ export default function QuizPage() {
   const topic = searchParams.get('topic') || 'General Knowledge';
 
   const [quizStarted, setQuizStarted] = useState(false);
-  const submittedRef = useRef(false);
-  const warningTimerRef = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [questions, setQuestions] = useState([]);
+  const [currentQIndex, setCurrentQIndex] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [calculatedScore, setCalculatedScore] = useState(0);
 
-  // Track fullscreen state and force re-entry if quiz is not done
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      const inFs = !!document.fullscreenElement;
-      setIsFullscreen(inFs);
-
-      // If they exited fullscreen and haven't submitted yet → force back in
-      if (!inFs && !submittedRef.current) {
-        setShowWarning(true);
-        clearTimeout(warningTimerRef.current);
-        // Auto re-enter after 2 seconds
-        warningTimerRef.current = setTimeout(() => {
-          if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen().catch(() => {});
-          }
-          setShowWarning(false);
-        }, 2000);
-      }
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      clearTimeout(warningTimerRef.current);
-    };
-  }, []);
-
-  const enterFullscreen = () => {
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }
-  };
-
-  const exitFullscreen = () => {
-    if (document.fullscreenElement && document.exitFullscreen) {
-      document.exitFullscreen().catch(() => {});
-    }
-  };
+  const { isFullscreen, showWarning, enterFullscreen, exitFullscreen } = useSecureMode(quizStarted && !submitted);
 
   // Fetch quiz questions
   useEffect(() => {
@@ -91,7 +59,6 @@ export default function QuizPage() {
     questions.forEach((q, idx) => { if (selectedAnswers[idx] === q.answer) correct++; });
     const score = Math.round((correct / questions.length) * 100);
     setCalculatedScore(score);
-    submittedRef.current = true;
     setSubmitted(true);
     // Exit fullscreen now that quiz is done
     exitFullscreen();
@@ -214,7 +181,7 @@ export default function QuizPage() {
     );
   }
 
-  if (!q) return null;
+  if (!q || !q.options) return null;
 
   // --- QUIZ STATE ---
   return (

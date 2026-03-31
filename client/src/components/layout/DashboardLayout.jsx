@@ -8,9 +8,12 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useUI } from '../../contexts/UIContext';
 
 export default function DashboardLayout() {
+  const { isSecureMode } = useUI();
   const { user, isAdmin } = useAuth();
+
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Controls desktop sidebar
@@ -215,7 +218,7 @@ export default function DashboardLayout() {
 
       {/* ===== PERSISTENT DESKTOP SIDEBAR ===== */}
       <AnimatePresence>
-        {isSidebarOpen && (
+        {isSidebarOpen && !isSecureMode && (
           <motion.aside
             initial={{ x: -240 }}
             animate={{ x: 0 }}
@@ -231,7 +234,7 @@ export default function DashboardLayout() {
 
       {/* ===== MOBILE / TABLET DRAWER ===== */}
       <AnimatePresence>
-        {isDrawerOpen && (
+        {isDrawerOpen && !isSecureMode && (
           <>
             {/* Backdrop */}
             <motion.div
@@ -262,137 +265,139 @@ export default function DashboardLayout() {
       {/* ===== MAIN CONTENT AREA ===== */}
       <div 
         className="flex-1 flex flex-col min-h-screen transition-all duration-300"
-        style={{ marginLeft: isSidebarOpen && window.innerWidth >= 1024 ? '240px' : '0' }}
+        style={{ marginLeft: isSidebarOpen && !isSecureMode && window.innerWidth >= 1024 ? '240px' : '0' }}
       >
 
         {/* ===== TOP NAVIGATION BAR ===== */}
-        <header
-          className="sticky top-0 z-20 flex items-center justify-between px-5 lg:px-8"
-          style={{
-            height: '60px',
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            borderBottom: '1px solid #F2F4F6',
-          }}
-        >
-          {/* Left: Hamburger (mobile & desktop) + Page Title */}
-          <div className="flex items-center gap-3">
-            {/* Desktop Hamburger */}
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="hidden lg:flex p-2 rounded-xl transition-all duration-200"
-              style={{ 
-                color: isSidebarOpen ? '#4F46E5' : '#464555',
-                background: isSidebarOpen ? '#EEF2FF' : 'transparent'
-              }}
-              onMouseEnter={e => { if(!isSidebarOpen) e.currentTarget.style.background = '#F2F4F6' }}
-              onMouseLeave={e => { if(!isSidebarOpen) e.currentTarget.style.background = 'transparent' }}
-            >
-              <Menu size={20} />
-            </button>
+        {!isSecureMode && (
+          <header 
+            className="sticky top-0 z-20 flex items-center justify-between px-5 lg:px-8"
+            style={{
+              height: '60px',
+              background: 'rgba(255, 255, 255, 0.9)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              borderBottom: '1px solid #F2F4F6',
+            }}
+          >
+            {/* Left: Hamburger (mobile & desktop) + Page Title */}
+            <div className="flex items-center gap-3">
+              {/* Desktop Hamburger */}
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="hidden lg:flex p-2 rounded-xl transition-all duration-200"
+                style={{ 
+                  color: isSidebarOpen ? '#4F46E5' : '#464555',
+                  background: isSidebarOpen ? '#EEF2FF' : 'transparent'
+                }}
+                onMouseEnter={e => { if(!isSidebarOpen) e.currentTarget.style.background = '#F2F4F6' }}
+                onMouseLeave={e => { if(!isSidebarOpen) e.currentTarget.style.background = 'transparent' }}
+              >
+                <Menu size={20} />
+              </button>
 
-            {/* Mobile Hamburger */}
-            <button
-              onClick={() => setIsDrawerOpen(true)}
-              className="lg:hidden p-2 rounded-xl transition-colors -ml-1"
-              style={{ color: '#464555' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#F2F4F6'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              aria-label="Open navigation menu"
-            >
-              <Menu size={20} />
-            </button>
+              {/* Mobile Hamburger */}
+              <button
+                onClick={() => setIsDrawerOpen(true)}
+                className="lg:hidden p-2 rounded-xl transition-colors -ml-1"
+                style={{ color: '#464555' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#F2F4F6'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                aria-label="Open navigation menu"
+              >
+                <Menu size={20} />
+              </button>
 
-            {/* Mobile brand logo */}
-            <div className="lg:hidden flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #3525CD, #4F46E5)' }}>
-                <GraduationCap size={14} style={{ color: '#ffffff' }} />
+              {/* Mobile brand logo */}
+              <div className="lg:hidden flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg, #3525CD, #4F46E5)' }}>
+                  <GraduationCap size={14} style={{ color: '#ffffff' }} />
+                </div>
+                <span className="font-bold text-sm" style={{ color: '#191C1E', letterSpacing: '-0.02em' }}>
+                  Neuro<span style={{ color: '#4F46E5' }}>Learn</span>
+                </span>
               </div>
-              <span className="font-bold text-sm" style={{ color: '#191C1E', letterSpacing: '-0.02em' }}>
-                Neuro<span style={{ color: '#4F46E5' }}>Learn</span>
-              </span>
+
+              {/* Desktop: page title breadcrumb */}
+              <div className="hidden lg:flex items-center gap-2">
+                <span className="text-sm font-medium" style={{ color: '#777587' }}>NeuroLearn</span>
+                <ChevronRight size={13} style={{ color: '#C7C4D8' }} />
+                <span className="text-sm font-semibold" style={{ color: '#191C1E' }}>{getPageTitle()}</span>
+              </div>
             </div>
 
-            {/* Desktop: page title breadcrumb */}
-            <div className="hidden lg:flex items-center gap-2">
-              <span className="text-sm font-medium" style={{ color: '#777587' }}>NeuroLearn</span>
-              <ChevronRight size={13} style={{ color: '#C7C4D8' }} />
-              <span className="text-sm font-semibold" style={{ color: '#191C1E' }}>{getPageTitle()}</span>
+            {/* Right: Actions */}
+            <div className="flex items-center gap-2">
+              {/* Search button — desktop */}
+              <button
+                className="hidden lg:flex p-2 rounded-xl transition-colors"
+                style={{ color: '#777587' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#F2F4F6'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                onClick={() => navigate('/dashboard/search')}
+                title="Search courses"
+              >
+                <Search size={18} />
+              </button>
+
+              {/* Notification bell */}
+              <button
+                className="p-2 rounded-xl transition-colors relative"
+                style={{ color: '#777587' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#F2F4F6'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                title="Notifications"
+              >
+                <Bell size={18} />
+                <span
+                  className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
+                  style={{ background: '#E11D48', border: '1.5px solid white' }}
+                />
+              </button>
+
+              {/* User avatar chip — desktop */}
+              <button
+                className="hidden lg:flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-xl transition-colors"
+                style={{ background: '#F8FAFC', border: '1px solid #ECEEF0' }}
+                onClick={() => navigate('/dashboard/profile')}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = '#EEF2FF';
+                  e.currentTarget.style.borderColor = '#C3C0FF';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = '#F8FAFC';
+                  e.currentTarget.style.borderColor = '#ECEEF0';
+                }}
+              >
+                <div className="avatar w-7 h-7 text-[10px]">
+                  {userInitials}
+                </div>
+                <span className="text-xs font-semibold" style={{ color: '#464555', letterSpacing: '-0.01em' }}>
+                  {userName.split(' ')[0]}
+                </span>
+              </button>
+
+              {/* Logout — desktop only */}
+              <button
+                onClick={handleLogout}
+                className="hidden lg:flex p-2 rounded-xl transition-colors"
+                style={{ color: '#777587' }}
+                title="Sign out"
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = '#FFF1F2';
+                  e.currentTarget.style.color = '#E11D48';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#777587';
+                }}
+              >
+                <LogOut size={17} />
+              </button>
             </div>
-          </div>
-
-          {/* Right: Actions */}
-          <div className="flex items-center gap-2">
-            {/* Search button — desktop */}
-            <button
-              className="hidden lg:flex p-2 rounded-xl transition-colors"
-              style={{ color: '#777587' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#F2F4F6'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              onClick={() => navigate('/dashboard/search')}
-              title="Search courses"
-            >
-              <Search size={18} />
-            </button>
-
-            {/* Notification bell */}
-            <button
-              className="p-2 rounded-xl transition-colors relative"
-              style={{ color: '#777587' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#F2F4F6'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              title="Notifications"
-            >
-              <Bell size={18} />
-              <span
-                className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
-                style={{ background: '#E11D48', border: '1.5px solid white' }}
-              />
-            </button>
-
-            {/* User avatar chip — desktop */}
-            <button
-              className="hidden lg:flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-xl transition-colors"
-              style={{ background: '#F8FAFC', border: '1px solid #ECEEF0' }}
-              onClick={() => navigate('/dashboard/profile')}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = '#EEF2FF';
-                e.currentTarget.style.borderColor = '#C3C0FF';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = '#F8FAFC';
-                e.currentTarget.style.borderColor = '#ECEEF0';
-              }}
-            >
-              <div className="avatar w-7 h-7 text-[10px]">
-                {userInitials}
-              </div>
-              <span className="text-xs font-semibold" style={{ color: '#464555', letterSpacing: '-0.01em' }}>
-                {userName.split(' ')[0]}
-              </span>
-            </button>
-
-            {/* Logout — desktop only */}
-            <button
-              onClick={handleLogout}
-              className="hidden lg:flex p-2 rounded-xl transition-colors"
-              style={{ color: '#777587' }}
-              title="Sign out"
-              onMouseEnter={e => {
-                e.currentTarget.style.background = '#FFF1F2';
-                e.currentTarget.style.color = '#E11D48';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = '#777587';
-              }}
-            >
-              <LogOut size={17} />
-            </button>
-          </div>
-        </header>
+          </header>
+        )}
 
         {/* ===== PAGE CONTENT ===== */}
         <main className="flex-1 px-5 lg:px-8 py-7">

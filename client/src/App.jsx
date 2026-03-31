@@ -18,11 +18,15 @@ import AdminPage from './pages/AdminPage';
 import LearningTrackerPage from './pages/LearningTrackerPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 
+import { UIProvider } from './contexts/UIContext';
+
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
+        <UIProvider>
+          <Routes>
+
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -47,9 +51,11 @@ function App() {
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </UIProvider>
       </AuthProvider>
     </Router>
   );
 }
+
 
 export default App;
