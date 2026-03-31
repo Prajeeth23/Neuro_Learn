@@ -772,7 +772,7 @@ export default function CoursesPage() {
 
       {/* Level Selector Modal */}
       {showLevelSelector && activeCourse && (
-        <div className="fixed inset-0 z-[100] bg-[#0f0f1a]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in-up">
+        <div className="fixed inset-0 z-50 bg-[#0f0f1a]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in-up">
           <div className="bg-[#12121a] border border-violet-900/50 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl shadow-violet-900/20">
             <div className="p-8">
               <div className="w-12 h-12 rounded-2xl bg-violet-950/50 border border-violet-800 flex items-center justify-center text-violet-400 mb-6">
