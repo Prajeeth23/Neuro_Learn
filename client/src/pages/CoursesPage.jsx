@@ -776,15 +776,15 @@ export default function CoursesPage() {
 
       {/* Level Selector Modal */}
       {showLevelSelector && activeCourse && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-indigo-950/20 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="bg-white border-2 border-indigo-50 rounded-[2.5rem] w-full max-w-xl overflow-hidden shadow-2xl shadow-indigo-200/40 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500" style={{ backgroundColor: '#FFFFFF' }}>
+        <div className="fixed inset-0 z-[9999] bg-[#0f0f1a]/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="bg-[#12121a] border border-violet-900/50 rounded-[2rem] w-full max-w-xl overflow-hidden shadow-2xl shadow-violet-900/40 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
             <div className="p-10">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white mb-8 shadow-xl shadow-indigo-200" style={{ backgroundColor: '#4338CA' }}>
+              <div className="w-14 h-14 rounded-2xl bg-violet-600 flex items-center justify-center text-white mb-8 shadow-xl shadow-violet-900/20">
                 <Target size={28} />
               </div>
-              <h2 className="text-3xl font-black tracking-tight mb-3" style={{ color: '#1E1B4B' }}>Select Expertise Level</h2>
-              <p className="text-slate-500 text-sm font-medium mb-10 leading-relaxed">
-                Choose your starting level for <strong style={{ color: '#4338CA' }}>{activeCourse.title}</strong>. Intermediate and Master levels require a brief Sync Assessment to verify your expertise.
+              <h2 className="text-3xl font-black tracking-tight mb-3 text-white">Select Expertise Level</h2>
+              <p className="text-slate-400 text-sm font-medium mb-10 leading-relaxed">
+                Choose your starting level for <strong className="text-violet-400">{activeCourse.title}</strong>. Intermediate and Master levels require a brief Sync Assessment to verify your expertise.
               </p>
 
               <div className="space-y-4">
@@ -796,18 +796,18 @@ export default function CoursesPage() {
                   <button
                     key={lvl.id}
                     onClick={() => setSelectedLevel(lvl.id)}
-                    className={`w-full flex items-center gap-6 p-6 border-2 rounded-[1.5rem] text-left transition-all duration-300 ${
+                    className={`w-full flex items-center gap-6 p-6 border rounded-[1.5rem] text-left transition-all duration-300 ${
                       selectedLevel === lvl.id 
-                        ? 'border-[#4338CA] bg-indigo-50/50 shadow-lg shadow-indigo-100/50' 
-                        : 'border-slate-100 bg-white hover:border-indigo-200 hover:bg-slate-50'
+                        ? 'border-violet-500 bg-violet-600/10 shadow-lg shadow-violet-900/20 text-white' 
+                        : 'border-violet-900/30 bg-[#1a1a2e] hover:border-violet-600/50 hover:bg-[#1f1f3a] text-slate-400'
                     }`}
                   >
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${selectedLevel === lvl.id ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`} style={selectedLevel === lvl.id ? { backgroundColor: '#4338CA' } : {}}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${selectedLevel === lvl.id ? 'bg-violet-600 text-white' : 'bg-[#0f0f1a] text-slate-500'}`}>
                       {lvl.icon}
                     </div>
                     <div>
-                      <h3 className={`text-base font-black ${selectedLevel === lvl.id ? 'text-[#1E1B4B]' : 'text-slate-600'}`}>{lvl.name}</h3>
-                      <p className={`text-xs font-medium ${selectedLevel === lvl.id ? 'text-indigo-600/80' : 'text-slate-400'}`}>{lvl.desc}</p>
+                      <h3 className={`text-base font-black ${selectedLevel === lvl.id ? 'text-white' : 'text-slate-200'}`}>{lvl.name}</h3>
+                      <p className="text-xs font-medium opacity-60 leading-tight">{lvl.desc}</p>
                     </div>
                   </button>
                 ))}
@@ -816,14 +816,13 @@ export default function CoursesPage() {
               <div className="flex gap-4 mt-10">
                 <button
                   onClick={() => { setShowLevelSelector(false); }}
-                  className="flex-1 py-4 text-xs font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-2xl transition-all border border-transparent"
+                  className="flex-1 py-4 text-xs font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white rounded-2xl transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleLevelConfirm}
-                  className="flex-[2] py-5 rounded-[1.25rem] font-black text-xs tracking-[0.2em] uppercase text-white shadow-2xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
-                  style={{ backgroundColor: '#4338CA', boxShadow: '0 20px 40px -12px rgba(67, 56, 202, 0.4)' }}
+                  className="flex-[2] py-5 rounded-[1.25rem] font-black text-xs tracking-[0.2em] uppercase text-white shadow-2xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 bg-violet-600 shadow-violet-900/40"
                 >
                   {selectedLevel === 'beginner' ? 'Enroll Now' : 'Start Assessment'} <ArrowRight size={18} />
                 </button>
@@ -836,40 +835,39 @@ export default function CoursesPage() {
 
       {/* Sync Assessment Modal */}
       {showSyncAssessment && activeCourse && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-white overflow-y-auto flex flex-col animate-in slide-in-from-bottom-8 duration-500">
+        <div className="fixed inset-0 z-[9999] bg-[#0b0a1a] overflow-y-auto flex flex-col animate-in slide-in-from-bottom-8 duration-500">
           {(showWarning || !isFullscreen) && !quizSubmitted && (
-            <div className="fixed inset-0 z-[10000] bg-white/95 backdrop-blur-md flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
-              <div className="w-24 h-24 bg-[#1E1B4B] text-white rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-indigo-200 animate-pulse">
+            <div className="fixed inset-0 z-[10000] bg-[#0b0a1a]/95 backdrop-blur-md flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+              <div className="w-24 h-24 bg-violet-600 text-white rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-violet-900 animate-pulse">
                 <ShieldAlert size={40} />
               </div>
               <div className="text-center space-y-4 max-w-md px-6">
-                <p className="text-3xl font-black tracking-tighter uppercase italic" style={{ color: '#1E1B4B' }}>Secure Mode Active</p>
-                <p className="text-sm font-bold text-slate-500 leading-relaxed uppercase tracking-widest">
+                <p className="text-3xl font-black tracking-tighter uppercase italic text-white">Secure Mode Active</p>
+                <p className="text-sm font-bold text-slate-400 leading-relaxed uppercase tracking-widest">
                   Assessments must be completed in full-screen. Returning you to secure mode automatically...
                 </p>
               </div>
               <button 
                 onClick={enterFullscreen} 
-                className="px-10 py-5 rounded-2xl text-[10px] font-black tracking-[0.25em] uppercase mt-4 text-white flex items-center gap-3 shadow-xl transition-transform hover:scale-105 active:scale-95"
-                style={{ backgroundColor: '#4338CA' }}
+                className="px-10 py-5 rounded-2xl text-[10px] font-black tracking-[0.25em] uppercase mt-4 text-white flex items-center gap-3 shadow-xl transition-transform hover:scale-105 active:scale-95 bg-violet-600"
               >
                 <Maximize size={18} /> RESUME FULLSCREEN NOW
               </button>
             </div>
           )}
 
-          <div className="px-6 py-6 md:px-12 border-b border-indigo-100 sticky top-0 bg-white/80 backdrop-blur-xl z-20 shadow-sm">
+          <div className="px-6 py-6 md:px-12 border-b border-violet-900/20 sticky top-0 bg-[#12121a]/80 backdrop-blur-xl z-20 shadow-sm">
             <div className="max-w-5xl mx-auto w-full flex justify-between items-center">
               <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-xl shadow-indigo-100" style={{ backgroundColor: '#4338CA' }}>
+                <div className="w-14 h-14 rounded-2xl bg-violet-600 flex items-center justify-center text-white shadow-xl shadow-violet-900/20">
                   <BrainCircuit size={28} />
                 </div>
                 <div>
-                  <h3 className="text-2xl md:text-3xl font-black tracking-tight" style={{ color: '#1E1B4B' }}>SYNC ASSESSMENT</h3>
+                  <h3 className="text-2xl md:text-3xl font-black tracking-tight text-white uppercase">SYNC ASSESSMENT</h3>
                   <div className="flex items-center gap-3 mt-1.5">
-                    <p className="text-indigo-600 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">{activeCourse.title}</p>
-                    <span className="w-1 h-1 rounded-full bg-slate-300" />
-                    <p className="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]">Level: {selectedLevel}</p>
+                    <p className="text-violet-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">{activeCourse.title}</p>
+                    <span className="w-1 h-1 rounded-full bg-slate-700" />
+                    <p className="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]">Level: {selectedLevel}</p>
                   </div>
                 </div>
               </div>
@@ -879,22 +877,21 @@ export default function CoursesPage() {
           <div className="flex-1 w-full max-w-5xl mx-auto p-6 py-12 md:p-12">
             {assessmentLoading ? (
               <div className="flex flex-col items-center justify-center py-24 gap-8">
-                <div className="w-20 h-20 rounded-full border-4 border-indigo-50 border-t-indigo-600 animate-spin" style={{ borderTopColor: '#4338CA' }} />
-                <p className="text-[11px] font-black uppercase tracking-[0.5em] text-indigo-400 animate-pulse">Generating Neural Test Matrix...</p>
+                <div className="w-20 h-20 rounded-full border-4 border-violet-900/20 border-t-violet-600 animate-spin" />
+                <p className="text-[11px] font-black uppercase tracking-[0.5em] text-violet-400 animate-pulse">Generating Neural Test Matrix...</p>
               </div>
             ) : assessmentData ? (
               <div className="space-y-12">
                 {quizSubmitted && quizResult && (
-                  <div className="text-center p-12 rounded-[2.5rem] border-2 border-indigo-50 bg-indigo-50/30 animate-in zoom-in-95 duration-500 shadow-xl shadow-indigo-100/20">
-                    <div className="text-7xl font-black mb-4 tracking-tighter" style={{ color: '#1E1B4B' }}>{quizResult.score}%</div>
-                    <p className="text-slate-600 text-base font-bold mb-2">
+                  <div className="text-center p-12 rounded-[2.5rem] border border-violet-900/30 bg-violet-900/10 animate-in zoom-in-95 duration-500 shadow-xl shadow-violet-900/20">
+                    <div className="text-7xl font-black mb-4 tracking-tighter text-white">{quizResult.score}%</div>
+                    <p className="text-slate-300 text-base font-bold mb-2">
                        {quizResult.passed ? '✨ Threshold achieved. Neural Entry granted.' : '⚠️ Threshold not met. System will adapt to lower complexity.'}
                     </p>
-                    <p className="text-indigo-600 font-black uppercase tracking-[0.25em] text-xs">Assigned Complexity: {quizResult.levelName}</p>
+                    <p className="text-violet-400 font-black uppercase tracking-[0.25em] text-xs">Assigned Complexity: {quizResult.levelName}</p>
                     <button
                       onClick={() => window.location.href = `/dashboard/courses/${activeCourse.id}`}
-                      className="mt-10 px-10 py-5 text-white font-black tracking-[0.2em] uppercase text-xs rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-2xl"
-                      style={{ backgroundColor: '#4338CA', boxShadow: '0 20px 40px -12px rgba(67, 56, 202, 0.4)' }}
+                      className="mt-10 px-10 py-5 text-white font-black tracking-[0.2em] uppercase text-xs rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-2xl bg-violet-600 shadow-violet-900/40"
                     >
                       PROCEED TO COURSE →
                     </button>
@@ -903,12 +900,12 @@ export default function CoursesPage() {
 
                 <div className="space-y-10">
                   {assessmentData.map((q, qIdx) => (
-                    <div key={qIdx} className="space-y-6 pb-10 border-b border-slate-50 last:border-0">
+                    <div key={qIdx} className="space-y-6 pb-10 border-b border-violet-900/10 last:border-0">
                       <div className="flex gap-6 items-start">
-                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-xs font-black text-indigo-600 shrink-0 mt-0.5">
+                        <div className="w-10 h-10 rounded-2xl bg-violet-900/20 border border-violet-900/30 flex items-center justify-center text-xs font-black text-violet-400 shrink-0 mt-0.5">
                           {(qIdx + 1).toString().padStart(2, '0')}
                         </div>
-                        <p className="font-black text-lg md:text-xl leading-relaxed" style={{ color: '#1E1B4B' }}>{q.question}</p>
+                        <p className="font-black text-lg md:text-xl leading-relaxed text-white">{q.question}</p>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-16">
                         {Object.entries(q.options).map(([key, value]) => {
@@ -919,18 +916,17 @@ export default function CoursesPage() {
                             <button key={key}
                               onClick={() => !quizSubmitted && setAnswers(prev => ({ ...prev, [qIdx]: key }))}
                               disabled={quizSubmitted}
-                              className={`text-left p-6 rounded-2xl border-2 font-bold transition-all duration-200 flex items-center gap-5 group ${
-                                isCorrect ? 'bg-emerald-50 border-emerald-500 text-emerald-900' :
-                                isWrong ? 'bg-rose-50 border-rose-500 text-rose-900' :
-                                isSelected ? 'bg-indigo-600 border-indigo-600 text-white shadow-xl shadow-indigo-200' :
-                                'bg-white border-slate-100 text-slate-600 hover:border-indigo-300 hover:bg-slate-50'
+                              className={`text-left p-6 rounded-2xl border font-bold transition-all duration-200 flex items-center gap-5 group ${
+                                isCorrect ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' :
+                                isWrong ? 'bg-rose-500/10 border-rose-500 text-rose-400' :
+                                isSelected ? 'bg-violet-600 border-violet-600 text-white shadow-xl shadow-violet-900/40' :
+                                'bg-[#1a1a2e] border-violet-900/30 text-slate-400 hover:border-violet-600/50 hover:bg-[#1f1f3a]'
                               }`}
-                              style={isSelected ? { backgroundColor: '#4338CA', borderColor: '#4338CA' } : {}}
                             >
-                              <span className={`w-8 h-8 flex items-center justify-center rounded-xl text-xs font-black shrink-0 transition-colors ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-indigo-100 group-hover:text-indigo-600'}`}>{key}</span>
+                              <span className={`w-8 h-8 flex items-center justify-center rounded-xl text-xs font-black shrink-0 transition-colors ${isSelected ? 'bg-white/20 text-white' : 'bg-[#0f0f1a] text-slate-500 group-hover:bg-violet-900/30 group-hover:text-violet-400'}`}>{key}</span>
                               <span className="leading-snug text-sm">{value}</span>
-                              {isCorrect && <CheckCircle size={20} className="ml-auto shrink-0 text-emerald-600" />}
-                              {isWrong && <XCircle size={20} className="ml-auto shrink-0 text-rose-600" />}
+                              {isCorrect && <CheckCircle size={20} className="ml-auto shrink-0 text-emerald-500" />}
+                              {isWrong && <XCircle size={20} className="ml-auto shrink-0 text-rose-500" />}
                             </button>
                           );
                         })}
@@ -944,18 +940,17 @@ export default function CoursesPage() {
                     <button
                       onClick={submitSyncAssessment}
                       disabled={Object.keys(answers).length < assessmentData.length}
-                      className="w-full py-6 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-base font-black tracking-[0.3em] uppercase rounded-3xl transition-all shadow-2xl flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-95"
-                      style={{ backgroundColor: '#4338CA', boxShadow: '0 25px 50px -12px rgba(67, 56, 202, 0.4)' }}
+                      className="w-full py-6 bg-violet-600 hover:bg-violet-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-base font-black tracking-[0.3em] uppercase rounded-3xl transition-all shadow-2xl flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-95 shadow-violet-900/40"
                     >
                       <BrainCircuit size={22} />
                       SUBMIT ASSESSMENT ({Object.keys(answers).length}/{assessmentData.length})
                     </button>
-                    <p className="text-center text-slate-400 text-[10px] font-black uppercase tracking-[0.25em] mt-6">Secure Transfer Protocol Active</p>
+                    <p className="text-center text-slate-600 text-[10px] font-black uppercase tracking-[0.25em] mt-6">Secure Transfer Protocol Active</p>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="text-center py-24 text-rose-500 font-black tracking-widest text-xs uppercase bg-rose-50 rounded-[2.5rem]">
+              <div className="text-center py-24 text-rose-500 font-black tracking-widest text-xs uppercase bg-rose-500/10 rounded-[2.5rem]">
                 Failed to initialize assessment matrix. Internal neural error.
               </div>
             )}
