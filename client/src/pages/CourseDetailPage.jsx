@@ -217,13 +217,18 @@ export default function CourseDetailPage() {
       </div>
 
       {/* Sidebar: AI Core Interaction */}
-      <div className="w-full lg:w-[400px] shrink-0">
+      <div className="w-full lg:w-[400px] shrink-0 animate-in fade-in slide-in-from-right-4 duration-700">
         <div className="sticky top-24 space-y-6">
-           <div className="flex items-center gap-3 px-1 border-b border-indigo-100 pb-2">
-              <Sparkles size={16} className="text-indigo-500" />
-              <span className="text-[10px] font-black tracking-widest text-indigo-700 uppercase">NEURAL CO-PILOT</span>
+           <div className="flex items-center gap-3 px-1 border-b-2 border-indigo-100 pb-3" style={{ borderBottomColor: '#E0E7FF' }}>
+              <div className="p-2 bg-indigo-600 rounded-lg text-white shadow-lg shadow-indigo-100" style={{ backgroundColor: '#4338CA' }}>
+                <Sparkles size={16} />
+              </div>
+              <div>
+                <span className="text-[10px] font-black tracking-[0.2em] uppercase" style={{ color: '#1E1B4B', fontWeight: 950 }}>NEURAL CO-PILOT</span>
+                <p className="text-[8px] font-bold text-[#4F46E5] uppercase tracking-widest mt-0.5">Cognitive Assistant</p>
+              </div>
            </div>
-           <div className="bg-white border border-gray-100 rounded-[2.5rem] shadow-card-lg overflow-hidden h-[70vh]">
+           <div className="bg-white border-2 border-indigo-100 rounded-[2.5rem] shadow-2xl shadow-indigo-100/30 overflow-hidden h-[70vh]" style={{ borderColor: '#E0E7FF', borderStyle: 'solid', borderWidth: '2px', backgroundColor: '#FFFFFF' }}>
               <AiTutor context={currentModule ? currentModule.title : course.title} level={userLevel} topic={currentModule ? currentModule.title : course.title} />
            </div>
         </div>
