@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
@@ -20,42 +20,44 @@ import AnalyticsPage from './pages/AnalyticsPage';
 
 import { UIProvider } from './contexts/UIContext';
 
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      
+      {/* Dashboard sub-routes wrapped in the glowing top-nav layout and ProtectedRoute */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="courses" element={<CoursesPage />} />
+          <Route path="search" element={<CourseSearchPage />} />
+          <Route path="courses/:id" element={<CourseDetailPage />} />
+          <Route path="quiz/:id" element={<QuizPage />} />
+          <Route path="assessment/:courseId" element={<AssessmentPage />} />
+          <Route path="personalized" element={<PersonalizedPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="admin" element={<AdminPage />} />
+          <Route path="tracker" element={<LearningTrackerPage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
+        </Route>
+      </Route>
+      
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </>
+  )
+);
+
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <UIProvider>
-          <Routes>
-
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          
-          {/* Dashboard sub-routes wrapped in the glowing top-nav layout and ProtectedRoute */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<DashboardPage />} />
-              <Route path="courses" element={<CoursesPage />} />
-              <Route path="search" element={<CourseSearchPage />} />
-              <Route path="courses/:id" element={<CourseDetailPage />} />
-              <Route path="quiz/:id" element={<QuizPage />} />
-              <Route path="assessment/:courseId" element={<AssessmentPage />} />
-              <Route path="personalized" element={<PersonalizedPage />} />
-              <Route path="profile" element={<ProfilePage />} />
-              <Route path="admin" element={<AdminPage />} />
-              <Route path="tracker" element={<LearningTrackerPage />} />
-              <Route path="analytics" element={<AnalyticsPage />} />
-            </Route>
-          </Route>
-          
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        </UIProvider>
-      </AuthProvider>
-    </Router>
+    <AuthProvider>
+      <UIProvider>
+        <RouterProvider router={router} />
+      </UIProvider>
+    </AuthProvider>
   );
 }
-
 
 export default App;
