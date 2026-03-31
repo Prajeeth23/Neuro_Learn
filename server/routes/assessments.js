@@ -112,14 +112,15 @@ router.post('/level-test/:courseId/submit', authMiddleware, async (req, res) => 
 
   try {
     // Determine if student passes
-    const passed = score >= 30; // 30% threshold
+    const passed = score >= 40; // 40% threshold
     
     let newLevel;
     if (targetLevel === 'advanced') {
-      newLevel = passed ? 5 : 4; // fail → downgrade to medium
+      newLevel = passed ? 5 : 4; // fail -> downgrade to medium
+    } else if (targetLevel === 'medium') {
+      newLevel = passed ? 4 : 3; // fail -> downgrade to beginner
     } else {
-      // medium
-      newLevel = passed ? 4 : 3; // fail → downgrade to beginner
+      newLevel = 3; // beginner bypasses test and gets level 3 directly
     }
 
     // Update user progress
@@ -156,7 +157,7 @@ router.post('/level-test/:courseId/submit', authMiddleware, async (req, res) => 
       passed,
       message: passed 
         ? `Congratulations! You've unlocked ${levelMappings[newLevel]} level.`
-        : `Score below 30%. You've been placed in ${levelMappings[newLevel]} level.`,
+        : `Score below 40%. You've been placed in ${levelMappings[newLevel]} level.`,
       newLevel,
       levelName: levelMappings[newLevel],
       progress: data

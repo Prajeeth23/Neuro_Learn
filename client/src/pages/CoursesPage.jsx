@@ -467,22 +467,25 @@ export default function CoursesPage() {
   const [courseInfoCache, setCourseInfoCache] = useState({});
   const [loadingInfo, setLoadingInfo] = useState({});
 
-  const [showLaunchTest, setShowLaunchTest] = useState(false);
+  const [showLevelSelector, setShowLevelSelector] = useState(false);
+  const [selectedLevel, setSelectedLevel] = useState('beginner');
+
+  const [showSyncAssessment, setShowSyncAssessment] = useState(false);
   const [activeCourse, setActiveCourse] = useState(null);
-  const [launchTestData, setLaunchTestData] = useState(null);
-  const [launchTestLoading, setLaunchTestLoading] = useState(false);
+  const [assessmentData, setAssessmentData] = useState(null);
+  const [assessmentLoading, setAssessmentLoading] = useState(false);
   const [answers, setAnswers] = useState({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
-  const [quizScore, setQuizScore] = useState(0);
+  const [quizResult, setQuizResult] = useState(null);
 
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  const { isFullscreen, showWarning, enterFullscreen, exitFullscreen } = useSecureMode(showLaunchTest && !quizSubmitted);
+  const { isFullscreen, showWarning, enterFullscreen, exitFullscreen } = useSecureMode(showSyncAssessment && !quizSubmitted);
 
   useEffect(() => {
-    if (!showLaunchTest) document.body.style.overflow = '';
+    if (!showLevelSelector && !showSyncAssessment) document.body.style.overflow = '';
     return () => { document.body.style.overflow = ''; };
-  }, [showLaunchTest]);
+  }, [showLevelSelector, showSyncAssessment]);
 
   useScreenTime();
 
@@ -546,40 +549,64 @@ export default function CoursesPage() {
     }
   };
 
-  const handleLaunchCourse = async (course) => {
+  const handleLaunchCourse = (course) => {
     if (enrolledCourses[course.id]) { window.location.href = `/dashboard/courses/${course.id}`; return; }
     setActiveCourse(course);
-    setShowLaunchTest(true);
-    setLaunchTestLoading(true);
-    setLaunchTestData(null);
-    setAnswers({});
-    setQuizSubmitted(false);
-    setQuizScore(0);
+    setSelectedLevel('beginner');
+    setShowLevelSelector(true);
     document.body.style.overflow = 'hidden';
-    enterFullscreen();
-    try {
-      const { data } = await api.post('/ai/launch-test', { courseTitle: course.title, courseDescription: course.description });
-      setLaunchTestData(data.test);
-    } catch (err) {
-      window.location.href = `/dashboard/courses/${course.id}`;
-    } finally {
-      setLaunchTestLoading(false);
+  };
+
+  const handleLevelConfirm = async () => {
+    if (selectedLevel === 'beginner') {
+      try {
+        await api.post(`/assessments/level-test/${activeCourse.id}/submit`, { score: 100, targetLevel: 'beginner' });
+        setEnrolledCourses(prev => ({ ...prev, [activeCourse.id]: true }));
+        window.location.href = `/dashboard/courses/${activeCourse.id}`;
+      } catch (err) { console.error(err); }
+    } else {
+      setShowLevelSelector(false);
+      setShowSyncAssessment(true);
+      setAssessmentLoading(true);
+      setAssessmentData(null);
+      setAnswers({});
+      setQuizSubmitted(false);
+      setQuizResult(null);
+      enterFullscreen();
+      try {
+        const { data } = await api.post('/ai/level-test', { 
+          courseTitle: activeCourse.title, 
+          targetLevel: selectedLevel === 'intermediate' ? 'medium' : 'advanced' 
+        });
+        setAssessmentData(data.test);
+      } catch (err) {
+        window.location.href = `/dashboard/courses/${activeCourse.id}`;
+      } finally {
+        setAssessmentLoading(false);
+      }
     }
   };
 
-  const submitLaunchTest = async () => {
-    if (!launchTestData) return;
+  const submitSyncAssessment = async () => {
+    if (!assessmentData) return;
     let correct = 0;
-    launchTestData.forEach((q, idx) => { if (answers[idx] === q.answer) correct++; });
-    const score = Math.round((correct / launchTestData.length) * 100);
-    setQuizScore(score);
+    assessmentData.forEach((q, idx) => { if (answers[idx] === q.answer) correct++; });
+    const score = Math.round((correct / assessmentData.length) * 100);
     setQuizSubmitted(true);
     exitFullscreen();
     document.body.style.overflow = '';
     try {
-      await api.post(`/assessments/initial/${activeCourse.id}/submit`, { score });
+      const res = await api.post(`/assessments/level-test/${activeCourse.id}/submit`, { 
+        score, 
+        targetLevel: selectedLevel === 'intermediate' ? 'medium' : 'advanced' 
+      });
+      setQuizResult({
+        score,
+        passed: res.data.passed,
+        message: res.data.message
+      });
       setEnrolledCourses(prev => ({ ...prev, [activeCourse.id]: true }));
-    } catch (err) { console.error('Failed to save initial assessment', err); }
+    } catch (err) { console.error('Failed to submit level test', err); }
   };
 
   if (loading) {
@@ -743,8 +770,66 @@ export default function CoursesPage() {
         <CareerVectorTab domain={userDomain} onOpenOnboarding={() => setShowOnboarding(true)} />
       )}
 
-      {/* Launch Test Modal */}
-      {showLaunchTest && activeCourse && (
+      {/* Level Selector Modal */}
+      {showLevelSelector && activeCourse && (
+        <div className="fixed inset-0 z-[100] bg-[#0f0f1a]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in-up">
+          <div className="bg-[#12121a] border border-violet-900/50 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl shadow-violet-900/20">
+            <div className="p-8">
+              <div className="w-12 h-12 rounded-2xl bg-violet-950/50 border border-violet-800 flex items-center justify-center text-violet-400 mb-6">
+                <Target size={24} />
+              </div>
+              <h2 className="text-3xl font-black text-white tracking-tight mb-2">Select Expertise Level</h2>
+              <p className="text-violet-300/70 text-sm font-medium mb-8">
+                Choose your starting level for <strong className="text-violet-300">{activeCourse.title}</strong>. Intermediate and Master levels require a brief Sync Assessment to verify your expertise.
+              </p>
+
+              <div className="space-y-3">
+                {[
+                  { id: 'beginner', name: 'Beginner', desc: 'Start from basics. No assessment required.', icon: <CheckCircle size={18} /> },
+                  { id: 'intermediate', name: 'Intermediate', desc: 'Skip fundamentals. Adaptive quiz required.', icon: <BrainCircuit size={18} /> },
+                  { id: 'master', name: 'Master', desc: 'Advanced topics only. Strict assessment required.', icon: <Zap size={18} /> }
+                ].map(lvl => (
+                  <button
+                    key={lvl.id}
+                    onClick={() => setSelectedLevel(lvl.id)}
+                    className={`w-full flex items-center gap-5 p-5 border-2 rounded-2xl text-left transition-all ${
+                      selectedLevel === lvl.id 
+                        ? 'bg-violet-900/30 border-violet-500 shadow-lg shadow-violet-900/20' 
+                        : 'bg-black/20 border-white/5 hover:border-violet-500/30 hover:bg-violet-950/20'
+                    }`}
+                  >
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedLevel === lvl.id ? 'bg-violet-600 text-white' : 'bg-white/5 text-violet-400'}`}>
+                      {lvl.icon}
+                    </div>
+                    <div>
+                      <h3 className={`text-base font-bold ${selectedLevel === lvl.id ? 'text-white' : 'text-slate-200'}`}>{lvl.name}</h3>
+                      <p className={`text-xs ${selectedLevel === lvl.id ? 'text-violet-200' : 'text-slate-500'}`}>{lvl.desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex gap-3 mt-8">
+                <button
+                  onClick={() => { setShowLevelSelector(false); document.body.style.overflow = ''; }}
+                  className="flex-1 py-4 text-xs font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 rounded-xl transition-colors border-2 border-transparent"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleLevelConfirm}
+                  className="flex-[2] py-4 rounded-xl font-black text-xs tracking-widest uppercase bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 shadow-xl shadow-violet-900/30 flex items-center justify-center gap-2"
+                >
+                  {selectedLevel === 'beginner' ? 'Enroll Now' : 'Start Assessment'} <ArrowRight size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sync Assessment Modal */}
+      {showSyncAssessment && activeCourse && (
         <div className="fixed inset-0 z-50 bg-[#0f0f1a] overflow-y-auto flex flex-col animate-in slide-in-from-bottom-4 duration-300">
           {(showWarning || !isFullscreen) && !quizSubmitted && (
             <div className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
@@ -772,26 +857,27 @@ export default function CoursesPage() {
                 </div>
                 <div>
                   <h3 className="text-xl md:text-2xl font-black text-white tracking-tight">SYNC ASSESSMENT</h3>
-                  <p className="text-indigo-400 text-[10px] md:text-xs font-bold mt-1 uppercase tracking-widest">{activeCourse.title}</p>
+                  <p className="text-indigo-400 text-[10px] md:text-xs font-bold mt-1 uppercase tracking-widest">{activeCourse.title} - Level: {selectedLevel}</p>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="flex-1 w-full max-w-4xl mx-auto p-4 py-10 md:p-8">
-            {launchTestLoading ? (
+            {assessmentLoading ? (
               <div className="flex flex-col items-center justify-center py-20 gap-6">
                 <div className="w-14 h-14 rounded-full border-2 border-indigo-800 border-t-indigo-400 animate-spin" />
                 <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-indigo-400 animate-pulse">Generating Neural Test Matrix...</p>
               </div>
-            ) : launchTestData ? (
+            ) : assessmentData ? (
               <div className="space-y-8">
-                {quizSubmitted && (
+                {quizSubmitted && quizResult && (
                   <div className="text-center p-8 rounded-2xl border border-indigo-700 bg-indigo-950/80 animate-in zoom-in-95 duration-500">
-                    <div className="text-6xl font-black text-white mb-2 tracking-tighter">{quizScore}%</div>
+                    <div className="text-6xl font-black text-white mb-2 tracking-tighter">{quizResult.score}%</div>
                     <p className="text-indigo-300 text-sm font-medium">
-                      {quizScore >= 60 ? '✅ Threshold achieved. Entry granted.' : '⚠️ Threshold not met. System will adapt to lower complexity.'}
+                      {quizResult.passed ? '✅ Threshold achieved. Entry granted.' : '⚠️ Threshold not met. System will adapt to lower complexity.'}
                     </p>
+                    <p className="text-violet-400 mt-2 font-bold uppercase tracking-widest text-xs">Assigned Level: {quizResult.levelName}</p>
                     <button
                       onClick={() => window.location.href = `/dashboard/courses/${activeCourse.id}`}
                       className="mt-6 px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold tracking-widest uppercase rounded-xl transition-colors shadow-lg shadow-indigo-900/50">
@@ -801,7 +887,7 @@ export default function CoursesPage() {
                 )}
 
                 <div className="space-y-8">
-                  {launchTestData.map((q, qIdx) => (
+                  {assessmentData.map((q, qIdx) => (
                     <div key={qIdx} className="space-y-4">
                       <div className="flex gap-4 items-start">
                         <div className="w-8 h-8 rounded-xl bg-indigo-900 border border-indigo-700 flex items-center justify-center text-[10px] font-black text-indigo-300 shrink-0 mt-0.5">
@@ -838,11 +924,11 @@ export default function CoursesPage() {
 
                 {!quizSubmitted && (
                   <button
-                    onClick={submitLaunchTest}
-                    disabled={Object.keys(answers).length < launchTestData.length}
+                    onClick={submitSyncAssessment}
+                    disabled={Object.keys(answers).length < assessmentData.length}
                     className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm font-bold tracking-widest uppercase rounded-2xl transition-all shadow-xl shadow-indigo-900/40 flex items-center justify-center gap-3">
                     <BrainCircuit size={16} />
-                    SUBMIT ASSESSMENT ({Object.keys(answers).length}/{launchTestData.length})
+                    SUBMIT ASSESSMENT ({Object.keys(answers).length}/{assessmentData.length})
                   </button>
                 )}
               </div>
