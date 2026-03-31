@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '../components/ui/Card';
 import {
   CheckCircle, XCircle, BrainCircuit, Sparkles, Loader2, ArrowRight, Play,
@@ -771,131 +772,142 @@ export default function CoursesPage() {
       )}
 
       {/* Level Selector Modal */}
-      {showLevelSelector && activeCourse && (
-        <div className="fixed inset-0 z-50 bg-[#0f0f1a]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in-up">
-          <div className="bg-[#12121a] border border-violet-900/50 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl shadow-violet-900/20">
-            <div className="p-8">
-              <div className="w-12 h-12 rounded-2xl bg-violet-950/50 border border-violet-800 flex items-center justify-center text-violet-400 mb-6">
-                <Target size={24} />
+      {showLevelSelector && activeCourse && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-indigo-950/20 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="bg-white border-2 border-indigo-50 rounded-[2.5rem] w-full max-w-xl overflow-hidden shadow-2xl shadow-indigo-200/40 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500" style={{ backgroundColor: '#FFFFFF' }}>
+            <div className="p-10">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white mb-8 shadow-xl shadow-indigo-200" style={{ backgroundColor: '#4338CA' }}>
+                <Target size={28} />
               </div>
-              <h2 className="text-3xl font-black text-white tracking-tight mb-2">Select Expertise Level</h2>
-              <p className="text-violet-300/70 text-sm font-medium mb-8">
-                Choose your starting level for <strong className="text-violet-300">{activeCourse.title}</strong>. Intermediate and Master levels require a brief Sync Assessment to verify your expertise.
+              <h2 className="text-3xl font-black tracking-tight mb-3" style={{ color: '#1E1B4B' }}>Select Expertise Level</h2>
+              <p className="text-slate-500 text-sm font-medium mb-10 leading-relaxed">
+                Choose your starting level for <strong style={{ color: '#4338CA' }}>{activeCourse.title}</strong>. Intermediate and Master levels require a brief Sync Assessment to verify your expertise.
               </p>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {[
-                  { id: 'beginner', name: 'Beginner', desc: 'Start from basics. No assessment required.', icon: <CheckCircle size={18} /> },
-                  { id: 'intermediate', name: 'Intermediate', desc: 'Skip fundamentals. Adaptive quiz required.', icon: <BrainCircuit size={18} /> },
-                  { id: 'master', name: 'Master', desc: 'Advanced topics only. Strict assessment required.', icon: <Zap size={18} /> }
+                  { id: 'beginner', name: 'Beginner', desc: 'Start from basics. No assessment required.', icon: <CheckCircle size={20} /> },
+                  { id: 'intermediate', name: 'Intermediate', desc: 'Skip fundamentals. Adaptive quiz required.', icon: <BrainCircuit size={20} /> },
+                  { id: 'master', name: 'Master', desc: 'Advanced topics only. Strict assessment required.', icon: <Zap size={20} /> }
                 ].map(lvl => (
                   <button
                     key={lvl.id}
                     onClick={() => setSelectedLevel(lvl.id)}
-                    className={`w-full flex items-center gap-5 p-5 border-2 rounded-2xl text-left transition-all ${
+                    className={`w-full flex items-center gap-6 p-6 border-2 rounded-[1.5rem] text-left transition-all duration-300 ${
                       selectedLevel === lvl.id 
-                        ? 'bg-violet-900/30 border-violet-500 shadow-lg shadow-violet-900/20' 
-                        : 'bg-black/20 border-white/5 hover:border-violet-500/30 hover:bg-violet-950/20'
+                        ? 'border-[#4338CA] bg-indigo-50/50 shadow-lg shadow-indigo-100/50' 
+                        : 'border-slate-100 bg-white hover:border-indigo-200 hover:bg-slate-50'
                     }`}
                   >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedLevel === lvl.id ? 'bg-violet-600 text-white' : 'bg-white/5 text-violet-400'}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${selectedLevel === lvl.id ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`} style={selectedLevel === lvl.id ? { backgroundColor: '#4338CA' } : {}}>
                       {lvl.icon}
                     </div>
                     <div>
-                      <h3 className={`text-base font-bold ${selectedLevel === lvl.id ? 'text-white' : 'text-slate-200'}`}>{lvl.name}</h3>
-                      <p className={`text-xs ${selectedLevel === lvl.id ? 'text-violet-200' : 'text-slate-500'}`}>{lvl.desc}</p>
+                      <h3 className={`text-base font-black ${selectedLevel === lvl.id ? 'text-[#1E1B4B]' : 'text-slate-600'}`}>{lvl.name}</h3>
+                      <p className={`text-xs font-medium ${selectedLevel === lvl.id ? 'text-indigo-600/80' : 'text-slate-400'}`}>{lvl.desc}</p>
                     </div>
                   </button>
                 ))}
               </div>
 
-              <div className="flex gap-3 mt-8">
+              <div className="flex gap-4 mt-10">
                 <button
                   onClick={() => { setShowLevelSelector(false); document.body.style.overflow = ''; }}
-                  className="flex-1 py-4 text-xs font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 rounded-xl transition-colors border-2 border-transparent"
+                  className="flex-1 py-4 text-xs font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-2xl transition-all border border-transparent"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleLevelConfirm}
-                  className="flex-[2] py-4 rounded-xl font-black text-xs tracking-widest uppercase bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 shadow-xl shadow-violet-900/30 flex items-center justify-center gap-2"
+                  className="flex-[2] py-5 rounded-[1.25rem] font-black text-xs tracking-[0.2em] uppercase text-white shadow-2xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
+                  style={{ backgroundColor: '#4338CA', boxShadow: '0 20px 40px -12px rgba(67, 56, 202, 0.4)' }}
                 >
-                  {selectedLevel === 'beginner' ? 'Enroll Now' : 'Start Assessment'} <ArrowRight size={16} />
+                  {selectedLevel === 'beginner' ? 'Enroll Now' : 'Start Assessment'} <ArrowRight size={18} />
                 </button>
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Sync Assessment Modal */}
-      {showSyncAssessment && activeCourse && (
-        <div className="fixed inset-0 z-50 bg-[#0f0f1a] overflow-y-auto flex flex-col animate-in slide-in-from-bottom-4 duration-300">
+      {showSyncAssessment && activeCourse && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-white overflow-y-auto flex flex-col animate-in slide-in-from-bottom-8 duration-500">
           {(showWarning || !isFullscreen) && !quizSubmitted && (
-            <div className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
-              <div className="w-20 h-20 bg-black text-white rounded-[2rem] flex items-center justify-center shadow-lg shadow-black/10 animate-pulse">
-                <ShieldAlert size={32} />
+            <div className="fixed inset-0 z-[10000] bg-white/95 backdrop-blur-md flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+              <div className="w-24 h-24 bg-[#1E1B4B] text-white rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-indigo-200 animate-pulse">
+                <ShieldAlert size={40} />
               </div>
               <div className="text-center space-y-4 max-w-md px-6">
-                <p className="text-2xl font-black tracking-tighter text-black uppercase italic">Secure Mode Active</p>
-                <p className="text-sm font-medium text-gray-500 leading-relaxed">
+                <p className="text-3xl font-black tracking-tighter uppercase italic" style={{ color: '#1E1B4B' }}>Secure Mode Active</p>
+                <p className="text-sm font-bold text-slate-500 leading-relaxed uppercase tracking-widest">
                   Assessments must be completed in full-screen. Returning you to secure mode automatically...
                 </p>
               </div>
-              <button onClick={enterFullscreen} className="px-8 py-4 rounded-xl text-[10px] font-black tracking-widest uppercase mt-4 bg-black text-white flex items-center gap-3">
-                <Maximize size={16} /> RESUME FULLSCREEN NOW
+              <button 
+                onClick={enterFullscreen} 
+                className="px-10 py-5 rounded-2xl text-[10px] font-black tracking-[0.25em] uppercase mt-4 text-white flex items-center gap-3 shadow-xl transition-transform hover:scale-105 active:scale-95"
+                style={{ backgroundColor: '#4338CA' }}
+              >
+                <Maximize size={18} /> RESUME FULLSCREEN NOW
               </button>
             </div>
           )}
 
-          <div className="px-4 py-6 md:px-8 border-b border-indigo-900/40 sticky top-0 bg-[#0f0f1a]/95 backdrop-blur-xl z-20 shadow-lg shadow-black/30"
-            style={{ background: 'linear-gradient(135deg, rgba(15,15,26,0.98) 0%, rgba(26,16,64,0.95) 100%)' }}>
-            <div className="max-w-4xl mx-auto w-full flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]">
-                  <BrainCircuit size={22} />
+          <div className="px-6 py-6 md:px-12 border-b border-indigo-100 sticky top-0 bg-white/80 backdrop-blur-xl z-20 shadow-sm">
+            <div className="max-w-5xl mx-auto w-full flex justify-between items-center">
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-xl shadow-indigo-100" style={{ backgroundColor: '#4338CA' }}>
+                  <BrainCircuit size={28} />
                 </div>
                 <div>
-                  <h3 className="text-xl md:text-2xl font-black text-white tracking-tight">SYNC ASSESSMENT</h3>
-                  <p className="text-indigo-400 text-[10px] md:text-xs font-bold mt-1 uppercase tracking-widest">{activeCourse.title} - Level: {selectedLevel}</p>
+                  <h3 className="text-2xl md:text-3xl font-black tracking-tight" style={{ color: '#1E1B4B' }}>SYNC ASSESSMENT</h3>
+                  <div className="flex items-center gap-3 mt-1.5">
+                    <p className="text-indigo-600 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">{activeCourse.title}</p>
+                    <span className="w-1 h-1 rounded-full bg-slate-300" />
+                    <p className="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]">Level: {selectedLevel}</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex-1 w-full max-w-4xl mx-auto p-4 py-10 md:p-8">
+          <div className="flex-1 w-full max-w-5xl mx-auto p-6 py-12 md:p-12">
             {assessmentLoading ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-6">
-                <div className="w-14 h-14 rounded-full border-2 border-indigo-800 border-t-indigo-400 animate-spin" />
-                <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-indigo-400 animate-pulse">Generating Neural Test Matrix...</p>
+              <div className="flex flex-col items-center justify-center py-24 gap-8">
+                <div className="w-20 h-20 rounded-full border-4 border-indigo-50 border-t-indigo-600 animate-spin" style={{ borderTopColor: '#4338CA' }} />
+                <p className="text-[11px] font-black uppercase tracking-[0.5em] text-indigo-400 animate-pulse">Generating Neural Test Matrix...</p>
               </div>
             ) : assessmentData ? (
-              <div className="space-y-8">
+              <div className="space-y-12">
                 {quizSubmitted && quizResult && (
-                  <div className="text-center p-8 rounded-2xl border border-indigo-700 bg-indigo-950/80 animate-in zoom-in-95 duration-500">
-                    <div className="text-6xl font-black text-white mb-2 tracking-tighter">{quizResult.score}%</div>
-                    <p className="text-indigo-300 text-sm font-medium">
-                      {quizResult.passed ? '✅ Threshold achieved. Entry granted.' : '⚠️ Threshold not met. System will adapt to lower complexity.'}
+                  <div className="text-center p-12 rounded-[2.5rem] border-2 border-indigo-50 bg-indigo-50/30 animate-in zoom-in-95 duration-500 shadow-xl shadow-indigo-100/20">
+                    <div className="text-7xl font-black mb-4 tracking-tighter" style={{ color: '#1E1B4B' }}>{quizResult.score}%</div>
+                    <p className="text-slate-600 text-base font-bold mb-2">
+                       {quizResult.passed ? '✨ Threshold achieved. Neural Entry granted.' : '⚠️ Threshold not met. System will adapt to lower complexity.'}
                     </p>
-                    <p className="text-violet-400 mt-2 font-bold uppercase tracking-widest text-xs">Assigned Level: {quizResult.levelName}</p>
+                    <p className="text-indigo-600 font-black uppercase tracking-[0.25em] text-xs">Assigned Complexity: {quizResult.levelName}</p>
                     <button
                       onClick={() => window.location.href = `/dashboard/courses/${activeCourse.id}`}
-                      className="mt-6 px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold tracking-widest uppercase rounded-xl transition-colors shadow-lg shadow-indigo-900/50">
+                      className="mt-10 px-10 py-5 text-white font-black tracking-[0.2em] uppercase text-xs rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-2xl"
+                      style={{ backgroundColor: '#4338CA', boxShadow: '0 20px 40px -12px rgba(67, 56, 202, 0.4)' }}
+                    >
                       PROCEED TO COURSE →
                     </button>
                   </div>
                 )}
 
-                <div className="space-y-8">
+                <div className="space-y-10">
                   {assessmentData.map((q, qIdx) => (
-                    <div key={qIdx} className="space-y-4">
-                      <div className="flex gap-4 items-start">
-                        <div className="w-8 h-8 rounded-xl bg-indigo-900 border border-indigo-700 flex items-center justify-center text-[10px] font-black text-indigo-300 shrink-0 mt-0.5">
+                    <div key={qIdx} className="space-y-6 pb-10 border-b border-slate-50 last:border-0">
+                      <div className="flex gap-6 items-start">
+                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-xs font-black text-indigo-600 shrink-0 mt-0.5">
                           {(qIdx + 1).toString().padStart(2, '0')}
                         </div>
-                        <p className="font-semibold text-white text-sm leading-relaxed">{q.question}</p>
+                        <p className="font-black text-lg md:text-xl leading-relaxed" style={{ color: '#1E1B4B' }}>{q.question}</p>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-12">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-16">
                         {Object.entries(q.options).map(([key, value]) => {
                           const isSelected = answers[qIdx] === key;
                           const isCorrect = quizSubmitted && key === q.answer;
@@ -904,16 +916,18 @@ export default function CoursesPage() {
                             <button key={key}
                               onClick={() => !quizSubmitted && setAnswers(prev => ({ ...prev, [qIdx]: key }))}
                               disabled={quizSubmitted}
-                              className={`text-left p-4 rounded-xl border text-xs font-semibold transition-all duration-200 flex items-center gap-3 ${
-                                isCorrect ? 'bg-green-900/60 border-green-500 text-green-200' :
-                                isWrong ? 'bg-red-900/40 border-red-600 text-red-300' :
-                                isSelected ? 'bg-indigo-700 border-indigo-500 text-white shadow-lg shadow-indigo-900/50' :
-                                'bg-white/5 border-indigo-900/50 text-indigo-200 hover:bg-indigo-900/40 hover:border-indigo-600'
-                              }`}>
-                              <span className={`w-6 h-6 flex items-center justify-center rounded-lg text-[10px] font-black shrink-0 ${isSelected ? 'bg-white/20 text-white' : 'bg-indigo-900 text-indigo-300'}`}>{key}</span>
-                              <span className="leading-snug">{value}</span>
-                              {isCorrect && <CheckCircle size={14} className="ml-auto shrink-0 text-green-400" />}
-                              {isWrong && <XCircle size={14} className="ml-auto shrink-0 text-red-400" />}
+                              className={`text-left p-6 rounded-2xl border-2 font-bold transition-all duration-200 flex items-center gap-5 group ${
+                                isCorrect ? 'bg-emerald-50 border-emerald-500 text-emerald-900' :
+                                isWrong ? 'bg-rose-50 border-rose-500 text-rose-900' :
+                                isSelected ? 'bg-indigo-600 border-indigo-600 text-white shadow-xl shadow-indigo-200' :
+                                'bg-white border-slate-100 text-slate-600 hover:border-indigo-300 hover:bg-slate-50'
+                              }`}
+                              style={isSelected ? { backgroundColor: '#4338CA', borderColor: '#4338CA' } : {}}
+                            >
+                              <span className={`w-8 h-8 flex items-center justify-center rounded-xl text-xs font-black shrink-0 transition-colors ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-indigo-100 group-hover:text-indigo-600'}`}>{key}</span>
+                              <span className="leading-snug text-sm">{value}</span>
+                              {isCorrect && <CheckCircle size={20} className="ml-auto shrink-0 text-emerald-600" />}
+                              {isWrong && <XCircle size={20} className="ml-auto shrink-0 text-rose-600" />}
                             </button>
                           );
                         })}
@@ -923,22 +937,28 @@ export default function CoursesPage() {
                 </div>
 
                 {!quizSubmitted && (
-                  <button
-                    onClick={submitSyncAssessment}
-                    disabled={Object.keys(answers).length < assessmentData.length}
-                    className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm font-bold tracking-widest uppercase rounded-2xl transition-all shadow-xl shadow-indigo-900/40 flex items-center justify-center gap-3">
-                    <BrainCircuit size={16} />
-                    SUBMIT ASSESSMENT ({Object.keys(answers).length}/{assessmentData.length})
-                  </button>
+                  <div className="pt-8">
+                    <button
+                      onClick={submitSyncAssessment}
+                      disabled={Object.keys(answers).length < assessmentData.length}
+                      className="w-full py-6 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-base font-black tracking-[0.3em] uppercase rounded-3xl transition-all shadow-2xl flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-95"
+                      style={{ backgroundColor: '#4338CA', boxShadow: '0 25px 50px -12px rgba(67, 56, 202, 0.4)' }}
+                    >
+                      <BrainCircuit size={22} />
+                      SUBMIT ASSESSMENT ({Object.keys(answers).length}/{assessmentData.length})
+                    </button>
+                    <p className="text-center text-slate-400 text-[10px] font-black uppercase tracking-[0.25em] mt-6">Secure Transfer Protocol Active</p>
+                  </div>
                 )}
               </div>
             ) : (
-              <div className="text-center py-20 text-red-400 font-semibold text-sm">
-                Failed to initialize assessment matrix. Please try again.
+              <div className="text-center py-24 text-rose-500 font-black tracking-widest text-xs uppercase bg-rose-50 rounded-[2.5rem]">
+                Failed to initialize assessment matrix. Internal neural error.
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
