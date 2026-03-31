@@ -219,9 +219,9 @@ export default function CourseDetailPage() {
       {/* Sidebar: AI Core Interaction */}
       <div className="w-full lg:w-[400px] shrink-0">
         <div className="sticky top-24 space-y-6">
-           <div className="flex items-center gap-3 px-1">
-              <Sparkles size={16} className="text-gray-300" />
-              <span className="text-[10px] font-black tracking-widest text-indigo-400 uppercase">NEURAL CO-PILOT</span>
+           <div className="flex items-center gap-3 px-1 border-b border-indigo-100 pb-2">
+              <Sparkles size={16} className="text-indigo-500" />
+              <span className="text-[10px] font-black tracking-widest text-indigo-700 uppercase">NEURAL CO-PILOT</span>
            </div>
            <div className="bg-white border border-gray-100 rounded-[2.5rem] shadow-card-lg overflow-hidden h-[70vh]">
               <AiTutor context={currentModule ? currentModule.title : course.title} level={userLevel} topic={currentModule ? currentModule.title : course.title} />

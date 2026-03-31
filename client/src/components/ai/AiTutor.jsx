@@ -80,9 +80,9 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
   };
 
   return (
-    <Card className="flex flex-col h-[600px] border border-indigo-100 bg-white shadow-xl shadow-indigo-100/20">
-      <CardHeader className="bg-white border-b border-gray-50 p-4">
-        <CardTitle className="flex items-center gap-2 text-lg text-indigo-600">
+    <Card className="flex flex-col h-[600px] border-2 border-indigo-200 bg-white shadow-2xl shadow-indigo-200/30 overflow-hidden">
+      <CardHeader className="bg-indigo-50/50 border-b border-indigo-100 p-4">
+        <CardTitle className="flex items-center gap-2 text-lg text-indigo-800 font-black italic">
           <Sparkles size={18} className="animate-pulse" />
           <span>AI Tutor</span>
           {level && (
@@ -95,8 +95,8 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
       
       <CardContent className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar">
         {messages.map((m, i) => (
-          <div key={i} className={`max-w-[85%] rounded-2xl p-4 text-sm font-medium whitespace-pre-wrap ${
-            m.role === 'user' ? 'bg-indigo-600 text-white ml-auto rounded-tr-none shadow-md shadow-indigo-200' : 'bg-slate-50 text-[#191C1E] mr-auto rounded-tl-none border border-slate-100'
+          <div key={i} className={`max-w-[85%] rounded-2xl p-4 text-sm font-bold whitespace-pre-wrap ${
+            m.role === 'user' ? 'bg-indigo-700 text-white ml-auto rounded-tr-none shadow-lg shadow-indigo-200' : 'bg-white text-black mr-auto rounded-tl-none border-2 border-indigo-50 shadow-sm'
           }`}>
             {m.file && (
               <div className="flex items-center gap-2 mb-2 p-2 bg-indigo-50/50 rounded-lg text-xs border border-indigo-100/50 text-indigo-700">
@@ -108,16 +108,16 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
           </div>
         ))}
         {loading && (
-          <div className="bg-slate-50 text-indigo-400 rounded-2xl rounded-tl-none p-4 max-w-[85%] text-sm w-fit flex items-center gap-2 border border-slate-100">
-            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
-            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
-            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+          <div className="bg-white text-indigo-600 rounded-2xl rounded-tl-none p-4 max-w-[85%] text-sm w-fit flex items-center gap-2 border-2 border-indigo-50 shadow-sm">
+            <div className="w-2.5 h-2.5 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+            <div className="w-2.5 h-2.5 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+            <div className="w-2.5 h-2.5 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </CardContent>
 
-      <CardFooter className="p-4 bg-white border-t border-gray-50 flex-col gap-3">
+      <CardFooter className="p-4 bg-indigo-50/30 border-t border-indigo-100 flex-col gap-3">
         {selectedFile && (
           <div className="w-full flex items-center justify-between p-2.5 bg-primary/10 border border-primary/20 rounded-xl text-xs text-primary animate-in fade-in slide-in-from-bottom-2">
             <span className="flex items-center gap-2 font-medium truncate pr-4">
@@ -159,10 +159,10 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
             value={input} 
             onChange={e => setInput(e.target.value)} 
             placeholder={selectedFile ? "Ask a question about this file..." : "Ask me anything..."} 
-            className="flex-1 bg-slate-50 border-slate-200 text-[#191C1E] focus:ring-indigo-500 focus:border-indigo-500 placeholder:text-slate-400"
+            className="flex-1 bg-white border-2 border-indigo-100 text-black font-semibold focus:ring-indigo-600 focus:border-indigo-600 placeholder:text-slate-400"
             disabled={loading}
           />
-          <Button type="submit" variant="primary" size="icon" className="px-3 shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200" disabled={loading || (!input.trim() && !selectedFile)}>
+          <Button type="submit" variant="primary" size="icon" className="px-3 shrink-0 bg-indigo-800 hover:bg-indigo-900 text-white shadow-lg shadow-indigo-200" disabled={loading || (!input.trim() && !selectedFile)}>
             <Send size={18} />
           </Button>
         </form>
