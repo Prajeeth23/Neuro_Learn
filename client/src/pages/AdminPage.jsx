@@ -67,7 +67,7 @@ export default function AdminPage() {
     if (!promoteEmail.trim()) { setError('Email required'); return; }
     setPromoting(true); setError(''); setSuccess('');
     try {
-      const { data } = await api.post('/admin/promote', { email: promoteEmail });
+      const { data } = await api.post('/admin/promote', { email: promoteEmail.toLowerCase() });
       setSuccess(data.message);
       setPromoteEmail('');
       fetchUsers();
@@ -237,8 +237,8 @@ export default function AdminPage() {
              <form onSubmit={handlePromote} className="space-y-4 relative z-10">
                 <div className="space-y-2">
                   <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">Target Agent Email</label>
-                  <input value={promoteEmail} onChange={e => setPromoteEmail(e.target.value)} placeholder="AGENT@NEUROLEARN.AI" type="email"
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-[#191C1E] focus:border-indigo-600 focus:outline-none transition-all uppercase" />
+                  <input value={promoteEmail} onChange={e => setPromoteEmail(e.target.value)} placeholder="agent@neurolearn.ai" type="email"
+                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-[#191C1E] focus:border-indigo-600 focus:outline-none transition-all" />
                 </div>
                 <button type="submit" disabled={promoting} className="bg-indigo-600 hover:bg-gray-800 text-white rounded-xl py-4 px-8 text-[10px] font-black tracking-widest uppercase transition-all shadow-lg shadow-indigo-900/10 flex items-center justify-center gap-3 w-full md:w-auto">
                   {promoting ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={16} />} 
