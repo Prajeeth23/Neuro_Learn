@@ -207,12 +207,11 @@ export default function CourseDetailPage() {
           </div>
         ) : (
           <div className="py-24 bg-gray-50 border border-gray-100 rounded-[2.5rem] text-center flex flex-col items-center justify-center space-y-8 px-6">
-             <div className="w-20 h-20 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-200"><Shield size={40} /></div>
+             <div className="w-20 h-20 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-200"><BrainCircuit size={40} /></div>
              <div className="space-y-2 max-w-sm">
-                <p className="text-lg font-black uppercase italic tracking-tight">Security Override Required</p>
-                <p className="text-gray-400 text-xs font-medium leading-relaxed">Complete the initial node synchronization to unlock full learning roadmap for this domain.</p>
+                <p className="text-lg font-black uppercase italic tracking-tight">Constructing Learning Nodes</p>
+                <p className="text-gray-400 text-xs font-medium leading-relaxed">The AI is finalizing the cognitive roadmap for this domain. Modules will appear here shortly.</p>
              </div>
-             <button onClick={() => window.location.href=`/dashboard/assessment/${course.id}`} className="uiverse-btn !px-10 !py-4 !rounded-xl text-[10px] font-black tracking-widest uppercase">INITIALIZE DIAGNOSTIC</button>
           </div>
         )}
       </div>
