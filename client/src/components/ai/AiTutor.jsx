@@ -80,13 +80,13 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
   };
 
   return (
-    <Card className="flex flex-col h-[600px] border border-accent/30 shadow-[0_0_20px_rgba(0,180,255,0.1)]">
-      <CardHeader className="bg-white/5 border-b border-white/10 p-4">
-        <CardTitle className="flex items-center gap-2 text-lg text-accent">
+    <Card className="flex flex-col h-[600px] border border-indigo-100 bg-white shadow-xl shadow-indigo-100/20">
+      <CardHeader className="bg-white border-b border-gray-50 p-4">
+        <CardTitle className="flex items-center gap-2 text-lg text-indigo-600">
           <Sparkles size={18} className="animate-pulse" />
           <span>AI Tutor</span>
           {level && (
-            <span className="ml-auto text-[10px] font-black tracking-widest uppercase px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30">
+            <span className="ml-auto text-[10px] font-black tracking-widest uppercase px-2 py-0.5 rounded bg-indigo-50 text-indigo-600 border border-indigo-100">
               Level {level}★
             </span>
           )}
@@ -95,29 +95,29 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
       
       <CardContent className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar">
         {messages.map((m, i) => (
-          <div key={i} className={`max-w-[85%] rounded-xl p-3 text-sm whitespace-pre-wrap ${
-            m.role === 'user' ? 'bg-primary text-white ml-auto rounded-tr-none' : 'bg-white/10 text-white/90 mr-auto rounded-tl-none'
+          <div key={i} className={`max-w-[85%] rounded-2xl p-4 text-sm font-medium whitespace-pre-wrap ${
+            m.role === 'user' ? 'bg-indigo-600 text-white ml-auto rounded-tr-none shadow-md shadow-indigo-200' : 'bg-slate-50 text-[#191C1E] mr-auto rounded-tl-none border border-slate-100'
           }`}>
             {m.file && (
-              <div className="flex items-center gap-2 mb-2 p-2 bg-black/20 rounded-lg text-xs border border-white/10">
-                <Paperclip size={12} className="text-white/50 shrink-0" /> 
-                <span className="break-all">{m.file}</span>
+              <div className="flex items-center gap-2 mb-2 p-2 bg-indigo-50/50 rounded-lg text-xs border border-indigo-100/50 text-indigo-700">
+                <Paperclip size={12} className="text-indigo-400 shrink-0" /> 
+                <span className="break-all font-semibold font-mono">{m.file}</span>
               </div>
             )}
             {m.role === 'model' ? renderContent(m.content) : m.content}
           </div>
         ))}
         {loading && (
-          <div className="bg-white/10 text-white/50 rounded-xl rounded-tl-none p-3 max-w-[85%] text-sm w-fit flex items-center gap-2">
-            <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
-            <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
-            <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+          <div className="bg-slate-50 text-indigo-400 rounded-2xl rounded-tl-none p-4 max-w-[85%] text-sm w-fit flex items-center gap-2 border border-slate-100">
+            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </CardContent>
 
-      <CardFooter className="p-4 bg-white/5 border-t border-white/10 flex-col gap-3">
+      <CardFooter className="p-4 bg-white border-t border-gray-50 flex-col gap-3">
         {selectedFile && (
           <div className="w-full flex items-center justify-between p-2.5 bg-primary/10 border border-primary/20 rounded-xl text-xs text-primary animate-in fade-in slide-in-from-bottom-2">
             <span className="flex items-center gap-2 font-medium truncate pr-4">
@@ -130,7 +130,7 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
                 setSelectedFile(null);
                 if (fileInputRef.current) fileInputRef.current.value = '';
               }} 
-              className="hover:text-white transition-colors bg-white/5 p-1 rounded-full shrink-0"
+              className="hover:text-red-500 transition-colors bg-white p-1 rounded-full shrink-0 shadow-sm"
             >
               <X size={14} />
             </button>
@@ -148,7 +148,7 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
             type="button" 
             variant="outline" 
             size="icon" 
-            className={`px-3 border-white/10 transition-colors shrink-0 ${selectedFile ? 'bg-primary/20 text-primary border-primary/30' : 'bg-white/5 text-white/50 hover:text-white'}`}
+            className={`px-3 border-slate-200 transition-colors shrink-0 shadow-sm ${selectedFile ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'bg-white text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-200'}`}
             onClick={() => fileInputRef.current?.click()} 
             disabled={loading}
             title="Attach a file, image, or document"
@@ -159,10 +159,10 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
             value={input} 
             onChange={e => setInput(e.target.value)} 
             placeholder={selectedFile ? "Ask a question about this file..." : "Ask me anything..."} 
-            className="flex-1 bg-black/50"
+            className="flex-1 bg-slate-50 border-slate-200 text-[#191C1E] focus:ring-indigo-500 focus:border-indigo-500 placeholder:text-slate-400"
             disabled={loading}
           />
-          <Button type="submit" variant="primary" size="icon" className="px-3 shrink-0" disabled={loading || (!input.trim() && !selectedFile)}>
+          <Button type="submit" variant="primary" size="icon" className="px-3 shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200" disabled={loading || (!input.trim() && !selectedFile)}>
             <Send size={18} />
           </Button>
         </form>
