@@ -26,6 +26,16 @@ export default function CoursesPage() {
 
   const { isFullscreen, showWarning, enterFullscreen, exitFullscreen } = useSecureMode(showLaunchTest && !quizSubmitted);
 
+  // Ensure body scroll is always restored when the modal is closed
+  useEffect(() => {
+    if (!showLaunchTest) {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showLaunchTest]);
+
   useScreenTime();
 
   useEffect(() => {
@@ -96,6 +106,9 @@ export default function CoursesPage() {
     setQuizSubmitted(false);
     setQuizScore(0);
     
+    // Prevent background scroll while modal is open
+    document.body.style.overflow = 'hidden';
+    
     // Trigger fullscreen (gesture mandatory)
     enterFullscreen();
 
@@ -124,6 +137,8 @@ export default function CoursesPage() {
     
     // Exit fullscreen now that quiz is done
     exitFullscreen();
+    // Restore body scroll
+    document.body.style.overflow = '';
 
     try {
       await api.post(`/assessments/initial/${activeCourse.id}/submit`, { score });

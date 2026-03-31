@@ -27,19 +27,25 @@ export const useSecureMode = (active) => {
   }, []);
 
   useEffect(() => {
-    if (!active) return;
-
     const handleFsChange = () => {
       const inFs = !!document.fullscreenElement;
       setIsFullscreen(inFs);
 
+      // Always dispatch a resize event so the browser recomputes layout
+      // This prevents the "misaligned grid/cards" bug after ESC
+      window.dispatchEvent(new Event('resize'));
+
       if (!inFs && active) {
+        // User pressed ESC mid-assessment — show warning and re-enter
         setShowWarning(true);
         clearTimeout(warningTimerRef.current);
         warningTimerRef.current = setTimeout(() => {
           enterFullscreen();
           setShowWarning(false);
         }, 2500);
+      } else if (!inFs && !active) {
+        // Assessment is done / not started — ensure secure mode is cleared
+        setSecureMode(false);
       }
     };
 
@@ -47,8 +53,10 @@ export const useSecureMode = (active) => {
     return () => {
       document.removeEventListener('fullscreenchange', handleFsChange);
       clearTimeout(warningTimerRef.current);
+      // Dispatch resize on unmount as well to restore normal layouts
+      window.dispatchEvent(new Event('resize'));
     };
-  }, [active, enterFullscreen]);
+  }, [active, enterFullscreen, setSecureMode]);
 
 
   // 4. Browser Protection (beforeunload, right-click, keyboard)
