@@ -271,7 +271,7 @@ export default function CoursesPage() {
           
           {/* Warning Overlay */}
           {(showWarning || !isFullscreen) && !quizSubmitted && (
-            <div className="absolute inset-0 z-[100] bg-white flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+            <div className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
               <div className="w-20 h-20 bg-black text-white rounded-[2rem] flex items-center justify-center shadow-lg shadow-black/10 animate-pulse">
                 <ShieldAlert size={32} />
               </div>
