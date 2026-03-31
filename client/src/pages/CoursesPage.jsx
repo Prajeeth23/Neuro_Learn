@@ -484,9 +484,13 @@ export default function CoursesPage() {
   const { isFullscreen, showWarning, enterFullscreen, exitFullscreen } = useSecureMode(showSyncAssessment && !quizSubmitted);
 
   useEffect(() => {
-    if (!showLevelSelector && !showSyncAssessment) document.body.style.overflow = '';
-    return () => { document.body.style.overflow = ''; };
-  }, [showLevelSelector, showSyncAssessment]);
+    if (showLevelSelector || showSyncAssessment || showOnboarding) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [showLevelSelector, showSyncAssessment, showOnboarding]);
 
   useScreenTime();
 
@@ -555,7 +559,6 @@ export default function CoursesPage() {
     setActiveCourse(course);
     setSelectedLevel('beginner');
     setShowLevelSelector(true);
-    document.body.style.overflow = 'hidden';
   };
 
   const handleLevelConfirm = async () => {
@@ -812,7 +815,7 @@ export default function CoursesPage() {
 
               <div className="flex gap-4 mt-10">
                 <button
-                  onClick={() => { setShowLevelSelector(false); document.body.style.overflow = ''; }}
+                  onClick={() => { setShowLevelSelector(false); }}
                   className="flex-1 py-4 text-xs font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-2xl transition-all border border-transparent"
                 >
                   Cancel
