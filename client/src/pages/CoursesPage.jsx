@@ -286,10 +286,6 @@ export default function CoursesPage() {
                   <p className="text-indigo-400 text-[10px] md:text-xs font-bold mt-1 uppercase tracking-widest">{activeCourse.title}</p>
                 </div>
               </div>
-              <button onClick={() => setShowLaunchTest(false)}
-                className="w-10 h-10 flex items-center justify-center text-indigo-400 border border-indigo-900/50 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/50 rounded-xl transition-all">
-                <XCircle size={20} />
-              </button>
             </div>
           </div>
 
