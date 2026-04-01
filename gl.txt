@@ -1,0 +1,20 @@
+511d4c364527bc719936f0a63a5d62880c2db315 2026-04-01 feat: restore Professional Light UI (Cognitive Atelier) across the platform
+8a7ce792de23f26a9f33dd82c0649ab26560dbc0 2026-03-28 Fix Vercel bundling by using explicit literal require calls for routes
+7fa405a01bafc2553f0ac2b9efc9a73e8d8c3565 2026-03-28 Fix Vercel module resolution by using absolute paths for route loading
+be8fc7286265146644cc4baca1435ea2b15ad184 2026-03-28 Final cleanup of duplicate routes to reveal feature status
+63ae92660d1a526598775d52bd5fc961a24ee939 2026-03-28 Remove duplicate health check to expose real feature status
+91aeff3444ac277cf48f01019c43f777cff2957b 2026-03-28 Refactor route loading into individual safety nets and update health check
+ad97af4906e55e55796bff4060ff04b8457e49aa 2026-03-28 Fix final Vercel 500 errors: missing imports and file-writing crashes
+1b0a031e5c160bf0f4fcc0445e0e06524b137346 2026-03-28 Isolate backend crash and fix frontend #31 crashes
+5438a8cd69ce1c2142b59ee25653dd329f7418eb 2026-03-28 Add minimal test endpoint and make route loading resilient
+8ef9fb3b3627ac2bce4eeb8a2f563107b2bbb812 2026-03-28 Make Supabase client initialization resilient and fix syntax errors
+afe846c0d5698c72b90a64eee924e597a7b3dd75 2026-03-28 Refine universal error handler for better debug output
+12c978f80b8727707a91ffbbdd7de657ed21dd1c 2026-03-28 Add server health check and improve admin error reporting
+912a7d0d9a7998a1565bf5db135e5348b5c64888 2026-03-28 Fix nested routing in vercel.json and add admin seed script
+8e3433891dce8667500fcae1762e203871ad8a06 2026-03-28 Fix 500 errors, React #31 crash, and optimize Vercel routing
+f58b5156155830aa9a3f325cc82172741ba7639c 2026-03-28 fix(vercel): clean and modern configuration for correctly mapped project root deployment
+6341d845c1be85511af11ddeb92a49df4be04a6b 2026-03-28 fix(vercel): revert to explicit builds and routes to force backend deployment regardless of default auto-detection heuristics
+fa9f6d636c7367c69fed9f000bc82dcd592aaa35 2026-03-28 fix(vercel): include backend dependencies in root package.json so vercel serverless builder can trace and compile API functions successfully
+0fe4c136fb1c5b703446cb437b4b17330175360b 2026-03-28 fix(vercel): correctly handle API routes using the file system API catch-all [...slug].js
+cfae06e03c75c3239da9acac8426341757893fe6 2026-03-28 fix(vercel): correctly map API routes to resolve 405 Method Not Allowed error
+af96af91216733fab2799079ce70d4755ca1f451 2026-03-27 Fix: Vercel routing and admin error logging

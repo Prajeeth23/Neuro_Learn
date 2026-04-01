@@ -1,0 +1,96 @@
+﻿af96af9 HEAD@{2026-04-01 12:46:45 +0530}: reset: moving to af96af9
+511d4c3 HEAD@{2026-04-01 12:46:38 +0530}: checkout: moving from backup-today-2026-04-01 to main
+511d4c3 HEAD@{2026-04-01 12:46:13 +0530}: checkout: moving from main to backup-today-2026-04-01
+511d4c3 HEAD@{2026-04-01 12:22:09 +0530}: commit: feat: restore Professional Light UI (Cognitive Atelier) across the platform
+8a7ce79 HEAD@{2026-04-01 11:57:58 +0530}: reset: moving to 8a7ce792de23f26a9f33dd82c0649ab26560d
+d259daf HEAD@{2026-04-01 11:30:42 +0530}: commit: [Batch 2] Complete platform-wide Prism Luxe migration
+072189a HEAD@{2026-04-01 11:02:14 +0530}: commit: ui: overhaul configuration details and ai content formatting
+dbffb38 HEAD@{2026-04-01 10:52:29 +0530}: commit: ui: overhaul onboarding and configuration screens for visibility and premium dark theme
+b145568 HEAD@{2026-03-31 22:17:52 +0530}: commit: style(ui): revert CoursesPage modals to original dark theme while keeping alignment/scroll fixes
+1f4b227 HEAD@{2026-03-31 22:13:36 +0530}: commit: fix(ui): centralize scroll-lock logic for all modals in CoursesPage
+cd228e7 HEAD@{2026-03-31 22:11:14 +0530}: commit: fix(ui): use React Portals to center assessment modals and modernize to White/Blue theme
+f09b31d HEAD@{2026-03-31 21:58:14 +0530}: commit: fix(ui): enforce high-contrast blue and white theme for AI Tutor
+34a742f HEAD@{2026-03-31 21:39:09 +0530}: commit: feat: enhance AI Tutor visibility with high-contrast white/blue theme
+e3b9d78 HEAD@{2026-03-31 21:33:42 +0530}: commit: feat: Neural Co-Pilot theme overhaul to white/blue with black fonts
+cfd7955 HEAD@{2026-03-31 18:26:42 +0530}: commit: feat: support multiple file uploads for AI study plan generation and add delete functionality
+da026d3 HEAD@{2026-03-31 18:13:10 +0530}: commit: fix: make admin promote email field lowercase visually and in api request
+5913363 HEAD@{2026-03-31 17:32:54 +0530}: commit: fix: allow beginners (level 3) to view level 3 difficulty modules to restore video player
+2816a52 HEAD@{2026-03-31 17:24:47 +0530}: commit: refactor: remove redundant initialize diagnostic button from course details
+d059b69 HEAD@{2026-03-31 17:16:19 +0530}: commit: fix: adjust modal z-index for visibility
+9da7e43 HEAD@{2026-03-31 17:07:13 +0530}: commit: feat: implement adaptive level assessment and beginner bypass
+e097d69 HEAD@{2026-03-31 16:33:43 +0530}: commit: feat: add Career Vector tab and first-visit onboarding modal to My Courses
+78020d2 HEAD@{2026-03-31 15:23:12 +0530}: commit: feat(ui): update Quiz page styling to distinct violet theme
+be1a73d HEAD@{2026-03-31 14:53:16 +0530}: commit: fix warning overlay to use fixed positioning covering full viewport
+a331bc5 HEAD@{2026-03-31 14:48:32 +0530}: commit: fix fullscreen exit layout reset and body scroll restore
+cb5dba4 HEAD@{2026-03-31 14:36:46 +0530}: commit: remove exit button from sync assessment
+79d2802 HEAD@{2026-03-31 14:25:37 +0530}: commit: fix fullscreen layout and add exit quiz button
+9421afe HEAD@{2026-03-31 12:15:08 +0530}: commit: fix: migrate to React Router Data Router to support useBlocker
+42196fc HEAD@{2026-03-31 12:07:53 +0530}: commit: feat: implement Secure Assessment Mode with centralized lock hook and UI isolation
+43dc96e HEAD@{2026-03-30 15:32:04 +0530}: commit: feat: enforce secure fullscreen via user gesture and redirect inline quizzes
+324a49f HEAD@{2026-03-30 15:18:08 +0530}: commit: feat: enforce auto-fullscreen lockdown during diagnostic assessment
+51fa9c3 HEAD@{2026-03-30 15:14:47 +0530}: commit: feat: enforce auto-fullscreen lockdown during quiz assessment
+41467e5 HEAD@{2026-03-30 15:09:24 +0530}: commit: Implement full-screen enforcement for QuizPage
+0bd20ea HEAD@{2026-03-30 15:04:26 +0530}: commit: Update LandingPage: remove watch demo and stats
+bdea842 HEAD@{2026-03-30 14:28:03 +0530}: commit: feat: make sync assessment modal full screen with premium styling
+3e7dc0a HEAD@{2026-03-30 14:17:46 +0530}: commit: feat: redesign sync assessment modal with premium blue/black dark theme
+b6609d2 HEAD@{2026-03-30 13:40:44 +0530}: commit: feat: add interactive domain filter tags to course catalog
+a029c8f HEAD@{2026-03-30 13:36:55 +0530}: commit: fix: remove domain filtering from course catalog - show all courses
+51caad1 HEAD@{2026-03-30 11:54:35 +0530}: commit: fix: admin course reflection and backend supabase client bypass
+40a6597 HEAD@{2026-03-30 11:36:04 +0530}: commit: feat: Prism Luxe UI overhaul & Admin promotion feature
+c8db4a5 HEAD@{2026-03-30 10:21:10 +0530}: commit: feat: stabilize auth, implement toggleable sidebar, and refine UI aesthetics
+a71f8ca HEAD@{2026-03-30 09:06:11 +0530}: revert: Revert "feat: complete Prism Luxe visual overhaul across all modules"
+c5d5860 HEAD@{2026-03-30 09:06:11 +0530}: reset: moving to origin/main
+d83c255 HEAD@{2026-03-30 08:58:39 +0530}: reset: moving to HEAD~1
+c5d5860 HEAD@{2026-03-29 23:38:53 +0530}: commit: feat: complete Prism Luxe visual overhaul across all modules
+d83c255 HEAD@{2026-03-28 16:15:24 +0530}: commit: UI Overhaul: Professional Light Theme (Stitch Design System)
+966ed3c HEAD@{2026-03-28 15:23:16 +0530}: commit: fix: ai-tutor-404 by correcting pdf-parse usage + style: b&w overhaul for analytics, courses, and personalized pages
+32f6b4d HEAD@{2026-03-28 14:45:06 +0530}: commit: style: black & white monochrome theme + Inter typography system
+dd997ed HEAD@{2026-03-28 14:14:18 +0530}: commit: style: recolor theme to white background + sky blue accents (no feature changes)
+0640f31 HEAD@{2026-03-28 13:39:54 +0530}: revert: Revert "feat: complete Cognitive Sanctuary UI overhaul from Google Stitch design"
+3a7026a HEAD@{2026-03-28 13:24:37 +0530}: commit: feat: complete Cognitive Sanctuary UI overhaul from Google Stitch design
+8a7ce79 HEAD@{2026-03-28 12:48:12 +0530}: commit: Fix Vercel bundling by using explicit literal require calls for routes
+7fa405a HEAD@{2026-03-28 12:42:46 +0530}: commit: Fix Vercel module resolution by using absolute paths for route loading
+be8fc72 HEAD@{2026-03-28 12:39:16 +0530}: commit: Final cleanup of duplicate routes to reveal feature status
+63ae926 HEAD@{2026-03-28 12:27:32 +0530}: commit: Remove duplicate health check to expose real feature status
+91aeff3 HEAD@{2026-03-28 12:19:43 +0530}: commit: Refactor route loading into individual safety nets and update health check
+ad97af4 HEAD@{2026-03-28 12:14:46 +0530}: commit: Fix final Vercel 500 errors: missing imports and file-writing crashes
+1b0a031 HEAD@{2026-03-28 12:08:06 +0530}: commit: Isolate backend crash and fix frontend #31 crashes
+5438a8c HEAD@{2026-03-28 12:00:34 +0530}: commit: Add minimal test endpoint and make route loading resilient
+8ef9fb3 HEAD@{2026-03-28 11:56:12 +0530}: commit: Make Supabase client initialization resilient and fix syntax errors
+afe846c HEAD@{2026-03-28 11:49:12 +0530}: commit: Refine universal error handler for better debug output
+12c978f HEAD@{2026-03-28 11:48:30 +0530}: commit: Add server health check and improve admin error reporting
+912a7d0 HEAD@{2026-03-28 11:37:59 +0530}: commit: Fix nested routing in vercel.json and add admin seed script
+8e34338 HEAD@{2026-03-28 11:32:09 +0530}: commit: Fix 500 errors, React #31 crash, and optimize Vercel routing
+f58b515 HEAD@{2026-03-28 11:06:57 +0530}: commit: fix(vercel): clean and modern configuration for correctly mapped project root deployment
+6341d84 HEAD@{2026-03-28 10:28:34 +0530}: commit: fix(vercel): revert to explicit builds and routes to force backend deployment regardless of default auto-detection heuristics
+fa9f6d6 HEAD@{2026-03-28 10:16:12 +0530}: commit: fix(vercel): include backend dependencies in root package.json so vercel serverless builder can trace and compile API functions successfully
+0fe4c13 HEAD@{2026-03-28 09:53:23 +0530}: commit: fix(vercel): correctly handle API routes using the file system API catch-all [...slug].js
+cfae06e HEAD@{2026-03-28 09:40:10 +0530}: commit: fix(vercel): correctly map API routes to resolve 405 Method Not Allowed error
+af96af9 HEAD@{2026-03-27 22:44:39 +0530}: commit: Fix: Vercel routing and admin error logging
+9922547 HEAD@{2026-03-27 22:05:53 +0530}: commit: Fix: Global defensive rendering for all list mappings
+08dcb47 HEAD@{2026-03-27 22:02:35 +0530}: commit: Fix: Add ultra-defensive Array.isArray checks to prevent n.map crashes
+7736543 HEAD@{2026-03-27 21:41:27 +0530}: commit: Config: Update Supabase project to dqskjdyptxulkdxvdjnj
+f776232 HEAD@{2026-03-27 21:16:36 +0530}: commit: UI: Update Gemini labels to Groq
+7842053 HEAD@{2026-03-27 21:06:51 +0530}: commit: Complete AI-to-Groq migration and cleanup
+f3cf5bd HEAD@{2026-03-27 21:05:02 +0530}: commit: Fix AI provider migration and defensive list returns
+bdef191 HEAD@{2026-03-27 20:56:17 +0530}: commit (amend): feat: migrate to Groq and fix authenticaton routing for Prajeeth
+5a52053 HEAD@{2026-03-27 20:51:58 +0530}: commit: feat: migrate to Groq and fix authenticaton routing for Prajeeth
+b86af75 HEAD@{2026-03-27 20:04:05 +0530}: commit: fix: route production api traffic to vercel serverless functions
+6efa53f HEAD@{2026-03-27 09:28:27 +0530}: commit: feat: Implement dynamic dashboard with hamburger menu and personalized hero section
+04ee5c3 HEAD@{2026-03-26 16:04:48 +0530}: commit: Added AI Tutor File Support and Nested Navigation
+ff84909 HEAD@{2026-03-26 15:20:13 +0530}: commit: Final deployment
+847d534 HEAD@{2026-03-26 11:38:55 +0530}: commit: Restore client/vercel.json for standalone frontend deployment
+f24fc7b HEAD@{2026-03-26 11:35:19 +0530}: commit: Fix Express 5 wildcard route for Render
+6ff0770 HEAD@{2026-03-26 11:29:37 +0530}: commit: Install server dependencies in build script for Render
+e2f36f5 HEAD@{2026-03-26 11:25:11 +0530}: commit: Add start script to root package.json
+f98c4fd HEAD@{2026-03-26 11:21:43 +0530}: commit: Fix build script with --prefix for Render
+6a680ec HEAD@{2026-03-26 11:14:44 +0530}: commit: Enable static file serving for Render deployment
+5abacbf HEAD@{2026-03-26 11:08:51 +0530}: commit: Add root package.json for Vercel build
+9fae775 HEAD@{2026-03-26 11:08:31 +0530}: commit: Configure for full-stack Vercel deployment
+df482d4 HEAD@{2026-03-26 11:05:31 +0530}: commit: Update Supabase configuration to new database instance
+e8a675b HEAD@{2026-03-25 15:41:15 +0530}: commit: feat: add AI-powered personalized learning features, analytics, and admin dashboard
+f953228 HEAD@{2026-03-21 11:42:09 +0530}: commit: Trigger Vercel deployment for API URL fix
+290731d HEAD@{2026-03-21 03:52:37 +0530}: commit: fix(production): update vercel.json with routes fallback for SPA
+cb62258 HEAD@{2026-03-21 03:46:38 +0530}: commit: fix(production): add vercel.json to root for SPA routing
+2fe5a5a HEAD@{2026-03-21 03:43:15 +0530}: commit: fix(production): add vercel spa routing and robust api prefix
+32bb7a8 HEAD@{2026-03-21 02:04:24 +0530}: commit (initial): Initialize NeuroLearn Project

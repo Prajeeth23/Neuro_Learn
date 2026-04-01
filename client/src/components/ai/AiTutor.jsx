@@ -3,12 +3,12 @@ import api from '../../lib/api';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import { MessageCircle, Send, Sparkles, Paperclip, X } from 'lucide-react';
+import { MessageCircle, Send, Sparkles, Paperclip, X, Loader2 } from 'lucide-react';
 
 export const AiTutor = ({ context, level = 3, topic = '' }) => {
   const [messages, setMessages] = useState([
-    { 
-      role: 'model', 
+    {
+      role: 'model',
       content: `Hello! I'm your NeuroLearn AI Tutor. I see you're learning about **${context || 'this course'}**. How can I help?`
     }
   ]);
@@ -52,8 +52,8 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
         setSelectedFile(null); // Clear file after send
         if (fileInputRef.current) fileInputRef.current.value = ''; // Reset input
       } else {
-        const { data } = await api.post('/ai/tutor', { 
-          message: userMessage, 
+        const { data } = await api.post('/ai/tutor', {
+          message: userMessage,
           history: messages.map(m => ({ role: m.role, content: m.content })),
           level: level || 3,
           topic: topic || context || ''
@@ -88,22 +88,21 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
         </div>
         <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Cognitive Assistant</p>
       </div>
-      
+
       <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar bg-white" style={{ backgroundColor: '#FFFFFF' }}>
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div 
-              className={`max-w-[85%] p-4 rounded-2xl shadow-sm ${
-                m.role === 'user' ? 'rounded-tr-none' : 'rounded-tl-none'
-              }`}
-              style={m.role === 'user' 
-                ? { backgroundColor: '#4338CA', color: '#FFFFFF', fontWeight: 600 } 
+            <div
+              className={`max-w-[85%] p-4 rounded-2xl shadow-sm ${m.role === 'user' ? 'rounded-tr-none' : 'rounded-tl-none'
+                }`}
+              style={m.role === 'user'
+                ? { backgroundColor: '#4338CA', color: '#FFFFFF', fontWeight: 600 }
                 : { backgroundColor: '#FFFFFF', color: '#191C1E', borderColor: '#E0E7FF', borderStyle: 'solid', borderWidth: '2px', fontWeight: 600 }
               }
             >
               {m.file && (
                 <div className="flex items-center gap-2 mb-2 p-2 bg-indigo-50/50 rounded-lg text-[10px] border border-indigo-100/50 text-indigo-700">
-                  <Paperclip size={10} className="text-indigo-400 shrink-0" /> 
+                  <Paperclip size={10} className="text-indigo-400 shrink-0" />
                   <span className="break-all font-semibold font-mono">{m.file}</span>
                 </div>
               )}
@@ -128,15 +127,15 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
         {selectedFile && (
           <div className="w-full flex items-center justify-between p-2.5 bg-white border border-indigo-200 rounded-xl text-xs text-indigo-600 shadow-sm">
             <span className="flex items-center gap-2 font-bold truncate pr-4">
-              <Paperclip size={14} className="shrink-0" /> 
+              <Paperclip size={14} className="shrink-0" />
               <span className="truncate">{selectedFile.name}</span>
             </span>
-            <button 
+            <button
               type="button"
               onClick={() => {
                 setSelectedFile(null);
                 if (fileInputRef.current) fileInputRef.current.value = '';
-              }} 
+              }}
               className="hover:text-red-500 transition-colors p-1 bg-gray-50 rounded-full"
             >
               <X size={14} />
@@ -144,32 +143,32 @@ export const AiTutor = ({ context, level = 3, topic = '' }) => {
           </div>
         )}
         <form onSubmit={sendMessage} className="flex gap-2 w-full items-center">
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            className="hidden" 
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
             onChange={(e) => setSelectedFile(e.target.files[0])}
             accept=".pdf,.docx,.jpg,.jpeg,.png,.webp"
           />
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="w-12 h-12 flex items-center justify-center shrink-0 bg-white border-2 border-indigo-100 text-indigo-400 hover:text-indigo-600 hover:border-indigo-200 rounded-xl transition-all shadow-sm"
             style={{ backgroundColor: '#FFFFFF', borderColor: '#E0E7FF' }}
-            onClick={() => fileInputRef.current?.click()} 
+            onClick={() => fileInputRef.current?.click()}
             disabled={loading}
           >
             <Paperclip size={18} />
           </button>
-          <input 
-            value={input} 
-            onChange={e => setInput(e.target.value)} 
-            placeholder={selectedFile ? "Ask a question about this file..." : "Ask me anything..."} 
+          <input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder={selectedFile ? "Ask a question about this file..." : "Ask me anything..."}
             className="flex-1 bg-white border-2 border-indigo-100 text-black font-semibold h-12 px-4 rounded-xl focus:ring-2 focus:ring-indigo-600 focus:outline-none placeholder:text-slate-400"
             style={{ backgroundColor: '#FFFFFF', color: '#000000', borderColor: '#E0E7FF', borderWidth: '2px', borderStyle: 'solid' }}
             disabled={loading}
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="w-12 h-12 flex items-center justify-center shrink-0 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl shadow-lg shadow-indigo-100 transition-all active:scale-95 disabled:opacity-50"
             style={{ backgroundColor: '#4338CA', color: '#FFFFFF' }}
             disabled={loading || (!input.trim() && !selectedFile)}

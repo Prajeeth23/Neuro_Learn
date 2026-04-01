@@ -1,0 +1,30 @@
+af96af91216733fab2799079ce70d4755ca1f451 2026-03-27 reset: moving to af96af9
+511d4c364527bc719936f0a63a5d62880c2db315 2026-04-01 checkout: moving from backup-today-2026-04-01 to main
+511d4c364527bc719936f0a63a5d62880c2db315 2026-04-01 checkout: moving from main to backup-today-2026-04-01
+511d4c364527bc719936f0a63a5d62880c2db315 2026-04-01 commit: feat: restore Professional Light UI (Cognitive Atelier) across the platform
+8a7ce792de23f26a9f33dd82c0649ab26560dbc0 2026-03-28 reset: moving to 8a7ce792de23f26a9f33dd82c0649ab26560d
+d259daf4201be9b9687d30fb15e17d46df5766ed 2026-04-01 commit: [Batch 2] Complete platform-wide Prism Luxe migration
+072189adff81ebf6a136950495cbd529438b1557 2026-04-01 commit: ui: overhaul configuration details and ai content formatting
+dbffb385b8783bb78e30a68ad2ead51797b351a1 2026-04-01 commit: ui: overhaul onboarding and configuration screens for visibility and premium dark theme
+b14556887631ddc39603dc44af4b9f71f2ed52e1 2026-03-31 commit: style(ui): revert CoursesPage modals to original dark theme while keeping alignment/scroll fixes
+1f4b227b206829a75271d7d7fee3d91b8835640b 2026-03-31 commit: fix(ui): centralize scroll-lock logic for all modals in CoursesPage
+cd228e7d061b6bb3405d6ff41f13ea681e5a0ef5 2026-03-31 commit: fix(ui): use React Portals to center assessment modals and modernize to White/Blue theme
+f09b31d2912faa4be2a143f14f6eb79a13639a05 2026-03-31 commit: fix(ui): enforce high-contrast blue and white theme for AI Tutor
+34a742f667e2a315a46383162ad44a2e01463712 2026-03-31 commit: feat: enhance AI Tutor visibility with high-contrast white/blue theme
+e3b9d7838f569f19af7c32107248f4bf35a48730 2026-03-31 commit: feat: Neural Co-Pilot theme overhaul to white/blue with black fonts
+cfd79551c7e145fa47ff616c269581e01d61152b 2026-03-31 commit: feat: support multiple file uploads for AI study plan generation and add delete functionality
+da026d3ecb349fccc9ef656d55c3a6089cace790 2026-03-31 commit: fix: make admin promote email field lowercase visually and in api request
+5913363d3b7f314ec8a5dea89759f2013d8e7da2 2026-03-31 commit: fix: allow beginners (level 3) to view level 3 difficulty modules to restore video player
+2816a527bbb1e7b6b268b39b2cde9e2c8b91947e 2026-03-31 commit: refactor: remove redundant initialize diagnostic button from course details
+d059b69c4e9bb49a38dd0735c6a88fdcf13c78fd 2026-03-31 commit: fix: adjust modal z-index for visibility
+9da7e43ce7ef3396b461c7f4f3d984a141e432fd 2026-03-31 commit: feat: implement adaptive level assessment and beginner bypass
+e097d69be7b937b28332adcb2d2cd287f92ecc1f 2026-03-31 commit: feat: add Career Vector tab and first-visit onboarding modal to My Courses
+78020d2f23ed88b39eb8638327ce6c806d770235 2026-03-31 commit: feat(ui): update Quiz page styling to distinct violet theme
+be1a73d2dde6c6cc135265699a9e8891083312e1 2026-03-31 commit: fix warning overlay to use fixed positioning covering full viewport
+a331bc5a7d61364ff63b73e214d24acb20ce502f 2026-03-31 commit: fix fullscreen exit layout reset and body scroll restore
+cb5dba458b9523aa65070eefbb950a6bbeb56b3e 2026-03-31 commit: remove exit button from sync assessment
+79d28022bd94ce6964ff462b34bd766f5c2ddd74 2026-03-31 commit: fix fullscreen layout and add exit quiz button
+9421afecec52f4282699c70f800d17faa16cf2e4 2026-03-31 commit: fix: migrate to React Router Data Router to support useBlocker
+42196fcae97306679861b0f28bc7f221daf5d10f 2026-03-31 commit: feat: implement Secure Assessment Mode with centralized lock hook and UI isolation
+43dc96e4f824b131013474294eadc667374668ce 2026-03-30 commit: feat: enforce secure fullscreen via user gesture and redirect inline quizzes
+324a49f8399ec3aee9b32208b1811ec71070067c 2026-03-30 commit: feat: enforce auto-fullscreen lockdown during diagnostic assessment
