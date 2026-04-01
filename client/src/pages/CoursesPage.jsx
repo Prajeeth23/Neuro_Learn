@@ -66,7 +66,7 @@ function OnboardingModal({ onComplete }) {
                   Step {step} of 2
                 </p>
                 <h2 className="text-2xl font-black tracking-tight text-slate-900">
-                  {step === 1 ? 'Who are you?' : 'What drives you?'}
+                  {step === 1 ? 'Who are you? (v2)' : 'What drives you?'}
                 </h2>
               </div>
             </div>
@@ -322,8 +322,8 @@ function CareerVectorTab({ domain, onOpenOnboarding }) {
                 key={i}
                 onClick={() => fetchRoadmap(role)}
                 className={`text-left p-7 rounded-2xl border-2 transition-all relative overflow-hidden group ${isSelected
-                    ? 'bg-gradient-to-br from-violet-600 to-fuchsia-600 border-transparent shadow-xl shadow-violet-500/25 text-white'
-                    : 'bg-white border-slate-100 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-50'
+                  ? 'bg-gradient-to-br from-violet-600 to-fuchsia-600 border-transparent shadow-xl shadow-violet-500/25 text-white'
+                  : 'bg-white border-slate-100 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-50'
                   }`}
               >
                 <div className="absolute -bottom-3 -right-3 opacity-10 scale-150 transition-opacity group-hover:opacity-20">
@@ -653,8 +653,8 @@ export default function CoursesPage() {
           <button
             onClick={() => setActiveTab('catalog')}
             className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-xs font-black tracking-widest uppercase transition-all duration-300 ${activeTab === 'catalog'
-                ? 'bg-white text-[#191C1E] shadow-md shadow-slate-200'
-                : 'text-slate-400 hover:text-slate-600'
+              ? 'bg-white text-[#191C1E] shadow-md shadow-slate-200'
+              : 'text-slate-400 hover:text-slate-600'
               }`}
           >
             <BookOpen size={14} />
@@ -663,8 +663,8 @@ export default function CoursesPage() {
           <button
             onClick={() => setActiveTab('career')}
             className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-xs font-black tracking-widest uppercase transition-all duration-300 ${activeTab === 'career'
-                ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/20'
-                : 'text-slate-400 hover:text-violet-500'
+              ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/20'
+              : 'text-slate-400 hover:text-violet-500'
               }`}
           >
             <Compass size={14} />
@@ -684,8 +684,8 @@ export default function CoursesPage() {
                   key={domain}
                   onClick={() => setFilterDomain(domain)}
                   className={`px-5 py-2.5 rounded-full text-xs font-bold tracking-wide uppercase transition-all duration-300 ${filterDomain === domain
-                      ? 'bg-[#4F46E5] text-white shadow-lg shadow-indigo-200 border border-transparent'
-                      : 'bg-white text-[#777587] hover:bg-indigo-50 hover:text-indigo-600 border border-[#ECEEF0]'
+                    ? 'bg-[#4F46E5] text-white shadow-lg shadow-indigo-200 border border-transparent'
+                    : 'bg-white text-[#777587] hover:bg-indigo-50 hover:text-indigo-600 border border-[#ECEEF0]'
                     }`}
                 >
                   {domain}
@@ -792,8 +792,8 @@ export default function CoursesPage() {
                     key={lvl.id}
                     onClick={() => setSelectedLevel(lvl.id)}
                     className={`w-full flex items-center gap-6 p-6 border rounded-[1.5rem] text-left transition-all duration-300 ${selectedLevel === lvl.id
-                        ? 'border-violet-500 bg-violet-600/10 shadow-lg shadow-violet-900/20 text-white'
-                        : 'border-violet-900/30 bg-[#1a1a2e] hover:border-violet-600/50 hover:bg-[#1f1f3a] text-slate-400'
+                      ? 'border-violet-500 bg-violet-600/10 shadow-lg shadow-violet-900/20 text-white'
+                      : 'border-violet-900/30 bg-[#1a1a2e] hover:border-violet-600/50 hover:bg-[#1f1f3a] text-slate-400'
                       }`}
                   >
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${selectedLevel === lvl.id ? 'bg-violet-600 text-white' : 'bg-[#0f0f1a] text-slate-500'}`}>
@@ -911,9 +911,9 @@ export default function CoursesPage() {
                               onClick={() => !quizSubmitted && setAnswers(prev => ({ ...prev, [qIdx]: key }))}
                               disabled={quizSubmitted}
                               className={`text-left p-6 rounded-2xl border font-bold transition-all duration-200 flex items-center gap-5 group ${isCorrect ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' :
-                                  isWrong ? 'bg-rose-500/10 border-rose-500 text-rose-400' :
-                                    isSelected ? 'bg-violet-600 border-violet-600 text-white shadow-xl shadow-violet-900/40' :
-                                      'bg-[#1a1a2e] border-violet-900/30 text-slate-400 hover:border-violet-600/50 hover:bg-[#1f1f3a]'
+                                isWrong ? 'bg-rose-500/10 border-rose-500 text-rose-400' :
+                                  isSelected ? 'bg-violet-600 border-violet-600 text-white shadow-xl shadow-violet-900/40' :
+                                    'bg-[#1a1a2e] border-violet-900/30 text-slate-400 hover:border-violet-600/50 hover:bg-[#1f1f3a]'
                                 }`}
                             >
                               <span className={`w-8 h-8 flex items-center justify-center rounded-xl text-xs font-black shrink-0 transition-colors ${isSelected ? 'bg-white/20 text-white' : 'bg-[#0f0f1a] text-slate-500 group-hover:bg-violet-900/30 group-hover:text-violet-400'}`}>{key}</span>
