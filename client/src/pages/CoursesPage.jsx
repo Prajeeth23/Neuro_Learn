@@ -66,7 +66,7 @@ function OnboardingModal({ onComplete }) {
                   Step {step} of 2
                 </p>
                 <h2 className="text-2xl font-black tracking-tight text-slate-900">
-                  {step === 1 ? 'Who are you? (v2)' : 'What drives you?'}
+                  {step === 1 ? 'Who are you? (v3)' : 'What drives you?'}
                 </h2>
               </div>
             </div>
@@ -771,9 +771,10 @@ export default function CoursesPage() {
 
       {/* Level Selector Modal */}
       {showLevelSelector && activeCourse && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#0f0f1a]/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="bg-[#12121a] border border-violet-900/50 rounded-[2rem] w-full max-w-xl overflow-hidden shadow-2xl shadow-violet-900/40 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
-            <div className="p-10">
+        <div className="fixed inset-0 z-[9999] bg-[#0f0f1a]/80 backdrop-blur-sm flex justify-center items-start md:items-center p-4 overflow-y-auto py-12 animate-in fade-in duration-300">
+          <div className="bg-[#12121a] border border-violet-900/50 rounded-[2rem] w-full max-w-xl overflow-hidden shadow-2xl shadow-violet-900/40 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500 my-auto relative">
+            <div className="absolute -inset-4 bg-violet-600/10 rounded-[3rem] blur-3xl pointer-events-none" />
+            <div className="relative p-7 md:p-10">
               <div className="w-14 h-14 rounded-2xl bg-violet-600 flex items-center justify-center text-white mb-8 shadow-xl shadow-violet-900/20">
                 <Target size={28} />
               </div>
