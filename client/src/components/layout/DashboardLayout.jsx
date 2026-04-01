@@ -56,12 +56,12 @@ export default function DashboardLayout() {
   };
 
   const navItems = [
-    { label: 'Dashboard',        path: '/dashboard',              icon: <LayoutDashboard size={17} />, color: 'indigo' },
-    { label: 'My Courses',       path: '/dashboard/courses',      icon: <BookOpen size={17} />,        color: 'violet' },
-    { label: 'AI Tutor',         path: '/dashboard/personalized', icon: <Sparkles size={17} />,        color: 'teal'   },
-    { label: 'Learning Tracker', path: '/dashboard/tracker',      icon: <Activity size={17} />,        color: 'amber'  },
-    { label: 'Analytics',        path: '/dashboard/analytics',    icon: <BarChart3 size={17} />,       color: 'indigo' },
-    { label: 'Profile',          path: '/dashboard/profile',      icon: <User size={17} />,            color: 'violet' },
+    { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={17} />, color: 'indigo' },
+    { label: 'My Courses v2', path: '/dashboard/courses', icon: <BookOpen size={17} />, color: 'violet' },
+    { label: 'AI Tutor', path: '/dashboard/personalized', icon: <Sparkles size={17} />, color: 'teal' },
+    { label: 'Learning Tracker', path: '/dashboard/tracker', icon: <Activity size={17} />, color: 'amber' },
+    { label: 'Analytics', path: '/dashboard/analytics', icon: <BarChart3 size={17} />, color: 'indigo' },
+    { label: 'Profile', path: '/dashboard/profile', icon: <User size={17} />, color: 'violet' },
   ];
 
   if (isAdmin) {
@@ -128,9 +128,9 @@ export default function DashboardLayout() {
           const colorMap = {
             indigo: { bg: '#EEF2FF', text: '#4F46E5', border: '#4F46E5' },
             violet: { bg: '#F5F3FF', text: '#7C3AED', border: '#7C3AED' },
-            teal:   { bg: '#F0FDFA', text: '#0D9488', border: '#0D9488' },
-            amber:  { bg: '#FFFBEB', text: '#D97706', border: '#D97706' },
-            rose:   { bg: '#FFF1F2', text: '#E11D48', border: '#E11D48' },
+            teal: { bg: '#F0FDFA', text: '#0D9488', border: '#0D9488' },
+            amber: { bg: '#FFFBEB', text: '#D97706', border: '#D97706' },
+            rose: { bg: '#FFF1F2', text: '#E11D48', border: '#E11D48' },
           };
           const c = colorMap[item.color] || colorMap.indigo;
 
@@ -263,14 +263,14 @@ export default function DashboardLayout() {
       </AnimatePresence>
 
       {/* ===== MAIN CONTENT AREA ===== */}
-      <div 
+      <div
         className="flex-1 flex flex-col min-h-screen transition-all duration-300"
         style={{ marginLeft: isSidebarOpen && !isSecureMode && window.innerWidth >= 1024 ? '240px' : '0' }}
       >
 
         {/* ===== TOP NAVIGATION BAR ===== */}
         {!isSecureMode && (
-          <header 
+          <header
             className="sticky top-0 z-20 flex items-center justify-between px-5 lg:px-8"
             style={{
               height: '60px',
@@ -286,12 +286,12 @@ export default function DashboardLayout() {
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 className="hidden lg:flex p-2 rounded-xl transition-all duration-200"
-                style={{ 
+                style={{
                   color: isSidebarOpen ? '#4F46E5' : '#464555',
                   background: isSidebarOpen ? '#EEF2FF' : 'transparent'
                 }}
-                onMouseEnter={e => { if(!isSidebarOpen) e.currentTarget.style.background = '#F2F4F6' }}
-                onMouseLeave={e => { if(!isSidebarOpen) e.currentTarget.style.background = 'transparent' }}
+                onMouseEnter={e => { if (!isSidebarOpen) e.currentTarget.style.background = '#F2F4F6' }}
+                onMouseLeave={e => { if (!isSidebarOpen) e.currentTarget.style.background = 'transparent' }}
               >
                 <Menu size={20} />
               </button>
