@@ -66,7 +66,7 @@ function OnboardingModal({ onComplete }) {
                   Step {step} of 2
                 </p>
                 <h2 className="text-2xl font-black tracking-tight text-slate-900">
-                  {step === 1 ? 'Who are you? (v3)' : 'What drives you?'}
+                  {step === 1 ? 'Who are you?' : 'What drives you?'}
                 </h2>
               </div>
             </div>

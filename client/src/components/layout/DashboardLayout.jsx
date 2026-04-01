@@ -57,7 +57,7 @@ export default function DashboardLayout() {
 
   const navItems = [
     { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={17} />, color: 'indigo' },
-    { label: 'My Courses (v3)', path: '/dashboard/courses', icon: <BookOpen size={17} />, color: 'violet' },
+    { label: 'My Courses', path: '/dashboard/courses', icon: <BookOpen size={17} />, color: 'violet' },
     { label: 'AI Tutor', path: '/dashboard/personalized', icon: <Sparkles size={17} />, color: 'teal' },
     { label: 'Learning Tracker', path: '/dashboard/tracker', icon: <Activity size={17} />, color: 'amber' },
     { label: 'Analytics', path: '/dashboard/analytics', icon: <BarChart3 size={17} />, color: 'indigo' },
