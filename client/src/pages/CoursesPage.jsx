@@ -38,9 +38,9 @@ function OnboardingModal({ onComplete }) {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[9999] bg-violet-950/80 backdrop-blur-md flex justify-center items-start md:items-center p-4 overflow-y-auto py-12">
-      <div className="relative w-full max-w-lg animate-fade-in-up my-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] bg-violet-950/80 backdrop-blur-md flex justify-center items-center p-4">
+      <div className="relative w-full max-w-lg animate-fade-in-up my-auto max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[2.2rem]">
         {/* Glow */}
         <div className="absolute -inset-4 bg-violet-500/20 rounded-[3rem] blur-3xl pointer-events-none" />
 
@@ -49,13 +49,13 @@ function OnboardingModal({ onComplete }) {
           <div className="h-1.5 w-full bg-gradient-to-r from-violet-400 via-fuchsia-500 to-violet-600" />
 
           {/* Step indicator */}
-          <div className="px-10 pt-8 pb-0 flex items-center gap-3">
+          <div className="px-5 md:px-10 pt-8 pb-0 flex items-center gap-3">
             {[1, 2].map(s => (
               <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= s ? 'bg-violet-500' : 'bg-slate-100'}`} />
             ))}
           </div>
 
-          <div className="px-10 pt-6 pb-10">
+          <div className="px-5 md:px-10 pt-6 pb-10">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500 ${step === 1 ? 'bg-violet-100 text-violet-600' : 'bg-fuchsia-100 text-fuchsia-600'}`}>
@@ -164,12 +164,13 @@ function OnboardingModal({ onComplete }) {
         </div>
 
         {/* Skip */}
-        <p className="text-center mt-5 text-violet-300/60 text-xs font-semibold cursor-pointer hover:text-violet-200 transition-colors"
+        <p className="text-center mt-5 text-fuchsia-100/60 text-xs font-semibold cursor-pointer hover:text-white transition-colors"
           onClick={() => { localStorage.setItem('neurolearn_onboarding_done', '1'); onComplete(null); }}>
           Skip for now →
         </p>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -771,8 +772,8 @@ export default function CoursesPage() {
 
       {/* Level Selector Modal */}
       {showLevelSelector && activeCourse && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#0f0f1a]/80 backdrop-blur-sm flex justify-center items-start md:items-center p-4 overflow-y-auto py-12 animate-in fade-in duration-300">
-          <div className="bg-[#12121a] border border-violet-900/50 rounded-[2rem] w-full max-w-xl overflow-hidden shadow-2xl shadow-violet-900/40 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500 my-auto relative">
+        <div className="fixed inset-0 z-[9999] bg-[#0f0f1a]/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#12121a] border border-violet-900/50 rounded-[2rem] w-full max-w-xl animate-in zoom-in-95 slide-in-from-bottom-8 duration-500 relative max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl shadow-violet-900/40">
             <div className="absolute -inset-4 bg-violet-600/10 rounded-[3rem] blur-3xl pointer-events-none" />
             <div className="relative p-7 md:p-10">
               <div className="w-14 h-14 rounded-2xl bg-violet-600 flex items-center justify-center text-white mb-8 shadow-xl shadow-violet-900/20">
