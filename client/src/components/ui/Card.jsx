@@ -5,7 +5,7 @@ export const Card = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "glass-card overflow-hidden",
+      "surface-elevated overflow-hidden",
       className
     )}
     {...props}
@@ -34,7 +34,7 @@ CardTitle.displayName = "CardTitle";
 export const CardDescription = React.forwardRef(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-white/60", className)}
+    className={cn("text-sm text-slate-500", className)}
     {...props}
   />
 ));

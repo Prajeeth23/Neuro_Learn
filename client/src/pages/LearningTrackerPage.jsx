@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
-import { Activity, BookOpen, Brain, Clock, Target, TrendingUp, Sparkles, Loader2, Star } from 'lucide-react';
+import { Activity, BookOpen, Brain, Clock, Target, TrendingUp, Sparkles, Loader2, Star, ArrowRight, Shield, CheckCircle } from 'lucide-react';
+import { Badge } from '../components/ui/Badge';
 import api from '../lib/api';
 import { useScreenTime } from '../hooks/useScreenTime';
 
@@ -41,14 +42,11 @@ export default function LearningTrackerPage() {
   };
 
   const levelNames = { 3: 'Beginner', 4: 'Intermediate', 5: 'Advanced' };
-  const levelStars = { 3: '⭐⭐⭐', 4: '⭐⭐⭐⭐', 5: '⭐⭐⭐⭐⭐' };
-  const levelColors = { 3: 'text-green-400', 4: 'text-yellow-400', 5: 'text-purple-400' };
 
   if (loading) {
     return (
-      <div className="text-center py-20">
-        <div className="w-10 h-10 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-white/30 text-sm">Loading learning data...</p>
+      <div className="w-full h-[60vh] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -56,185 +54,242 @@ export default function LearningTrackerPage() {
   const summary = analytics?.summary || {};
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 w-full mb-20">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
+    <div className="animate-fade-in w-full mb-20">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
         <div className="space-y-1">
-          <h1 className="text-5xl font-black tracking-tighter text-white">
-            Learning <span className="text-secondary underline decoration-accent/30 underline-offset-8">Tracker</span>
+          <div className="inline-flex items-center space-x-2 px-3 py-1 bg-primary/10 rounded-full mb-4">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Intelligence Node</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-2">
+            Learning <span className="text-primary italic">Analytics</span>
           </h1>
-          <p className="text-white/40 font-medium tracking-widest uppercase text-[10px]">Your performance at a glance</p>
+          <p className="text-slate-500 font-medium">Real-time telemetry and cognitive performance metrics</p>
         </div>
         <button
           onClick={fetchInsights}
           disabled={insightsLoading}
-          className="uiverse-btn !text-xs !px-6 !py-3 font-black tracking-widest flex items-center gap-3 shadow-xl shadow-primary/20"
+          className="btn-primary group"
         >
-          {insightsLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} className="text-accent" />}
-          {insightsLoading ? 'Analyzing...' : 'AI Study Suggestions'}
+          {insightsLoading ? <Loader2 size={18} className="animate-spin mr-2" /> : <Sparkles size={18} className="text-white mr-2 group-hover:scale-110 transition-transform" />}
+          {insightsLoading ? 'Analyzing Performance...' : 'Generate AI Insights'}
         </button>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <Card className="glass-card-premium neon-border-primary p-6 group hover:translate-y-[-4px] transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Screen Time</h3>
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary"><Clock size={20} /></div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <Card className="surface-elevated p-8 flex flex-col gap-8 group hover:border-primary/20 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total Input</h3>
+            <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all"><Clock size={20} /></div>
           </div>
-          <p className="text-4xl font-black tracking-tighter">{summary.totalScreenTimeMinutes || 0}<span className="text-lg text-white/30 ml-1">min</span></p>
+          <div className="space-y-1">
+            <p className="text-5xl font-bold tracking-tighter text-slate-900">
+              {summary.totalScreenTimeMinutes || 0}
+              <span className="text-sm font-bold text-slate-300 ml-2 uppercase tracking-widest">Min</span>
+            </p>
+          </div>
         </Card>
 
-        <Card className="glass-card-premium neon-border-primary p-6 group hover:translate-y-[-4px] transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Avg Quiz Score</h3>
-            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent"><Target size={20} /></div>
+        <Card className="surface-elevated p-8 flex flex-col gap-8 group hover:border-secondary/20 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Avg Cognition</h3>
+            <div className="w-10 h-10 rounded-xl bg-secondary/5 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-all"><Target size={20} /></div>
           </div>
-          <p className="text-4xl font-black tracking-tighter">{summary.avgQuizScore || 0}<span className="text-lg text-white/30 ml-1">%</span></p>
+          <div className="space-y-1">
+            <p className="text-5xl font-bold tracking-tighter text-slate-900">
+              {summary.avgQuizScore || 0}
+              <span className="text-sm font-bold text-slate-300 ml-2 uppercase tracking-widest">%</span>
+            </p>
+          </div>
         </Card>
 
-        <Card className="glass-card-premium neon-border-primary p-6 group hover:translate-y-[-4px] transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Courses</h3>
-            <div className="w-10 h-10 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary"><BookOpen size={20} /></div>
+        <Card className="surface-elevated p-8 flex flex-col gap-8 group hover:border-primary/10 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Paths Sync</h3>
+            <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all"><BookOpen size={20} /></div>
           </div>
-          <p className="text-4xl font-black tracking-tighter">{summary.coursesEnrolled || 0}</p>
+          <div className="space-y-1">
+            <p className="text-5xl font-bold tracking-tighter text-slate-900">
+              {summary.coursesEnrolled || 0}
+              <span className="text-sm font-bold text-slate-300 ml-2 uppercase tracking-widest">Active</span>
+            </p>
+          </div>
         </Card>
 
-        <Card className="glass-card-premium neon-border-primary p-6 group hover:translate-y-[-4px] transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Avg Level</h3>
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400"><Star size={20} /></div>
+        <Card className="surface-elevated p-8 flex flex-col gap-8 group hover:border-amber-200 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Synthesizer</h3>
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all"><Star size={20} /></div>
           </div>
-          <p className="text-4xl font-black tracking-tighter">{summary.avgLevel || 3}<span className="text-lg text-white/30 ml-1">★</span></p>
+          <div className="space-y-1">
+            <p className="text-5xl font-bold tracking-tighter text-slate-900">
+              {summary.avgLevel || 3}
+              <span className="text-sm font-bold text-slate-300 ml-2 uppercase tracking-widest">Grade</span>
+            </p>
+          </div>
         </Card>
       </div>
 
       {/* AI Insights */}
       {insights && (
-        <Card className="glass-card-premium neon-border-primary p-8 mb-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <CardHeader className="p-0 mb-6">
-            <CardTitle className="text-2xl font-black tracking-tight text-gradient-primary flex items-center gap-3">
-              <Brain size={24} /> AI Learning Insights
+        <Card className="surface-elevated p-8 md:p-10 !rounded-[2.5rem] mb-12 bg-gradient-to-br from-white to-slate-50/50 border-secondary/20">
+          <CardHeader className="p-0 mb-10">
+            <CardTitle className="text-2xl font-bold text-slate-900 flex items-center gap-4">
+              <div className="p-3 bg-secondary/10 rounded-2xl">
+                 <Brain size={28} className="text-secondary" />
+              </div>
+              Executive Learning Analysis
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Best Study Time */}
-              <div className="bg-white/[0.02] rounded-2xl p-5 border border-white/5 space-y-2">
-                <h4 className="text-xs font-black tracking-widest uppercase text-accent/60 flex items-center gap-2">
-                  <Clock size={14} /> Best Study Time
-                </h4>
-                <p className="text-sm text-white/70">{insights.bestStudyTime}</p>
+              <div className="bg-white border border-slate-100 rounded-[2rem] p-8 space-y-3 shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center gap-3">
+                   <div className="p-2 bg-amber-50 rounded-xl">
+                      <Clock size={18} className="text-amber-500" />
+                   </div>
+                   <h4 className="text-xs font-bold tracking-widest uppercase text-slate-400">Peak Performance Window</h4>
+                </div>
+                <p className="text-slate-600 font-medium leading-relaxed italic">"{insights.bestStudyTime}"</p>
               </div>
 
               {/* Next Recommendation */}
-              <div className="bg-white/[0.02] rounded-2xl p-5 border border-white/5 space-y-2">
-                <h4 className="text-xs font-black tracking-widest uppercase text-primary/60 flex items-center gap-2">
-                  <TrendingUp size={14} /> Next Step
-                </h4>
-                <p className="text-sm text-white/70">{insights.nextRecommendation}</p>
+              <div className="bg-white border border-slate-100 rounded-[2rem] p-8 space-y-3 shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center gap-3">
+                   <div className="p-2 bg-primary/5 rounded-xl">
+                      <TrendingUp size={18} className="text-primary" />
+                   </div>
+                   <h4 className="text-xs font-bold tracking-widest uppercase text-slate-400">Strategic Next Step</h4>
+                </div>
+                <p className="text-slate-600 font-medium leading-relaxed italic">"{insights.nextRecommendation}"</p>
               </div>
 
               {/* Weak Areas */}
-              <div className="bg-white/[0.02] rounded-2xl p-5 border border-white/5 space-y-2">
-                <h4 className="text-xs font-black tracking-widest uppercase text-red-400/60 flex items-center gap-2">
-                  <Target size={14} /> Areas to Improve
-                </h4>
+              <div className="bg-white border border-slate-100 rounded-[2rem] p-8 space-y-4 shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center gap-3">
+                   <div className="p-2 bg-red-50 rounded-xl">
+                      <Shield size={18} className="text-red-400" />
+                   </div>
+                   <h4 className="text-xs font-bold tracking-widest uppercase text-slate-400">Vulnerabilities</h4>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {(insights.weakAreas || []).map((area, i) => (
-                    <span key={i} className="text-xs px-3 py-1 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 font-bold">{area}</span>
+                    <span key={i} className="text-[10px] px-3 py-1.5 rounded-full bg-red-50 text-red-600 font-bold border border-red-100">{area}</span>
                   ))}
+                  {(!insights.weakAreas || insights.weakAreas.length === 0) && <p className="text-slate-400 text-sm font-medium">None detected.</p>}
                 </div>
               </div>
 
               {/* Revision Suggestions */}
-              <div className="bg-white/[0.02] rounded-2xl p-5 border border-white/5 space-y-2">
-                <h4 className="text-xs font-black tracking-widest uppercase text-green-400/60 flex items-center gap-2">
-                  <BookOpen size={14} /> Revision Suggestions
-                </h4>
+              <div className="bg-white border border-slate-100 rounded-[2rem] p-8 space-y-4 shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center gap-3">
+                   <div className="p-2 bg-green-50 rounded-xl">
+                      <CheckCircle size={18} className="text-green-500" />
+                   </div>
+                   <h4 className="text-xs font-bold tracking-widest uppercase text-slate-400">Maintenance Paths</h4>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {(insights.revisionSuggestions || []).map((topic, i) => (
-                    <span key={i} className="text-xs px-3 py-1 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 font-bold">{topic}</span>
+                    <span key={i} className="text-[10px] px-3 py-1.5 rounded-full bg-green-50 text-green-600 font-bold border border-green-100">{topic}</span>
                   ))}
+                  {(!insights.revisionSuggestions || insights.revisionSuggestions.length === 0) && <p className="text-slate-400 text-sm font-medium">Optimized status reached.</p>}
                 </div>
               </div>
             </div>
 
             {/* General Insights */}
             {insights.insights && insights.insights.length > 0 && (
-              <div className="mt-6 space-y-3">
-                <h4 className="text-xs font-black tracking-widest uppercase text-white/40">Performance Insights</h4>
-                {insights.insights.map((insight, i) => (
-                  <div key={i} className="flex items-center gap-3 text-sm text-white/60 bg-white/[0.02] p-3 rounded-xl border border-white/5">
-                    <Sparkles size={14} className="text-accent shrink-0" />
-                    {insight}
-                  </div>
-                ))}
+              <div className="mt-10 space-y-4">
+                <h4 className="text-[10px] font-bold tracking-widest uppercase text-slate-400 ml-2">Contextual Observations</h4>
+                <div className="grid grid-cols-1 gap-3">
+                  {insights.insights.map((insight, i) => (
+                    <div key={i} className="flex items-center gap-4 text-sm text-slate-600 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm group hover:border-secondary/30 transition-all">
+                      <Sparkles size={16} className="text-secondary opacity-30 group-hover:opacity-100 group-hover:scale-110 transition-all shrink-0" />
+                      <span className="font-medium leading-relaxed">{insight}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </CardContent>
         </Card>
       )}
 
-      {/* Course Progress */}
-      {(analytics?.progress || []).length > 0 && (
-        <Card className="glass-card-premium p-8 mb-10">
-          <CardHeader className="p-0 mb-6">
-            <CardTitle className="text-xl font-black tracking-tight">Course Progress</CardTitle>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Course Progress */}
+        <Card className="surface-elevated !rounded-[2.5rem] overflow-hidden">
+          <CardHeader className="p-8 border-b border-slate-100 bg-slate-50/50">
+            <CardTitle className="text-lg font-bold text-slate-900 flex items-center justify-between">
+              <span>Curriculum Progression</span>
+              <BookOpen size={18} className="text-slate-300" />
+            </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 space-y-4">
-            {analytics.progress.map((p, i) => (
-              <div key={i} className="flex items-center justify-between p-5 bg-white/[0.02] rounded-2xl border border-white/5">
-                <div className="flex-1 min-w-0 mr-4">
-                  <p className="font-bold text-white/80 truncate">{p.course?.title || 'Course'}</p>
-                  <p className="text-xs text-white/30 mt-0.5">{p.course?.category || ''}</p>
-                </div>
-                <div className="flex items-center gap-4 shrink-0">
-                  <div className="text-right">
-                    <span className={`text-sm font-black ${levelColors[p.level] || 'text-white/40'}`}>
-                      {levelStars[p.level] || '⭐⭐⭐'}
-                    </span>
-                    <p className="text-[10px] font-black tracking-widest uppercase text-white/30 mt-0.5">
-                      {levelNames[p.level] || 'Beginner'}
-                    </p>
+          <CardContent className="p-0">
+            {(!analytics?.progress || analytics.progress.length === 0) ? (
+               <div className="p-12 text-center text-slate-400 font-medium italic">No curriculum data archived.</div>
+            ) : (
+              <div className="divide-y divide-slate-100">
+                {analytics.progress.map((p, i) => (
+                  <div key={i} className="flex items-center justify-between p-6 hover:bg-slate-50/50 transition-colors">
+                    <div className="flex-1 min-w-0 mr-6">
+                      <p className="font-bold text-slate-900 truncate text-base">{p.course?.title || 'Unknown Path'}</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{p.course?.category || 'General'}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                       <Badge className="bg-primary/5 text-primary border-none font-bold px-4">Level {p.level || 1}</Badge>
+                       <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest mt-1.5">{levelNames[p.level] || 'Entry'}</p>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
           </CardContent>
         </Card>
-      )}
 
-      {/* Recent Quiz Results */}
-      {(analytics?.quizResults || []).length > 0 && (
-        <Card className="glass-card-premium p-8">
-          <CardHeader className="p-0 mb-6">
-            <CardTitle className="text-xl font-black tracking-tight">Recent Quiz Results</CardTitle>
+        {/* Recent Quiz Results */}
+        <Card className="surface-elevated !rounded-[2.5rem] overflow-hidden">
+          <CardHeader className="p-8 border-b border-slate-100 bg-slate-50/50">
+            <CardTitle className="text-lg font-bold text-slate-900 flex items-center justify-between">
+              <span>Diagnostic Ledger</span>
+              <Activity size={18} className="text-slate-300" />
+            </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 space-y-3">
-            {analytics.quizResults.slice(0, 10).map((q, i) => (
-              <div key={i} className="flex items-center justify-between p-4 bg-white/[0.02] rounded-xl border border-white/5">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${
-                    q.score >= 70 ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
-                    q.score >= 40 ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' :
-                    'bg-red-500/10 text-red-400 border border-red-500/20'
-                  }`}>
-                    {q.score}%
+          <CardContent className="p-0">
+            {(!analytics?.quizResults || analytics.quizResults.length === 0) ? (
+              <div className="p-12 text-center text-slate-400 font-medium italic">No diagnostic results recorded.</div>
+            ) : (
+              <div className="divide-y divide-slate-100">
+                {analytics.quizResults.slice(0, 8).map((q, i) => (
+                  <div key={i} className="flex items-center justify-between p-6 hover:bg-slate-50/50 transition-colors">
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                      <div className={`w-12 h-12 rounded-2xl flex flex-col items-center justify-center shrink-0 shadow-sm border ${
+                        q.score >= 70 ? 'bg-green-50 text-green-600 border-green-100' :
+                        q.score >= 50 ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                        'bg-red-50 text-red-600 border-red-100'
+                      }`}>
+                        <span className="text-sm font-black leading-none">{q.score}%</span>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold text-slate-800 truncate capitalize">{q.quiz_type || 'General Diagnostic'}</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{new Date(q.created_at).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{q.total_questions} Questions</span>
+                       <div className="flex gap-0.5">
+                          {[1,2,3,4,5].map(s => (
+                            <div key={s} className={`w-1 h-1 rounded-full ${s <= (q.score/20) ? 'bg-primary' : 'bg-slate-200'}`}></div>
+                          ))}
+                       </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-white/70 capitalize">{q.quiz_type || 'Quiz'}</p>
-                    <p className="text-[10px] text-white/30">{new Date(q.created_at).toLocaleDateString()}</p>
-                  </div>
-                </div>
-                <span className="text-xs font-black tracking-widest uppercase text-white/20">
-                  {q.total_questions} Q
-                </span>
+                ))}
               </div>
-            ))}
+            )}
           </CardContent>
         </Card>
-      )}
+      </div>
     </div>
   );
 }

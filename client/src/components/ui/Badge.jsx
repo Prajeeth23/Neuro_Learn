@@ -6,7 +6,7 @@ export const Badge = React.forwardRef(({ className, variant = 'default', ...prop
     default: "bg-primary/20 text-primary border-primary/50",
     secondary: "bg-secondary/20 text-secondary border-secondary/50",
     accent: "bg-accent/20 text-accent border-accent/50",
-    outline: "border-white/20 text-white"
+    outline: "border-slate-200 text-slate-600"
   };
 
   return (

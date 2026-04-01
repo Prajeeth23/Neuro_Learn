@@ -11,6 +11,7 @@ module.exports = {
         primary: "hsl(var(--primary) / <alpha-value>)",
         secondary: "hsl(var(--secondary) / <alpha-value>)",
         accent: "hsl(var(--accent) / <alpha-value>)",
+        border: "hsl(var(--border) / <alpha-value>)",
         darkbg: "hsl(230, 20%, 10% / <alpha-value>)",
         glass: "rgba(255,255,255,0.08)"
       },

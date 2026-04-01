@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { CheckCircle, XCircle, BrainCircuit } from 'lucide-react';
+import { Badge } from '../components/ui/Badge';
+import { CheckCircle, XCircle, BrainCircuit, Sparkles, ChevronRight, ChevronLeft, Shield, Target } from 'lucide-react';
 import api from '../lib/api';
 
 export default function AssessmentPage() {
@@ -98,35 +99,46 @@ export default function AssessmentPage() {
   // Start splash
   if (!started) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 animate-in fade-in duration-500">
-        <Card className="max-w-md text-center p-8 glass-card-premium neon-border-primary">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 flex items-center justify-center">
-            <BrainCircuit size={36} className="text-primary" />
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 animate-fade-in">
+        <Card className="max-w-md w-full text-center p-10 surface-elevated !rounded-[2.5rem] shadow-xl shadow-slate-200/50">
+          <div className="w-24 h-24 mx-auto mb-8 rounded-3xl bg-primary/5 flex items-center justify-center">
+            <BrainCircuit size={42} className="text-primary" />
           </div>
-          <h1 className="text-3xl font-black mb-3 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-            Diagnostic Assessment
+          <h1 className="text-3xl font-bold mb-3 text-slate-900 tracking-tight">
+            Diagnostic <span className="text-primary">Calibration</span>
           </h1>
-          <p className="text-white/70 mb-3 text-sm">{courseName}</p>
-          <p className="text-white/40 mb-8 text-sm">
-            This quick 10-question assessment will calibrate NeuroLearn's adaptive engine to match your skill level.
-            No pressure — it just ensures you get the right content!
+          <p className="text-slate-500 font-medium mb-2 text-sm">{courseName}</p>
+          <p className="text-slate-400 mb-10 text-sm leading-relaxed">
+            This 10-question analytical diagnostic will synchronize the AI tutor with your current cognitive baseline.
           </p>
-          <div className="space-y-3 text-left mb-8 text-xs text-white/40">
-            <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-xl border border-white/5">
-              <span className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 font-black">3★</span>
-              <span>Score &lt; 50% → <strong className="text-white/60">Beginner</strong> — Simple explanations</span>
+          
+          <div className="space-y-3 text-left mb-10">
+            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <span className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600 font-black text-sm">3★</span>
+              <div className="space-y-0.5">
+                 <p className="text-xs font-bold text-slate-800">Beginner Node</p>
+                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Score &lt; 50%</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-xl border border-white/5">
-              <span className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-400 font-black">4★</span>
-              <span>Score 50-79% → <strong className="text-white/60">Intermediate</strong> — Moderate depth</span>
+            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <span className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 font-black text-sm">4★</span>
+              <div className="space-y-0.5">
+                 <p className="text-xs font-bold text-slate-800">Intermediate Node</p>
+                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Score 50-79%</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-xl border border-white/5">
-              <span className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 font-black">5★</span>
-              <span>Score ≥ 80% → <strong className="text-white/60">Advanced</strong> — In-depth content</span>
+            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <span className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary font-black text-sm">5★</span>
+              <div className="space-y-0.5">
+                 <p className="text-xs font-bold text-slate-800">Advanced Node</p>
+                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Score ≥ 80%</p>
+              </div>
             </div>
           </div>
-          <Button className="w-full uiverse-btn !py-5 shadow-xl shadow-primary/20" onClick={handleStart}>
-            Start Assessment
+          
+          <Button className="w-full btn-primary !py-7 !rounded-2xl shadow-lg shadow-primary/20 group" onClick={handleStart}>
+            Initialize Assessment
+            <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </Card>
       </div>
@@ -136,12 +148,12 @@ export default function AssessmentPage() {
   // Loading
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-center space-y-6">
-          <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto"></div>
+      <div className="min-h-[70vh] flex items-center justify-center animate-fade-in">
+        <div className="text-center space-y-8">
+          <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
           <div className="space-y-2">
-            <p className="text-xl font-bold text-white/70">Generating Assessment</p>
-            <p className="text-sm text-white/30">AI is creating 10 diagnostic questions on {courseName}...</p>
+            <h2 className="text-2xl font-bold text-slate-900">Synthesizing Diagnostic Questions</h2>
+            <p className="text-sm text-slate-400 font-medium italic">Constructing calibrated challenges for {courseName}...</p>
           </div>
         </div>
       </div>
@@ -150,32 +162,40 @@ export default function AssessmentPage() {
 
   // Results
   if (submitted && result) {
-    const starColors = { 3: 'text-green-400', 4: 'text-yellow-400', 5: 'text-purple-400' };
-    const starBgs = { 3: 'bg-green-500/10 border-green-500/30', 4: 'bg-yellow-500/10 border-yellow-500/30', 5: 'bg-purple-500/10 border-purple-500/30' };
     const levelNames = { 3: 'Beginner', 4: 'Intermediate', 5: 'Advanced' };
 
     return (
-      <div className="min-h-[60vh] flex items-center justify-center p-6 animate-in fade-in duration-500">
-        <Card className="w-full max-w-lg text-center p-8 glass-card-premium neon-border-primary">
-          <div className={`w-24 h-24 mx-auto mb-6 rounded-full border-2 flex items-center justify-center ${starBgs[result.level]}`}>
-            <span className={`text-4xl font-black ${starColors[result.level]}`}>{result.level}★</span>
+      <div className="min-h-[70vh] flex items-center justify-center p-6 animate-fade-in">
+        <Card className="w-full max-w-xl text-center p-12 surface-elevated !rounded-[3rem] shadow-2xl shadow-slate-200/50">
+          <div className="w-32 h-32 mx-auto mb-8 rounded-[2.5rem] bg-primary/5 flex flex-col items-center justify-center border-2 border-primary/20 shadow-inner">
+            <span className="text-4xl font-black text-primary">{result.level}★</span>
+            <span className="text-[10px] font-black uppercase text-primary/40 tracking-[0.2em] mt-1">Grade</span>
           </div>
-          <CardTitle className="text-3xl mb-2 font-black">Assessment Complete!</CardTitle>
-          <p className="text-xl text-white/70 mb-2">{result.score}% — {result.correct}/{result.total} correct</p>
-          <p className={`text-lg font-bold mb-6 ${starColors[result.level]}`}>
-            Level: {levelNames[result.level]}
-          </p>
-          <p className="text-sm text-white/40 mb-8">
-            {result.level === 5 ? 'You\'ll get detailed, in-depth content explanations.' :
-             result.level === 4 ? 'You\'ll get clear, moderately detailed content.' :
-             'You\'ll get simple, easy-to-understand explanations with examples.'}
-          </p>
+          <CardTitle className="text-4xl mb-3 font-bold text-slate-900 tracking-tight">Calibration Success</CardTitle>
+          <div className="flex flex-col items-center gap-1 mb-10">
+             <p className="text-xl font-bold text-slate-700">{result.score}% Accuracy</p>
+             <p className="text-sm font-bold text-primary uppercase tracking-[0.2em]">{levelNames[result.level]} Path Unlocked</p>
+          </div>
+          
+          <div className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 text-left mb-10 space-y-4">
+             <div className="flex items-center gap-3">
+                <Target size={20} className="text-primary" />
+                <h4 className="font-bold text-slate-800 text-sm">Adaptive Tuning:</h4>
+             </div>
+             <p className="text-slate-500 text-sm leading-relaxed font-medium">
+                {result.level === 5 ? 'System configured for high-complexity, conceptual deep-dives and technical rigor.' :
+                 result.level === 4 ? 'System configured for balanced conceptual delivery with structural reinforcement.' :
+                 'System configured for fundamental concepts, visual analogies, and progressive disclosure.'}
+             </p>
+          </div>
+
           <Button 
             onClick={() => navigate(`/dashboard/courses/${courseId}`)} 
             variant="primary" 
-            className="w-full uiverse-btn !py-4"
+            className="w-full btn-primary !py-7 !rounded-2xl group"
           >
-            Begin Learning →
+            Enter Curriculum
+            <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </Card>
       </div>
@@ -187,71 +207,93 @@ export default function AssessmentPage() {
   const q = questions[currentQIndex];
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center p-6 animate-in fade-in duration-500">
-      <Card className="w-full max-w-2xl glass-card-premium neon-border-primary">
-        <CardHeader className="border-b border-white/10 pb-4 mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] text-white/40 font-black tracking-widest uppercase">Question {currentQIndex + 1} of {questions.length}</span>
+    <div className="min-h-[80vh] flex items-center justify-center p-6 animate-fade-in">
+      <Card className="w-full max-w-3xl surface-elevated !rounded-[3rem] shadow-2xl shadow-slate-200/40 relative overflow-hidden">
+        {/* Visual Decoration */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+        
+        <CardHeader className="p-10 pb-6 mb-2">
+          <div className="flex items-center justify-between mb-8">
+            <div className="space-y-1">
+               <span className="text-[10px] text-slate-300 font-black tracking-widest uppercase">Diagnostic Node</span>
+               <p className="text-xs font-bold text-slate-900">Question {currentQIndex + 1} of {questions.length}</p>
+            </div>
             {q.difficulty && (
-              <span className={`text-[10px] font-black tracking-widest uppercase px-2 py-0.5 rounded border ${
-                q.difficulty === 'easy' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
-                q.difficulty === 'medium' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
-                'bg-red-500/10 border-red-500/20 text-red-400'
-              }`}>{q.difficulty}</span>
+               <Badge className={`bg-slate-50 text-slate-400 border-none font-bold text-[9px] uppercase tracking-widest px-4 py-1 ${
+                 q.difficulty === 'easy' ? 'text-green-500 bg-green-50' :
+                 q.difficulty === 'medium' ? 'text-amber-500 bg-amber-50' :
+                 'text-red-500 bg-red-50'
+               }`}>{q.difficulty}</Badge>
             )}
           </div>
-          {/* Progress bar */}
-          <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500" 
-              style={{ width: `${((currentQIndex + 1) / questions.length) * 100}%` }}
-            ></div>
+          
+          <div className="space-y-6">
+            <CardTitle className="text-2xl font-bold leading-snug text-slate-900 tracking-tight">
+               {q.question}
+            </CardTitle>
+            
+            {/* Minimalist Progress Meter */}
+            <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+               <div 
+                 className="h-full bg-primary rounded-full transition-all duration-700 ease-out" 
+                 style={{ width: `${((currentQIndex + 1) / questions.length) * 100}%` }}
+               ></div>
+            </div>
           </div>
-          <CardTitle className="text-xl leading-relaxed mt-4">{q.question}</CardTitle>
         </CardHeader>
         
-        <CardContent className="flex flex-col gap-3">
+        <CardContent className="p-10 px-10 pt-0 space-y-3">
           {Object.entries(q.options).map(([key, value]) => (
             <button
               key={key}
               onClick={() => handleSelect(key)}
-              className={`w-full text-left p-4 rounded-xl border transition-all flex items-center gap-4 ${
+              className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all flex items-center gap-6 group ${
                 selectedAnswers[currentQIndex] === key 
-                  ? 'bg-primary/20 border-primary text-white shadow-[0_0_15px_rgba(100,50,255,0.3)]' 
-                  : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/80'
+                  ? 'bg-primary/5 border-primary shadow-sm' 
+                  : 'bg-white border-slate-100 hover:border-slate-200 hover:bg-slate-50/50'
               }`}
             >
-              <span className="font-black text-xs w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 shrink-0">{key}</span>
-              <span>{value}</span>
+              <div className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-black transition-all ${
+                selectedAnswers[currentQIndex] === key 
+                  ? 'bg-primary text-white' 
+                  : 'bg-slate-50 text-slate-300 group-hover:bg-primary/10 group-hover:text-primary'
+              }`}>
+                {key}
+              </div>
+              <span className={`font-bold transition-colors ${selectedAnswers[currentQIndex] === key ? 'text-slate-900' : 'text-slate-600 group-hover:text-slate-900'}`}>{value}</span>
+              {selectedAnswers[currentQIndex] === key && <Sparkles size={16} className="ml-auto text-primary animate-pulse" />}
             </button>
           ))}
         </CardContent>
 
-        <CardFooter className="pt-6 flex gap-3">
+        <CardFooter className="p-10 pt-0 flex gap-4">
           <Button 
-            className="flex-1"
+            className="flex-1 !rounded-2xl !h-14 font-black tracking-widest text-[10px] uppercase border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-900"
+            variant="outline"
             onClick={handlePrev}
             disabled={currentQIndex === 0}
           >
+            <ChevronLeft size={16} className="mr-2" />
             Previous
           </Button>
+          
           {currentQIndex === questions.length - 1 ? (
             <Button 
-              className="flex-1" 
-              variant="primary" 
+              className="flex-1 !rounded-2xl !h-14 btn-primary"
               onClick={handleSubmit}
               disabled={Object.keys(selectedAnswers).length < questions.length}
             >
-              Submit ({Object.keys(selectedAnswers).length}/{questions.length})
+              Complete Calibration
+              <Shield size={16} className="ml-2" />
             </Button>
           ) : (
             <Button 
-              className="flex-1" 
-              variant="primary" 
+              className="flex-1 !rounded-2xl !h-14 btn-primary group"
               onClick={handleNext}
               disabled={selectedAnswers[currentQIndex] === undefined}
             >
-              Next Question
+              Continue
+              <ChevronRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           )}
         </CardFooter>

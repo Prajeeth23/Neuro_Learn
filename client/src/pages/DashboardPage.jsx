@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, BookOpen, Star, BrainCircuit, ArrowRight } from 'lucide-react';
+import { Activity, BookOpen, Star, BrainCircuit, ArrowRight, Brain, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import api from '../lib/api';
@@ -28,30 +28,27 @@ export default function DashboardPage() {
       try {
         setLoading(true);
 
-        // Check if first login (if true or undefined)
         const isFirst = user?.user_metadata?.isFirstLogin !== false;
         setIsFirstLogin(isFirst);
         
-        // Randomize messages for returning users
         if (!isFirst) {
           const messages = [
-            `Welcome Back, ${firstName} — Your learning evolution continues`,
-            `Good to see you, ${firstName} — Systems synced and ready`,
-            `Hey ${firstName}, Your adaptive engine is recalibrated`,
-            `Welcome back, ${firstName} — Progress awaits`,
-            `Neural sync complete, ${firstName}`
+            `Welcome Back, ${firstName} — Your evolution continues`,
+            `Systems Synced, ${firstName} — Performance optimized`,
+            `Hey ${firstName} — Your neural path is ready`,
+            `Synchronicity Restored, ${firstName}`,
+            `Welcome to the Atelier, ${firstName}`
           ];
           const subtitles = [
-            "Cognitive Synchronization Active",
-            "Adaptive Learning Mode Engaged",
-            "Skill Matrix Updating",
-            "Neural Pathways Optimized"
+            "Cognitive Status: Optimal",
+            "Editorial Intelligence Engaged",
+            "Skill Matrix Recalibrated",
+            "Next-Gen Learning Active"
           ];
           setWelcomeMessage(messages[Math.floor(Math.random() * messages.length)]);
           setSubtitle(subtitles[Math.floor(Math.random() * subtitles.length)]);
         }
 
-        // Fetch Analytics and Study Plans
         const [analyticsRes, personalizedRes] = await Promise.all([
           api.get('/progress/analytics').catch(() => null),
           api.get('/personalized').catch(() => null)
@@ -65,8 +62,8 @@ export default function DashboardPage() {
            setStats({
              adaptiveLevel: analyticsData.summary.avgLevel || 4.2,
              activeCourses: analyticsData.summary.coursesEnrolled || 0,
-             studyPlans: personalizedData.length > 0 ? personalizedData.length : 1, // At least 1 template
-             skillPoints: calculatedSkillPoints || 1200
+             studyPlans: personalizedData.length > 0 ? personalizedData.length : 0,
+             skillPoints: calculatedSkillPoints || 0
            });
         }
       } catch (err) {
@@ -83,13 +80,10 @@ export default function DashboardPage() {
 
   const handleStartSetup = async () => {
     try {
-      // Update user metadata in Supabase
       await supabase.auth.updateUser({
         data: { isFirstLogin: false }
       });
       setIsFirstLogin(false);
-      
-      // Navigate to onboarding / personalized page
       navigate('/dashboard/personalized'); 
     } catch (error) {
        console.error("Failed to update user status", error);
@@ -101,115 +95,110 @@ export default function DashboardPage() {
     return points;
   };
 
-  const getAdaptiveDecimal = (val) => {
-    return (val % 1).toFixed(1).split('.')[1];
-  };
-
   if (loading) {
     return (
-      <div className="w-full h-full flex items-center justify-center min-h-[50vh]">
-        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(124,58,237,0.5)]"></div>
+      <div className="w-full h-[60vh] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="animate-in fade-in duration-700 w-full h-full flex flex-col gap-8">
+    <div className="animate-fade-in w-full h-full flex flex-col gap-10">
       
       {/* Dynamic Hero Section */}
-      <section className="glass-card-premium neon-border-primary p-12 relative overflow-hidden group">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] group-hover:bg-primary/20 transition-all duration-700"></div>
-        <div className="relative z-10 w-full lg:w-2/3 space-y-6">
+      <section className="surface-elevated p-10 md:p-14 relative overflow-hidden group !rounded-[2.5rem] bg-gradient-to-br from-white to-slate-50">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[120px]"></div>
+        <div className="relative z-10 w-full lg:w-2/3 space-y-8">
           
+          <div className="inline-flex items-center space-x-2 px-3 py-1 bg-primary/10 rounded-full">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Status Alpha</span>
+          </div>
+
           {isFirstLogin ? (
-            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter capitalize">
-                 Welcome, <span className="text-secondary underline decoration-primary/30 underline-offset-8">{firstName}</span>
+            <div className="space-y-6">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
+                 Welcome to the <span className="text-primary italic">Atelier</span>, {firstName}
               </h1>
-              <h2 className="text-xl md:text-2xl text-white/80 font-bold tracking-wide">
-                 Let's build your personalized learning path
-              </h2>
-              <p className="text-lg text-white/50 leading-relaxed max-w-lg mt-2 font-medium">
-                 Select your domain of interest and preferred role to generate your adaptive roadmap.
+              <p className="text-lg text-slate-600 leading-relaxed max-w-lg font-medium">
+                 Your personalized cognitive roadmap starts here. Let's calibrate your learning preferences to begin.
               </p>
               <button 
                 onClick={handleStartSetup} 
-                className="uiverse-btn !px-8 !py-4 shadow-lg shadow-primary/20 mt-6 flex items-center gap-3 active:scale-95 transition-transform"
+                className="btn-primary group"
               >
-                 START SETUP <ArrowRight size={18} />
+                 <span>Begin Onboarding</span>
+                 <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           ) : (
-            <div className="space-y-6 animate-in fade-in duration-1000">
-              <div className="space-y-2 flex flex-col items-start pr-4">
-                <h1 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight italic uppercase">
-                  <span className="text-white">
-                    {welcomeMessage.split('—')[0]}
-                  </span>
-                  <span className="block text-xl md:text-2xl text-primary/80 mt-2 lowercase tracking-wider pl-1">
-                    — {welcomeMessage.split('—')[1]}
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 leading-tight">
+                  {welcomeMessage.split('—')[0]}
+                  <span className="block text-primary italic font-medium mt-1">
+                    {welcomeMessage.split('—')[1]}
                   </span>
                 </h1>
-                <p className="text-white/40 font-medium tracking-[0.3em] uppercase text-[10px] ml-1 mt-4">{subtitle}</p>
+                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 mt-4 ml-1">{subtitle}</p>
               </div>
               
-              <p className="text-lg text-white/50 leading-relaxed font-medium">
+              <p className="text-lg text-slate-500 leading-relaxed font-medium">
                 {stats.activeCourses > 0 
-                  ? "Your personalized learning node is active. Continue your journey." 
-                  : "Your learning system is ready. Explore new courses to begin."}
+                  ? "Your neural curriculum is initialized. Resuming your latest progress." 
+                  : "Platform capacity verified. Explore our collection of high-end learning paths."}
               </p>
               
               <button 
                 onClick={() => navigate('/dashboard/courses')} 
-                className="uiverse-btn !px-10 !py-4 shadow-2xl shadow-primary/20 mt-2 active:scale-95 transition-transform"
+                className="btn-primary px-10 group"
               >
-                 {stats.activeCourses > 0 ? "RESUME LEARNING ✦" : "EXPLORE COURSES ✦"}
+                 <span>{stats.activeCourses > 0 ? "Resume Learning" : "Explore Curricula"}</span>
+                 <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           )}
-
         </div>
       </section>
 
       {/* Dynamic Stats Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
-        <div className="glass-card-premium neon-border-primary border-white/5 p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Adaptive Level</h3>
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform"><Activity size={20} /></div>
+        <div className="surface-elevated p-8 flex flex-col gap-8 group hover:border-primary/30 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Cognitive Level</h3>
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform"><Activity size={20} /></div>
           </div>
-          <p className="text-6xl font-black tracking-tighter italic relative z-10">
-            {Math.floor(stats.adaptiveLevel)}<span className="text-2xl text-primary/40 ml-1">.{getAdaptiveDecimal(stats.adaptiveLevel)}</span>
-          </p>
+          <div className="space-y-1">
+            <p className="text-5xl font-bold tracking-tighter text-slate-900">
+              {stats.adaptiveLevel.toFixed(1)}
+              <span className="text-sm font-medium text-slate-400 ml-2 tracking-widest uppercase">Rank Alpha</span>
+            </p>
+          </div>
         </div>
 
-        <div className="glass-card-premium neon-border-primary border-white/5 p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-2xl group-hover:bg-accent/10 transition-colors"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Active Courses</h3>
-            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent group-hover:scale-110 transition-transform"><BookOpen size={20} /></div>
+        <div className="surface-elevated p-8 flex flex-col gap-8 group hover:border-secondary/30 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Active Paths</h3>
+            <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform"><BookOpen size={20} /></div>
           </div>
-          <p className="text-6xl font-black tracking-tighter italic relative z-10">{stats.activeCourses.toString().padStart(2, '0')}</p>
+          <p className="text-5xl font-bold tracking-tighter text-slate-900">{stats.activeCourses.toString().padStart(2, '0')}</p>
         </div>
 
-        <div className="glass-card-premium neon-border-primary border-white/5 p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-2xl group-hover:bg-secondary/10 transition-colors"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Study Plans</h3>
-            <div className="w-10 h-10 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform"><BrainCircuit size={20} /></div>
+        <div className="surface-elevated p-8 flex flex-col gap-8 group hover:border-primary/20 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">AI Blueprints</h3>
+            <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary/60 group-hover:scale-110 transition-transform"><BrainCircuit size={20} /></div>
           </div>
-          <p className="text-6xl font-black tracking-tighter italic relative z-10">{stats.studyPlans.toString().padStart(2, '0')}</p>
+          <p className="text-5xl font-bold tracking-tighter text-slate-900">{stats.studyPlans.toString().padStart(2, '0')}</p>
         </div>
 
-        <div className="glass-card-premium neon-border-primary border-white/5 p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-colors"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Skill Points</h3>
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform"><Star size={20} /></div>
+        <div className="surface-elevated p-8 flex flex-col gap-8 group hover:border-amber-200 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Skill Points</h3>
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform"><Star size={20} /></div>
           </div>
-          <p className="text-6xl font-black tracking-tighter italic text-gradient-primary relative z-10">{formatPoints(stats.skillPoints)}</p>
+          <p className="text-5xl font-bold tracking-tighter text-slate-900">{formatPoints(stats.skillPoints)}</p>
         </div>
 
       </section>
