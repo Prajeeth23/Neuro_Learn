@@ -377,5 +377,77 @@ router.get('/cohorts', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
+// GET /api/admin/cohort-progress — Fetch student evaluation progress matrix
+router.get('/cohort-progress', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    // 1. Fetch all users who are regular students
+    const { data: students, error: sErr } = await supabase
+      .from('users')
+      .select('id, name, email, created_at, domain_of_interest')
+      .eq('role', 'user')
+      .order('name', { ascending: true });
+
+    if (sErr) throw sErr;
+
+    // 2. Fetch all courses (representing the steps/curriculum)
+    const { data: courses, error: cErr } = await supabase
+      .from('courses')
+      .select('id, title, category, domain')
+      .order('created_at', { ascending: true });
+
+    if (cErr) throw cErr;
+
+    // 3. Fetch all current student evaluations
+    const { data: evaluations, error: eErr } = await supabase
+      .from('student_evaluations')
+      .select('*');
+
+    res.json({
+      students: students || [],
+      courses: courses || [],
+      evaluations: evaluations || []
+    });
+  } catch (err) {
+    console.error('Error fetching cohort progress matrix:', err);
+    res.status(500).json({ error: err.message || 'Failed to fetch cohort progress matrix' });
+  }
+});
+
+// POST /api/admin/evaluate — Create or override manual evaluation for a student
+router.post('/evaluate', authMiddleware, adminMiddleware, async (req, res) => {
+  const { user_id, course_id, status, feedback_notes } = req.body;
+
+  if (!user_id || !course_id || !status) {
+    return res.status(400).json({ error: 'Missing required evaluation fields (user_id, course_id, status)' });
+  }
+
+  const validStatuses = ['approved', 'pending', 'rejected'];
+  if (!validStatuses.includes(status.toLowerCase())) {
+    return res.status(400).json({ error: 'Invalid status. Must be approved, pending, or rejected' });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('student_evaluations')
+      .upsert({
+        user_id,
+        course_id,
+        status: status.toLowerCase(),
+        feedback_notes: feedback_notes || '',
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,course_id'
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json({ message: 'Evaluation successfully saved', evaluation: data });
+  } catch (err) {
+    console.error('Error upserting student evaluation:', err);
+    res.status(500).json({ error: err.message || 'Failed to save student evaluation' });
+  }
+});
+
 module.exports = router;
 

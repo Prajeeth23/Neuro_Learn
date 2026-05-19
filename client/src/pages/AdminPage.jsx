@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
-import { Shield, Plus, Trash2, BookOpen, Users, BarChart3, Loader2, ChevronDown, ChevronUp, Eye, Search, Layers, ShieldCheck, UserCircle2 } from 'lucide-react';
+import { Shield, Plus, Trash2, BookOpen, Users, BarChart3, Loader2, ChevronDown, ChevronUp, Eye, Search, Layers, ShieldCheck, UserCircle2, Check, Clock, X, Download, RefreshCw, TrendingUp } from 'lucide-react';
 import api from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/Button';
@@ -27,8 +27,18 @@ export default function AdminPage() {
   const [userPerformance, setUserPerformance] = useState({});
   const [perfLoading, setPerfLoading] = useState({});
 
+  // Cohort Progress Heatmap States
+  const [cohortData, setCohortData] = useState({ students: [], courses: [], evaluations: [] });
+  const [cohortLoading, setCohortLoading] = useState(false);
+  const [selectedCohort, setSelectedCohort] = useState('Jan 2025');
+  const [selectedCell, setSelectedCell] = useState(null);
+  const [evalSaving, setEvalSaving] = useState(false);
+  const [evalStatus, setEvalStatus] = useState('pending');
+  const [evalFeedback, setEvalFeedback] = useState('');
+
   useEffect(() => { if (isAdmin) { fetchCourses(); } }, [isAdmin]);
   useEffect(() => { if (activeTab === 'users' && users.length === 0) { fetchUsers(); } }, [activeTab]);
+  useEffect(() => { if (activeTab === 'cohort_progress') { fetchCohortProgress(); } }, [activeTab]);
 
   const fetchCourses = async () => {
     try {
@@ -57,6 +67,77 @@ export default function AdminPage() {
       const { data } = await api.get(`/admin/users/${userId}/performance`);
       setUserPerformance(prev => ({ ...prev, [userId]: data }));
     } catch (err) { console.error('Error loading performance:', err); } finally { setPerfLoading(prev => ({ ...prev, [userId]: false })); }
+  };
+
+  const fetchCohortProgress = async () => {
+    setCohortLoading(true); setError('');
+    try {
+      const { data } = await api.get('/admin/cohort-progress');
+      setCohortData(data || { students: [], courses: [], evaluations: [] });
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Failed to load cohort progress');
+    } finally { setCohortLoading(false); }
+  };
+
+  const handleSaveEvaluation = async (e) => {
+    e.preventDefault();
+    if (!selectedCell) return;
+    setEvalSaving(true); setError(''); setSuccess('');
+    try {
+      await api.post('/admin/evaluate', {
+        user_id: selectedCell.student.id,
+        course_id: selectedCell.course.id,
+        status: evalStatus,
+        feedback_notes: evalFeedback
+      });
+      setSuccess(`Evaluation updated successfully for ${selectedCell.student.name || selectedCell.student.email}`);
+      
+      setCohortData(prev => {
+        const updatedEvals = [...prev.evaluations];
+        const existingIdx = updatedEvals.findIndex(ev => ev.user_id === selectedCell.student.id && ev.course_id === selectedCell.course.id);
+        
+        const newEval = {
+          user_id: selectedCell.student.id,
+          course_id: selectedCell.course.id,
+          status: evalStatus,
+          feedback_notes: evalFeedback,
+          updated_at: new Date().toISOString()
+        };
+
+        if (existingIdx >= 0) {
+          updatedEvals[existingIdx] = newEval;
+        } else {
+          updatedEvals.push(newEval);
+        }
+
+        return { ...prev, evaluations: updatedEvals };
+      });
+
+      setSelectedCell(null);
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Failed to save evaluation');
+    } finally { setEvalSaving(false); }
+  };
+
+  const handleExportCSV = () => {
+    if (!cohortData.students?.length || !cohortData.courses?.length) return;
+    let csvContent = "Steps\\Students," + cohortData.students.map(s => `"${s.name || s.email}"`).join(",") + "\n";
+    cohortData.courses.forEach((c, idx) => {
+      const rowLabel = `"${idx + 1}. ${c.title}"`;
+      const rowCells = cohortData.students.map(s => {
+        const evaluation = cohortData.evaluations.find(ev => ev.user_id === s.id && ev.course_id === c.id);
+        return evaluation ? `"${evaluation.status.toUpperCase()}"` : '"PENDING"';
+      });
+      csvContent += rowLabel + "," + rowCells.join(",") + "\n";
+    });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `cohort_progress_${selectedCohort.toLowerCase().replace(' ', '_')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const [promoteEmail, setPromoteEmail] = useState('');
@@ -111,6 +192,7 @@ export default function AdminPage() {
   const tabs = [
     { id: 'courses', label: 'DOMAIN CONTROL', icon: <BookOpen size={14} /> },
     { id: 'users', label: 'USER LEDGER', icon: <Users size={14} /> },
+    { id: 'cohort_progress', label: 'COHORT PROGRESS', icon: <BarChart3 size={14} /> },
   ];
 
   return (
@@ -330,6 +412,360 @@ export default function AdminPage() {
                 ))
               }
            </div>
+        </div>
+      )}
+
+      {activeTab === 'cohort_progress' && (
+        <div className="space-y-8 animate-fade-in-up">
+          {/* Heatmap Card Header */}
+          <div className="bg-white border border-gray-100 rounded-[3rem] p-10 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-gray-50">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-black italic tracking-tight text-[#191C1E] uppercase">Cohort Progress Heatmap</h2>
+                <p className="text-[11px] text-gray-400 font-black tracking-widest uppercase">
+                  Grid: rows = steps, columns = students. Color = status (green=done, yellow=pending, red=rejected). Instantly shows bottlenecks.
+                </p>
+              </div>
+
+              {/* Filters */}
+              <div className="flex items-center gap-4">
+                <select
+                  value={selectedCohort}
+                  onChange={e => setSelectedCohort(e.target.value)}
+                  className="bg-gray-50 border border-gray-100 rounded-xl px-5 py-3 text-xs font-black text-[#191C1E] uppercase tracking-wider focus:outline-none focus:border-indigo-600 transition-all cursor-pointer"
+                >
+                  <option value="Jan 2025">Cohort: Jan 2025</option>
+                  <option value="Feb 2025">Cohort: Feb 2025</option>
+                  <option value="Mar 2025">Cohort: Mar 2025</option>
+                </select>
+
+                <button
+                  onClick={handleExportCSV}
+                  disabled={!cohortData.students?.length}
+                  className="flex items-center gap-2 px-5 py-3 rounded-xl border border-gray-100 bg-white hover:border-indigo-600 text-[#191C1E] hover:text-indigo-600 text-xs font-black tracking-wider uppercase transition-all shadow-sm disabled:opacity-50 disabled:pointer-events-none"
+                >
+                  <Download size={14} /> Export CSV
+                </button>
+              </div>
+            </div>
+
+            {/* Legend and Refresh */}
+            <div className="flex flex-wrap items-center justify-between gap-6 py-6 border-b border-gray-50">
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded bg-[#DCFCE7] border border-[#BBF7D0] flex items-center justify-center text-[#15803D]">
+                    <Check size={12} />
+                  </span>
+                  <span className="text-[10px] font-black tracking-widest text-[#191C1E] uppercase">Completed (Approved)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#D97706]">
+                    <Clock size={12} />
+                  </span>
+                  <span className="text-[10px] font-black tracking-widest text-[#191C1E] uppercase">Pending Review</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded bg-[#FEE2E2] border border-[#FCA5A5] flex items-center justify-center text-[#DC2626]">
+                    <X size={12} />
+                  </span>
+                  <span className="text-[10px] font-black tracking-widest text-[#191C1E] uppercase">Rejected / Needs Resubmission</span>
+                </div>
+              </div>
+
+              <button
+                onClick={fetchCohortProgress}
+                disabled={cohortLoading}
+                className="flex items-center gap-2 text-gray-300 hover:text-[#191C1E] transition-all text-[10px] font-black tracking-widest uppercase disabled:opacity-40"
+              >
+                {cohortLoading ? (
+                  <Loader2 size={12} className="animate-spin" />
+                ) : (
+                  <RefreshCw size={12} />
+                )}
+                Last updated: Just now
+              </button>
+            </div>
+
+            {/* Matrix Data Grid Table */}
+            <div className="mt-8 overflow-x-auto rounded-[2rem] border border-gray-50">
+              {cohortLoading ? (
+                <div className="py-32 flex justify-center items-center grayscale opacity-40">
+                  <Loader2 size={32} className="animate-spin text-[#191C1E]" />
+                </div>
+              ) : !cohortData.students?.length ? (
+                <div className="py-20 text-center text-[10px] font-black text-gray-300 uppercase tracking-widest italic">
+                  No active students registered in database.
+                </div>
+              ) : (
+                <table className="min-w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-50/50">
+                      {/* Top Left Cell */}
+                      <th className="p-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest border-r border-b border-gray-100 min-w-[260px]">
+                        Steps \ Students
+                      </th>
+                      {/* Student Headers */}
+                      {cohortData.students.map(student => (
+                        <th key={student.id} className="p-6 text-center border-b border-gray-100 min-w-[140px]">
+                          <div className="flex flex-col items-center space-y-3">
+                            <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white text-sm font-black shadow-md shadow-indigo-900/5 uppercase">
+                              {(student.name || student.email || '??').substring(0, 2)}
+                            </div>
+                            <span className="text-[10px] font-black text-[#191C1E] tracking-tight uppercase leading-tight max-w-[120px] truncate block">
+                              {student.name || student.email.split('@')[0]}
+                            </span>
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cohortData.courses.map((course, cIdx) => (
+                      <tr key={course.id} className="hover:bg-gray-50/20 transition-all border-b border-gray-100">
+                        {/* Step Description Cell */}
+                        <td className="p-6 font-black text-xs text-[#191C1E] uppercase italic tracking-tight border-r border-gray-100">
+                          {cIdx + 1}. {course.title}
+                        </td>
+                        {/* Evaluation Status Cells */}
+                        {cohortData.students.map(student => {
+                          const ev = cohortData.evaluations.find(e => e.user_id === student.id && e.course_id === course.id);
+                          const status = ev ? ev.status.toLowerCase() : 'pending';
+
+                          let cellBg = 'bg-[#FEF3C7] text-[#D97706] border-[#FDE68A] hover:bg-[#FDE68A]';
+                          let cellIcon = <Clock size={16} />;
+
+                          if (status === 'approved') {
+                            cellBg = 'bg-[#DCFCE7] text-[#15803D] border-[#BBF7D0] hover:bg-[#C6F6D5]';
+                            cellIcon = <Check size={16} />;
+                          } else if (status === 'rejected') {
+                            cellBg = 'bg-[#FEE2E2] text-[#DC2626] border-[#FCA5A5] hover:bg-[#FCA5A5]';
+                            cellIcon = <X size={16} />;
+                          }
+
+                          return (
+                            <td key={student.id} className="p-3 text-center">
+                              <button
+                                onClick={() => {
+                                  setSelectedCell({ student, course, evaluation: ev });
+                                  setEvalStatus(status);
+                                  setEvalFeedback(ev ? ev.feedback_notes || '' : '');
+                                }}
+                                className={`w-12 h-12 rounded-2xl ${cellBg} flex items-center justify-center mx-auto border transition-all duration-200 active:scale-95 shadow-sm font-bold`}
+                                title={`Review: ${student.name || student.email} on ${course.title}`}
+                              >
+                                {cellIcon}
+                              </button>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* Cohort Summary Footer Cards */}
+            {!cohortLoading && cohortData.students?.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mt-12 pt-10 border-t border-gray-50">
+                {/* 1. Avg Completion Card */}
+                <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-green-50 text-[#15803D] flex items-center justify-center shadow-sm">
+                    <Check size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black italic text-[#191C1E] leading-none">
+                      {cohortData.students.length * cohortData.courses.length > 0 ? (
+                        Math.round((cohortData.evaluations.filter(e => e.status === 'approved').length / (cohortData.students.length * cohortData.courses.length)) * 100)
+                      ) : 0}%
+                    </h4>
+                    <p className="text-[8px] font-black uppercase text-gray-300 tracking-widest mt-1">Avg. Completion</p>
+                  </div>
+                </div>
+
+                {/* 2. Pending Card */}
+                <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 text-[#D97706] flex items-center justify-center shadow-sm">
+                    <Clock size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black italic text-[#191C1E] leading-none">
+                      {(cohortData.students.length * cohortData.courses.length) - cohortData.evaluations.filter(e => e.status === 'approved' || e.status === 'rejected').length}
+                    </h4>
+                    <p className="text-[8px] font-black uppercase text-gray-300 tracking-widest mt-1">Pending (Total)</p>
+                  </div>
+                </div>
+
+                {/* 3. Rejected Card */}
+                <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-red-50 text-[#DC2626] flex items-center justify-center shadow-sm">
+                    <X size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black italic text-[#191C1E] leading-none">
+                      {cohortData.evaluations.filter(e => e.status === 'rejected').length}
+                    </h4>
+                    <p className="text-[8px] font-black uppercase text-gray-300 tracking-widest mt-1">Rejected (Total)</p>
+                  </div>
+                </div>
+
+                {/* 4. Total Students Card */}
+                <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-sm">
+                    <Users size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black italic text-[#191C1E] leading-none">{cohortData.students.length}</h4>
+                    <p className="text-[8px] font-black uppercase text-gray-300 tracking-widest mt-1">Total Students</p>
+                  </div>
+                </div>
+
+                {/* 5. Bottleneck Card */}
+                <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100 flex items-center gap-4 lg:col-span-1">
+                  <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shadow-sm">
+                    <TrendingUp size={20} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-[11px] font-black text-[#191C1E] uppercase leading-tight truncate italic">
+                      {(() => {
+                        let worstIdx = 0;
+                        let worstCount = -1;
+                        cohortData.courses.forEach((c, i) => {
+                          const issues = cohortData.students.filter(s => {
+                            const ev = cohortData.evaluations.find(e => e.user_id === s.id && e.course_id === c.id);
+                            return !ev || ev.status === 'pending' || ev.status === 'rejected';
+                          }).length;
+                          if (issues > worstCount) {
+                            worstCount = issues;
+                            worstIdx = i;
+                          }
+                        });
+                        return cohortData.courses[worstIdx] ? `${worstIdx + 1}. ${cohortData.courses[worstIdx].title}` : 'None';
+                      })()}
+                    </h4>
+                    <p className="text-[8px] font-black uppercase text-gray-300 tracking-widest mt-1">Top Bottleneck Step</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Modal Popover */}
+      {selectedCell && (
+        <div className="fixed inset-0 bg-[#191C1E]/40 backdrop-blur-sm z-50 flex items-center justify-center p-6 animate-fade-in">
+          <div className="bg-white rounded-[3rem] p-10 max-w-lg w-full border border-gray-100 shadow-2xl relative overflow-hidden animate-fade-in-up">
+            <button
+              onClick={() => setSelectedCell(null)}
+              className="absolute right-8 top-8 p-3 rounded-xl bg-gray-50 border border-gray-100 text-gray-400 hover:text-[#191C1E] transition-all"
+            >
+              <X size={14} />
+            </button>
+
+            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-gray-50">
+              <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white">
+                <ShieldCheck size={20} />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-[#191C1E] uppercase tracking-widest">Evaluate Student Task</h3>
+                <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest mt-0.5">Admin Assessment Module</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSaveEvaluation} className="space-y-6">
+              {/* Target info */}
+              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5 space-y-2">
+                <div>
+                  <p className="text-[8px] font-black text-gray-300 uppercase tracking-widest">STUDENT AGENT</p>
+                  <p className="text-xs font-black text-[#191C1E] uppercase italic">
+                    {selectedCell.student.name || 'ANONYMOUS'} ({selectedCell.student.email})
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[8px] font-black text-gray-300 uppercase tracking-widest">MODULE / COURSE</p>
+                  <p className="text-xs font-black text-[#191C1E] uppercase italic">{selectedCell.course.title}</p>
+                </div>
+              </div>
+
+              {/* Status selectors */}
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">EVALUATION STATUS</label>
+                <div className="grid grid-cols-3 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setEvalStatus('approved')}
+                    className={`py-3 px-4 rounded-xl text-[9px] font-black tracking-widest uppercase transition-all flex flex-col items-center justify-center gap-2 border ${
+                      evalStatus === 'approved'
+                        ? 'bg-[#DCFCE7] border-[#15803D] text-[#15803D] shadow-sm'
+                        : 'bg-white border-gray-100 text-gray-400 hover:text-[#191C1E]'
+                    }`}
+                  >
+                    <Check size={14} /> Approved
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEvalStatus('pending')}
+                    className={`py-3 px-4 rounded-xl text-[9px] font-black tracking-widest uppercase transition-all flex flex-col items-center justify-center gap-2 border ${
+                      evalStatus === 'pending'
+                        ? 'bg-[#FEF3C7] border-[#D97706] text-[#D97706] shadow-sm'
+                        : 'bg-white border-gray-100 text-gray-400 hover:text-[#191C1E]'
+                    }`}
+                  >
+                    <Clock size={14} /> Pending
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEvalStatus('rejected')}
+                    className={`py-3 px-4 rounded-xl text-[9px] font-black tracking-widest uppercase transition-all flex flex-col items-center justify-center gap-2 border ${
+                      evalStatus === 'rejected'
+                        ? 'bg-[#FEE2E2] border-[#DC2626] text-[#DC2626] shadow-sm'
+                        : 'bg-white border-gray-100 text-gray-400 hover:text-[#191C1E]'
+                    }`}
+                  >
+                    <X size={14} /> Rejected
+                  </button>
+                </div>
+              </div>
+
+              {/* Feedback text area */}
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest ml-1">FEEDBACK / INSTRUCTIONS</label>
+                <textarea
+                  value={evalFeedback}
+                  onChange={e => setEvalFeedback(e.target.value)}
+                  placeholder="Enter details, corrections required, or praise for student execution..."
+                  rows={4}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-5 text-xs font-bold text-[#191C1E] focus:border-indigo-600 focus:outline-none transition-all placeholder-gray-300"
+                />
+              </div>
+
+              <div className="flex gap-4 pt-4 border-t border-gray-50">
+                <button
+                  type="button"
+                  onClick={() => setSelectedCell(null)}
+                  className="flex-1 bg-gray-50 border border-gray-100 hover:border-[#191C1E] rounded-xl py-4 text-[10px] font-black tracking-widest uppercase transition-all text-[#191C1E] text-center"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={evalSaving}
+                  className="flex-1 bg-indigo-600 hover:bg-gray-800 text-white rounded-xl py-4 text-[10px] font-black tracking-widest uppercase transition-all shadow-lg shadow-indigo-900/10 flex items-center justify-center gap-2"
+                >
+                  {evalSaving ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <ShieldCheck size={14} />
+                  )}
+                  {evalSaving ? 'SAVING...' : 'SAVE EVALUATION'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
