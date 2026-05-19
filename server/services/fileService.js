@@ -5,7 +5,7 @@ const axios = require('axios');
 
 // Polyfill for PDF.js / pdf-parse in Node environments
 if (typeof global.DOMMatrix === 'undefined') {
-  global.DOMMatrix = class DOMMatrix {};
+  global.DOMMatrix = class DOMMatrix { };
 }
 
 const apiKey = process.env.GEMINI_API_KEY;
@@ -20,7 +20,13 @@ const extractTextFromFile = async (filePath, mimeType, originalName) => {
   try {
     // PDF
     if (mimeType === 'application/pdf' || ext === '.pdf') {
-      const pdf = require('pdf-parse');
+      const pdfParse = require('pdf-parse');
+      const pdf = typeof pdfParse === 'function' ? pdfParse : (pdfParse.default || pdfParse);
+
+      if (typeof pdf !== 'function') {
+        throw new Error('pdf-parse is not a function. Check dependency installation.');
+      }
+
       const dataBuffer = fs.readFileSync(filePath);
       const data = await pdf(dataBuffer);
       return data.text;

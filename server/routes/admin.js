@@ -257,4 +257,125 @@ router.get('/users/:userId/performance', authMiddleware, adminMiddleware, async 
   }
 });
 
+// GET /api/admin/cohorts — Cohort Retention heatmap analysis
+router.get('/cohorts', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    // 1. Fetch all users
+    const { data: users, error: usersError } = await supabase
+      .from('users')
+      .select('id, email, created_at')
+      .order('created_at', { ascending: true });
+
+    if (usersError) throw usersError;
+
+    // 2. Fetch all screen times & quizzes in parallel
+    const [stRes, qrRes] = await Promise.all([
+      supabase.from('screen_time').select('user_id, session_date'),
+      supabase.from('quiz_results').select('user_id, created_at')
+    ]);
+
+    const screenTimes = stRes.data || [];
+    const quizResults = qrRes.data || [];
+
+    // Helpers to segment by week
+    const getCohortWeek = (dateStr) => {
+      const d = new Date(dateStr);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Start week on Monday
+      const monday = new Date(d.setDate(diff));
+      monday.setHours(0, 0, 0, 0);
+      return monday.toISOString().split('T')[0];
+    };
+
+    const formatCohortName = (dateStr) => {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+
+    // User details and map
+    const userMap = {};
+    const cohorts = {}; // cohortKey -> array of userIds
+
+    users.forEach(u => {
+      const cohortKey = getCohortWeek(u.created_at);
+      userMap[u.id] = {
+        id: u.id,
+        email: u.email,
+        createdAt: new Date(u.created_at),
+        cohort: cohortKey
+      };
+
+      if (!cohorts[cohortKey]) {
+        cohorts[cohortKey] = [];
+      }
+      cohorts[cohortKey].push(u.id);
+    });
+
+    // Map user activities
+    const userActivityMap = {};
+
+    screenTimes.forEach(st => {
+      if (!userActivityMap[st.user_id]) {
+        userActivityMap[st.user_id] = new Set();
+      }
+      userActivityMap[st.user_id].add(st.session_date);
+    });
+
+    quizResults.forEach(qr => {
+      if (!userActivityMap[qr.user_id]) {
+        userActivityMap[qr.user_id] = new Set();
+      }
+      const dateStr = new Date(qr.created_at).toISOString().split('T')[0];
+      userActivityMap[qr.user_id].add(dateStr);
+    });
+
+    // Compute weekly retention percentages
+    const cohortResults = Object.keys(cohorts).sort().map(cohortKey => {
+      const userIds = cohorts[cohortKey];
+      const totalUsers = userIds.length;
+
+      const weeklyRetention = [0, 1, 2, 3, 4].map(weekIndex => {
+        let activeCount = 0;
+
+        userIds.forEach(userId => {
+          const user = userMap[userId];
+          const signupDate = user.createdAt;
+          const activeDates = userActivityMap[userId] || new Set();
+
+          const isStepActive = Array.from(activeDates).some(dateStr => {
+            const activityDate = new Date(dateStr);
+            const diffTime = activityDate.getTime() - signupDate.getTime();
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays >= weekIndex * 7 && diffDays < (weekIndex + 1) * 7;
+          });
+
+          // Week 0 is always 100% active since that's signup week
+          if (isStepActive || weekIndex === 0) {
+            activeCount++;
+          }
+        });
+
+        const percentage = totalUsers > 0 ? Math.round((activeCount / totalUsers) * 100) : 0;
+        return {
+          week: weekIndex,
+          activeUsers: activeCount,
+          percentage
+        };
+      });
+
+      return {
+        cohort: formatCohortName(cohortKey),
+        totalUsers,
+        retention: weeklyRetention
+      };
+    });
+
+    res.json(cohortResults);
+  } catch (err) {
+    console.error('Error computing cohort analytics:', err);
+    res.status(500).json({ error: 'Failed to compute cohort analytics' });
+  }
+});
+
 module.exports = router;
+
